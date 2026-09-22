@@ -90,6 +90,9 @@ class ImageDropWidget(QFrame):
         """Load and preview an image, reporting a useful error for invalid files."""
         pixmap = QPixmap(str(path))
         if pixmap.isNull():
+            self._image_path = None
+            self.preview.clear()
+            self.preview.setText("Drop an image here\nor choose a file")
             self.metadata_label.setText("Could not read this image. Choose a supported image file.")
             self.metadata_label.setObjectName("errorText")
             self.metadata_label.style().unpolish(self.metadata_label)
@@ -123,4 +126,3 @@ class ImageDropWidget(QFrame):
                     Qt.TransformationMode.SmoothTransformation,
                 )
             )
-
