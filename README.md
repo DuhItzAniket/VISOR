@@ -4,9 +4,11 @@
 
 The project is being built in milestones. The first release focuses on OpenCV SIFT and ORB, feature matching, and homography-based localization. Homography results apply to planar scenes and are estimates, not general 3D pose measurements.
 
+The initial desktop shell supports choosing or dragging and dropping a reference and target image. Analysis and result views are not implemented yet.
+
 ## Project status
 
-See [Implementation Status](docs/IMPLEMENTATION_STATUS.md) and [Project Plan](docs/PROJECT_PLAN.md). The first UI milestone includes reference and target image loading by file picker and drag-and-drop.
+See [Implementation Status](docs/IMPLEMENTATION_STATUS.md) and [Project Plan](docs/PROJECT_PLAN.md).
 
 ## Development setup
 
@@ -23,3 +25,6 @@ python -m visor
 
 The initial implementation uses OpenCV's existing SIFT and ORB algorithms. It does not train models or download pretrained weights. Learned engines, benchmark tooling, export formats, and packaged Windows installers are later roadmap items.
 
+## Image input
+
+Drag a PNG, JPEG, BMP, TIFF, or WebP file into either image input area, or select it using the corresponding **Choose image…** button. The UI shows the image dimensions and filename after loading.
