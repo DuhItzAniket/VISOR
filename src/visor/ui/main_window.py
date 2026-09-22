@@ -4,19 +4,43 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QAction
+from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtGui import QAction, QImage, QPixmap
 from PySide6.QtWidgets import (
+    QComboBox,
+    QDockWidget,
     QHBoxLayout,
     QLabel,
     QMainWindow,
+    QPushButton,
     QSplitter,
     QStatusBar,
+    QTabWidget,
+    QTextEdit,
     QVBoxLayout,
     QWidget,
 )
 
+from visor.models import AnalysisResult, EngineName
+from visor.pipeline import analyze
 from visor.ui.widgets.image_drop import ImageDropWidget
+
+
+class AnalysisWorker(QThread):
+    completed = Signal(object)
+    failed = Signal(str)
+
+    def __init__(self, reference: Path, target: Path, engine: EngineName) -> None:
+        super().__init__()
+        self.reference = reference
+        self.target = target
+        self.engine = engine
+
+    def run(self) -> None:
+        try:
+            self.completed.emit(analyze(self.reference, self.target, self.engine))
+        except Exception as exc:
+            self.failed.emit(str(exc))
 
 
 class MainWindow(QMainWindow):
@@ -26,8 +50,11 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1040, 680)
         self.resize(1280, 820)
         self._paths: dict[str, Path] = {}
+        self._worker: AnalysisWorker | None = None
+        self._result_arrays: dict[QLabel, object] = {}
         self._build_menu()
         self._build_workspace()
+        self._build_details_dock()
         self.setStatusBar(QStatusBar(self))
         self.statusBar().showMessage("Ready — add a reference and target image to begin.")
         self._apply_theme()
@@ -47,6 +74,12 @@ class MainWindow(QMainWindow):
         exit_action.setShortcut("Ctrl+Q")
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
+
+        analysis_menu = self.menuBar().addMenu("&Analysis")
+        run_action = QAction("Run Analysis", self)
+        run_action.setShortcut("F5")
+        run_action.triggered.connect(self._start_analysis)
+        analysis_menu.addAction(run_action)
 
         help_menu = self.menuBar().addMenu("&Help")
         about_action = QAction("About VISOR", self)
@@ -73,6 +106,15 @@ class MainWindow(QMainWindow):
         brand.addWidget(subheading)
         header.addLayout(brand)
         header.addStretch(1)
+        self.engine_selector = QComboBox()
+        self.engine_selector.addItems(["SIFT", "ORB"])
+        self.engine_selector.setToolTip("Feature extraction and descriptor matching engine")
+        header.addWidget(self.engine_selector, 0, Qt.AlignmentFlag.AlignTop)
+        self.run_button = QPushButton("Run analysis")
+        self.run_button.setObjectName("primaryButton")
+        self.run_button.setEnabled(False)
+        self.run_button.clicked.connect(self._start_analysis)
+        header.addWidget(self.run_button, 0, Qt.AlignmentFlag.AlignTop)
         version = QLabel("CLASSICAL FEATURES  ·  SIFT / ORB")
         version.setObjectName("badge")
         header.addWidget(version, 0, Qt.AlignmentFlag.AlignTop)
@@ -127,11 +169,121 @@ class MainWindow(QMainWindow):
         welcome_layout.addWidget(assumption, 0, Qt.AlignmentFlag.AlignHCenter)
         welcome_layout.addStretch(1)
 
+        self.result_tabs = QTabWidget()
+        self.result_tabs.addTab(welcome, "Overview")
+        self.matches_view = self._image_view("Run an analysis to inspect feature correspondences.")
+        self.localization_view = self._image_view("A projected reference outline appears when a valid planar mapping is found.")
+        self.warped_view = self._image_view("Rectified view is available after a valid homography.")
+        self.result_tabs.addTab(self.matches_view, "Feature Matches")
+        self.result_tabs.addTab(self.localization_view, "Localization")
+        self.result_tabs.addTab(self.warped_view, "Warped / Rectified")
         splitter.addWidget(input_panel)
-        splitter.addWidget(welcome)
+        splitter.addWidget(self.result_tabs)
         splitter.setSizes([390, 770])
         outer.addWidget(splitter, 1)
         self.setCentralWidget(root)
+
+    @staticmethod
+    def _image_view(message: str) -> QLabel:
+        view = QLabel(message)
+        view.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        view.setWordWrap(True)
+        view.setMinimumSize(300, 240)
+        view.setObjectName("resultImage")
+        return view
+
+    def _build_details_dock(self) -> None:
+        dock = QDockWidget("Analysis Details", self)
+        dock.setObjectName("analysisDetailsDock")
+        self.details_text = QTextEdit()
+        self.details_text.setReadOnly(True)
+        self.details_text.setPlaceholderText("Run an analysis to see engine, matching, geometry, and timing details.")
+        dock.setWidget(self.details_text)
+        self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, dock)
+        dock.setMinimumWidth(275)
+
+    def _start_analysis(self) -> None:
+        reference = self._paths.get("Reference image")
+        target = self._paths.get("Target image")
+        if reference is None or target is None or self._worker is not None:
+            return
+        engine = EngineName(self.engine_selector.currentText())
+        self.run_button.setEnabled(False)
+        self.statusBar().showMessage(f"Running {engine} feature analysis…")
+        self._worker = AnalysisWorker(reference, target, engine)
+        self._worker.completed.connect(self._show_result)
+        self._worker.failed.connect(self._show_error)
+        self._worker.finished.connect(self._worker_finished)
+        self._worker.start()
+
+    def _worker_finished(self) -> None:
+        self._worker = None
+        self.run_button.setEnabled("Reference image" in self._paths and "Target image" in self._paths)
+
+    def _show_error(self, message: str) -> None:
+        self.statusBar().showMessage(f"Analysis failed: {message}")
+        self.details_text.setPlainText(f"Analysis could not be completed.\n\n{message}")
+
+    def _show_result(self, result: AnalysisResult) -> None:
+        self._result_arrays = {
+            self.matches_view: result.matches_image,
+            self.localization_view: result.localization_image,
+        }
+        self._refresh_result_views()
+        if result.warped_image is not None:
+            self._result_arrays[self.warped_view] = result.warped_image
+            self._refresh_one_view(self.warped_view)
+        else:
+            self._result_arrays.pop(self.warped_view, None)
+            self.warped_view.setPixmap(QPixmap())
+            self.warped_view.setText("Rectified view is unavailable because no valid homography was found.")
+        ref = result.reference_features
+        target = result.target_features
+        g = result.geometry
+        p = result.performance
+        corners = "\n".join(f"  {name}: ({x:.1f}, {y:.1f}) px" for name, (x, y) in zip(("Top-left", "Top-right", "Bottom-right", "Bottom-left"), g.projected_corners)) or "  Unavailable"
+        reprojection = f"{g.reprojection_error_px:.2f} px" if g.reprojection_error_px is not None else "unavailable"
+        self.details_text.setPlainText(
+            f"{result.engine} ENGINE\n"
+            f"Reference keypoints: {len(ref.keypoints):,}\nTarget keypoints: {len(target.keypoints):,}\n"
+            f"Descriptor: {ref.descriptor_info.dimensions} dimensions · {ref.descriptor_info.dtype} · {ref.descriptor_info.distance}\n\n"
+            f"MATCHING\nMatcher: {result.match_set.matcher}\nFilter: {result.match_set.filter_name} ({result.match_set.threshold:.2f})\n"
+            f"KNN candidate pairs: {result.match_set.candidate_count:,}\nGood matches: {result.match_set.good_count:,}\n\n"
+            f"GEOMETRY\nStatus: {g.message}\nInliers: {g.inlier_count:,} · Outliers: {g.outlier_count:,}\n"
+            f"Inlier ratio: {g.inlier_ratio:.1%}\nMean inlier reprojection error: {reprojection}\n"
+        )
+        # Replace the compact initial geometry block with complete location and timing details.
+        self.details_text.append(
+            f"Projected corners:\n{corners}\n\nPERFORMANCE\n"
+            f"Extraction reference: {p.extraction_reference_ms:.1f} ms\n"
+            f"Extraction target: {p.extraction_target_ms:.1f} ms\nMatching: {p.matching_ms:.1f} ms\n"
+            f"Geometry: {p.geometry_ms:.1f} ms\nTotal: {p.total_ms:.1f} ms\n\n"
+            "Geometry values are image-space estimates under a planar homography assumption."
+        )
+        self.statusBar().showMessage(
+            f"{result.engine} complete — {len(ref.keypoints):,}/{len(target.keypoints):,} keypoints, "
+            f"{result.match_set.good_count:,} good matches, {g.inlier_count:,} inliers · {p.total_ms:.0f} ms"
+        )
+
+    def _refresh_result_views(self) -> None:
+        for label in self._result_arrays:
+            self._refresh_one_view(label)
+
+    def _refresh_one_view(self, label: QLabel) -> None:
+        image = self._result_arrays.get(label)
+        if image is None:
+            return
+        rgb = image[:, :, ::-1].copy()
+        height, width, _ = rgb.shape
+        qimage = QImage(rgb.data, width, height, 3 * width, QImage.Format.Format_RGB888).copy()
+        label.setPixmap(QPixmap.fromImage(qimage).scaled(
+            label.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation,
+        ))
+        label.setText("")
+
+    def resizeEvent(self, event) -> None:
+        super().resizeEvent(event)
+        self._refresh_result_views()
 
     def _on_image_changed(self, role: str, path: object) -> None:
         if isinstance(path, Path):
@@ -140,6 +292,8 @@ class MainWindow(QMainWindow):
         else:
             self._paths.pop(role, None)
             self.statusBar().showMessage(f"Unable to load {role.lower()} image.")
+        if hasattr(self, "run_button"):
+            self.run_button.setEnabled("Reference image" in self._paths and "Target image" in self._paths and self._worker is None)
 
     def _show_about(self) -> None:
         self.statusBar().showMessage("VISOR 0.1.0 — classical image feature registration workspace")
@@ -167,7 +321,16 @@ class MainWindow(QMainWindow):
             QLabel#assumption { color: #8290a2; font-size: 11px; padding-top: 18px; }
             QPushButton#secondaryButton { color: #dce3ec; background: #293545; border: 1px solid #3c4c61; border-radius: 5px; padding: 8px; }
             QPushButton#secondaryButton:hover { background: #34465c; }
+            QPushButton#primaryButton { color: #f1f6fc; background: #356ba5; border: 1px solid #477fb9; border-radius: 5px; padding: 8px 14px; font-weight: 600; }
+            QPushButton#primaryButton:hover { background: #407bb8; }
+            QPushButton#primaryButton:disabled { color: #788493; background: #27303b; border-color: #333d49; }
+            QComboBox { color: #dce3ec; background: #202a36; border: 1px solid #3c4c61; border-radius: 5px; padding: 7px 9px; }
+            QTabWidget::pane { border: 1px solid #29313b; background: #171c23; }
+            QTabBar::tab { color: #aeb7c4; background: #1b222c; padding: 8px 14px; border: 1px solid #29313b; }
+            QTabBar::tab:selected { color: #edf2f8; background: #293545; }
+            QLabel#resultImage { background: #141920; color: #8290a2; }
+            QDockWidget { color: #dce3ec; }
+            QTextEdit { color: #c8d1dd; background: #171c23; border: 1px solid #29313b; font-family: Consolas; font-size: 11px; }
             QSplitter::handle { background: #11151b; width: 10px; }
             """
         )
-
