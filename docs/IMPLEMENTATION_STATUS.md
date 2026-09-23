@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-M5 — classical feature pipeline and initial result views.
+M8 — feature analysis, comparison, benchmark, exports, and Windows release path.
 
 ## Completed
 
@@ -14,17 +14,23 @@ M5 — classical feature pipeline and initial result views.
 - Added typed records for features, descriptors, matches, geometry, analysis, and performance.
 - Implemented configurable SIFT and ORB extraction, L2/Hamming/Hamming2 KNN matching with Lowe ratio filtering, and RANSAC homography localization.
 - Connected the pipeline to a Qt worker thread and added feature-match, localization, rectification, and analysis-details views.
+- Added SIFT/ORB-specific parameter controls, geometry/match visualization toggles, zoom/pan/fit canvases, cursor coordinates, and nearby keypoint inspection.
+- Added a comparison workflow, deterministic synthetic transformation benchmark with ground-truth corner error, cancellation at safe stage boundaries, and analysis/benchmark exports.
+- Added JSON project sessions, JSON/CSV/image exports, PyInstaller Windows build script, and a multi-resolution application icon.
+- Added core integration, geometry, matching, export, benchmark, and offscreen UI coverage.
 
 ## Verification
 
-- Python 3.11.9 is available. OpenCV and NumPy are installed; PySide6 is declared as an application dependency and is not present in the current environment.
+- Python 3.11.9, OpenCV 4.11, NumPy 1.26, and PySide6 6.11 are available in the current environment.
 - GitHub `origin` returned no branch refs during initial inspection (consistent with an empty repository).
-- Python source syntax compilation and `git diff --check` passed. Runtime GUI validation remains outstanding because PySide6 is not installed here.
+- `python -m pytest -q`: 13 passed.
+- `python -m ruff check src tests`: passed.
+- Python source syntax compilation and `git diff --check` passed.
 
 ## Next
 
-Install dependencies and validate the UI in a Windows desktop session. Then add automated coverage for core edge cases, engine-specific parameter controls, and image/match exports.
+Build the Windows standalone folder and exercise it on a clean Windows install; then close remaining hardening gaps and prepare a tagged release.
 
 ## Known limitations
 
-The current release has no test suite yet. Engine comparison mode, benchmark generation, keypoint-level inspection, detailed engine configuration controls, export, caching, cancellation, and packaged Windows builds remain planned.
+Caching remains deferred until repeated analysis demonstrates a measurable benefit. Installer signing and clean-machine distribution validation require a separate target system.

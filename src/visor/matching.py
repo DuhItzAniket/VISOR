@@ -28,7 +28,7 @@ def match_features(
     candidates = [pair for pair in pairs if len(pair) == 2]
     accepted: list[MatchInfo] = []
     for nearest, second in candidates:
-        ratio = float(nearest.distance / second.distance) if second.distance > 0 else 0.0
+        ratio = float(nearest.distance / second.distance) if second.distance > 0 else float("inf")
         if ratio < ratio_threshold:
             accepted.append(MatchInfo(nearest.queryIdx, nearest.trainIdx, float(nearest.distance), ratio))
     elapsed = (perf_counter() - start) * 1000
@@ -36,4 +36,3 @@ def match_features(
         tuple(accepted), len(candidates), len(accepted), f"Brute force / {reference.descriptor_info.distance}",
         "Lowe ratio test", ratio_threshold, elapsed,
     )
-

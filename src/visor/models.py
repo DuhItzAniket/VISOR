@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import isfinite
 from pathlib import Path
 from typing import Literal
 
@@ -12,6 +13,7 @@ from numpy.typing import NDArray
 EngineName = Literal["SIFT", "ORB"]
 FloatArray = NDArray[np.float32]
 ByteArray = NDArray[np.uint8]
+DescriptorArray = NDArray[np.float32] | NDArray[np.uint8]
 MatrixArray = NDArray[np.float64]
 
 
@@ -38,7 +40,7 @@ class DescriptorInfo:
 @dataclass(frozen=True)
 class FeatureSet:
     keypoints: tuple[KeypointInfo, ...]
-    descriptors: NDArray[np.generic] | None
+    descriptors: DescriptorArray | None
     descriptor_info: DescriptorInfo
     extraction_ms: float
 
@@ -78,11 +80,29 @@ class GeometryResult:
 
 @dataclass(frozen=True)
 class PerformanceMetrics:
+    image_loading_ms: float
     extraction_reference_ms: float
     extraction_target_ms: float
     matching_ms: float
     geometry_ms: float
     total_ms: float
+
+
+@dataclass(frozen=True)
+class AnalysisSettings:
+    ratio_threshold: float = 0.75
+    ransac_threshold: float = 4.0
+    show_match_lines: bool = True
+    show_inliers: bool = True
+    show_outliers: bool = True
+    show_keypoints: bool = False
+    show_geometry: bool = True
+
+    def __post_init__(self) -> None:
+        if not isfinite(self.ratio_threshold) or not 0 < self.ratio_threshold < 1:
+            raise ValueError("Ratio threshold must be finite and between zero and one.")
+        if not isfinite(self.ransac_threshold) or self.ransac_threshold <= 0:
+            raise ValueError("RANSAC threshold must be finite and positive.")
 
 
 @dataclass(frozen=True)
@@ -100,4 +120,13 @@ class AnalysisResult:
     matches_image: NDArray[np.uint8]
     localization_image: NDArray[np.uint8]
     warped_image: NDArray[np.uint8] | None
+    settings: AnalysisSettings
+    engine_configuration: dict[str, object]
+    reference_image: NDArray[np.uint8]
+    target_image: NDArray[np.uint8]
 
+
+@dataclass(frozen=True)
+class ComparisonResult:
+    sift: AnalysisResult
+    orb: AnalysisResult
