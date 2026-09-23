@@ -61,9 +61,10 @@ _ICONS_DIR = Path(__file__).parent.parent / "assets" / "icons"
 def _icon(name: str) -> QIcon:
     # Support both normal install and PyInstaller one-folder bundle.
     import sys
-    base = Path(getattr(sys, "_MEIPASS", Path(__file__).parent.parent))
-    path = base / "assets" / "icons" / f"{name}.svg"
-    if not path.exists():
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass is not None:
+        path = Path(meipass) / "visor" / "assets" / "icons" / f"{name}.svg"
+    else:
         path = _ICONS_DIR / f"{name}.svg"
     return QIcon(str(path)) if path.exists() else QIcon()
 

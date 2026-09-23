@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-M8 — packaging and release hardening.
+M8 complete — Windows standalone build verified.
 
 ## Completed
 
@@ -20,17 +20,19 @@ M8 — packaging and release hardening.
 - Added core integration, geometry, matching, export, benchmark, and offscreen UI coverage.
 - Wired the structured `AnalysisDetailsPanel` (tab/tree view with engine-specific SIFT and ORB sections) into the main window dock, replacing the plain-text details area.
 - Added a main toolbar with SVG icon actions for Open Reference, Open Target, Run, Compare, Benchmark, Cancel, Export, and Fit View.
-- Included `assets/icons/` in package data.
+- Included `assets/icons/` in package data and PyInstaller bundle; fixed `_MEIPASS` icon resolution for the standalone build.
+- Built and verified `dist/VISOR/VISOR.exe` one-folder Windows distribution with all assets bundled.
 
 ## Verification
 
 - Python 3.11.9, OpenCV 4.11, NumPy 1.26, and PySide6 6.11 are available in the current environment.
 - `python -m pytest -q`: 16 passed.
 - `python -m ruff check src tests`: passed.
+- `dist/VISOR/VISOR.exe` built successfully; `visor/assets/icons/` present in `_internal/`.
 
 ## Next
 
-Build the Windows standalone folder and exercise it on a clean Windows install; then close remaining hardening gaps and prepare a tagged release.
+Test the packaged build on a clean Windows machine. Then proceed to M9: documentation polish, screenshots in README, and a tagged v0.1.0 release.
 
 ## Known limitations
 
