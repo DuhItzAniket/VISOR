@@ -168,6 +168,7 @@ class MainWindow(QMainWindow):
         self._default_window_state = self.saveState()
         self._window_settings = QSettings("VISOR", "VISOR")
         self._restore_window_settings()
+        self.show()
         self.statusBar().showMessage("Ready — add a reference and target image to begin.")
         self._apply_theme()
 
@@ -367,6 +368,28 @@ class MainWindow(QMainWindow):
         input_layout.addWidget(self.reference_input, 1)
         input_layout.addWidget(self.target_input, 1)
 
+        overlay_controls = QWidget()
+        overlay_controls.setObjectName("overlayControls")
+        overlay_layout = QHBoxLayout(overlay_controls)
+        overlay_layout.setContentsMargins(0, 0, 0, 0)
+        overlay_layout.setSpacing(10)
+        overlay_label = QLabel("Overlay")
+        overlay_label.setObjectName("mutedText")
+        self.feature_color_button = QPushButton("🎨")
+        self.feature_color_button.setCheckable(True)
+        self.feature_color_button.setChecked(False)
+        self.feature_color_button.setToolTip("Toggle rainbow feature colors")
+        self.feature_color_button.clicked.connect(self._refresh_visualization)
+        self.feature_thickness_slider = QSlider(Qt.Orientation.Horizontal)
+        self.feature_thickness_slider.setRange(1, 10)
+        self.feature_thickness_slider.setValue(1)
+        self.feature_thickness_slider.setToolTip("Feature line thickness")
+        self.feature_thickness_slider.valueChanged.connect(self._refresh_visualization)
+        overlay_layout.addWidget(overlay_label)
+        overlay_layout.addWidget(self.feature_color_button)
+        overlay_layout.addWidget(self.feature_thickness_slider, 1)
+        input_layout.addWidget(overlay_controls)
+
         welcome = QWidget()
         welcome.setObjectName("welcomePanel")
         welcome_layout = QVBoxLayout(welcome)
@@ -459,6 +482,7 @@ class MainWindow(QMainWindow):
         self.match_line_thickness.setValue(1)
         self.match_line_thickness.setToolTip("Adjust the visible thickness of feature match lines.")
         self.match_line_thickness.valueChanged.connect(self._refresh_visualization)
+        self.match_line_thickness.valueChanged.connect(self._sync_overlay_controls)
         common_form.addRow("Ratio threshold", self.ratio_control)
         common_form.addRow("RANSAC threshold (px)", self.ransac_control)
         common_form.addRow("Feature line thickness", self.match_line_thickness)
@@ -506,10 +530,19 @@ class MainWindow(QMainWindow):
         if hasattr(self, "engine_settings"):
             self.engine_settings.setCurrentIndex(index)
 
+    def _sync_overlay_controls(self) -> None:
+        if hasattr(self, "feature_thickness_slider"):
+            self.feature_thickness_slider.setValue(self.match_line_thickness.value())
+        if hasattr(self, "feature_color_button"):
+            self.feature_color_button.setChecked(self.view_toggles.get("rainbow_feature_colors", QAction(self)).isChecked())
+
     def _reset_configuration(self) -> None:
         self.ratio_control.setValue(0.75)
         self.ransac_control.setValue(4.0)
         self.match_line_thickness.setValue(1)
+        self.feature_thickness_slider.setValue(1)
+        self.feature_color_button.setChecked(False)
+        self.view_toggles["rainbow_feature_colors"].setChecked(False)
         self.sift_features.setValue(0)
         self.sift_layers.setValue(3)
         self.sift_contrast.setValue(0.04)
@@ -527,6 +560,9 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage("SIFT, ORB, matching, and geometry parameters restored to defaults.")
 
     def _read_configurations(self) -> tuple[AnalysisSettings, SIFTConfiguration, ORBConfiguration]:
+        rainbow_checked = self.view_toggles.get("rainbow_feature_colors", QAction(self)).isChecked()
+        if hasattr(self, "feature_color_button"):
+            rainbow_checked = self.feature_color_button.isChecked() or rainbow_checked
         settings = AnalysisSettings(
             self.ratio_control.value(), self.ransac_control.value(),
             self.view_toggles["show_match_lines"].isChecked(),
@@ -534,8 +570,8 @@ class MainWindow(QMainWindow):
             self.view_toggles["show_outliers"].isChecked(),
             self.view_toggles["show_keypoints"].isChecked(),
             self.view_toggles["show_geometry"].isChecked(),
-            self.view_toggles.get("rainbow_feature_colors", QAction(self)).isChecked(),
-            float(self.match_line_thickness.value()),
+            rainbow_checked,
+            float(self.feature_thickness_slider.value() if hasattr(self, "feature_thickness_slider") else self.match_line_thickness.value()),
         )
         sift = SIFTConfiguration(
             self.sift_features.value(), self.sift_layers.value(), self.sift_contrast.value(),
@@ -703,6 +739,9 @@ class MainWindow(QMainWindow):
         result = self._latest_result
         if result is None or not hasattr(self, "view_toggles"):
             return
+        rainbow_checked = self.view_toggles.get("rainbow_feature_colors").isChecked()
+        if hasattr(self, "feature_color_button"):
+            rainbow_checked = self.feature_color_button.isChecked() or rainbow_checked
         settings = replace(
             result.settings,
             show_match_lines=self.view_toggles["show_match_lines"].isChecked(),
@@ -710,8 +749,8 @@ class MainWindow(QMainWindow):
             show_outliers=self.view_toggles["show_outliers"].isChecked(),
             show_keypoints=self.view_toggles["show_keypoints"].isChecked(),
             show_geometry=self.view_toggles["show_geometry"].isChecked(),
-            rainbow_feature_colors=self.view_toggles.get("rainbow_feature_colors").isChecked(),
-            feature_line_thickness=float(self.match_line_thickness.value()),
+            rainbow_feature_colors=rainbow_checked,
+            feature_line_thickness=float(self.feature_thickness_slider.value() if hasattr(self, "feature_thickness_slider") else self.match_line_thickness.value()),
         )
         result = replace(
             result,

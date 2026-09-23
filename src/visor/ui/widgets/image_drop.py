@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QFrame,
     QLabel,
     QPushButton,
+    QHBoxLayout,
     QVBoxLayout,
     QWidget,
 )
@@ -49,16 +50,18 @@ class ImageDropWidget(QFrame):
         self.browse_button.setObjectName("secondaryButton")
         self.browse_button.clicked.connect(self._browse)
 
-        self.clear_button = QPushButton("Remove")
+        self.clear_button = QPushButton("✕")
         self.clear_button.setObjectName("secondaryButton")
-        self.clear_button.setToolTip("Clear this image slot")
+        self.clear_button.setToolTip("Remove this image")
+        self.clear_button.setFixedWidth(34)
         self.clear_button.clicked.connect(self.clear_image)
+        self.clear_button.setVisible(False)
 
         action_row = QWidget()
-        action_layout = QVBoxLayout(action_row)
+        action_layout = QHBoxLayout(action_row)
         action_layout.setContentsMargins(0, 0, 0, 0)
         action_layout.setSpacing(6)
-        action_layout.addWidget(self.browse_button)
+        action_layout.addWidget(self.browse_button, 1)
         action_layout.addWidget(self.clear_button)
 
         layout = QVBoxLayout(self)
@@ -82,6 +85,7 @@ class ImageDropWidget(QFrame):
         self.metadata_label.setText("PNG, JPEG, BMP, TIFF, or WebP")
         self.metadata_label.style().unpolish(self.metadata_label)
         self.metadata_label.style().polish(self.metadata_label)
+        self.clear_button.setVisible(False)
         self.image_changed.emit(self._title, None)
 
     def _browse(self) -> None:
@@ -108,19 +112,20 @@ class ImageDropWidget(QFrame):
         accepted = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff", ".webp"}
         return [Path(url.toLocalFile()) for url in urls if url.isLocalFile() and Path(url.toLocalFile()).suffix.lower() in accepted]
 
-    def load_path(self, path: Path) -> None:
+    def load_path(self, path: str | Path) -> None:
         """Load and preview an image, reporting a useful error for invalid files."""
-        pixmap = QPixmap(str(path))
+        normalized = Path(path)
+        pixmap = QPixmap(str(normalized))
         if pixmap.isNull():
             self.clear_image()
             self.metadata_label.setText("Could not read this image. Choose a supported image file.")
             self.metadata_label.setObjectName("errorText")
             self.metadata_label.style().unpolish(self.metadata_label)
             self.metadata_label.style().polish(self.metadata_label)
-            logger.warning("Unable to load image for %s: %s", self._title, path)
+            logger.warning("Unable to load image for %s: %s", self._title, normalized)
             return
 
-        self._image_path = path.resolve()
+        self._image_path = normalized.resolve()
         self.preview.setPixmap(
             pixmap.scaled(
                 self.preview.size(),
@@ -129,9 +134,10 @@ class ImageDropWidget(QFrame):
             )
         )
         self.metadata_label.setObjectName("mutedText")
-        self.metadata_label.setText(f"{path.name}  ·  {pixmap.width()} × {pixmap.height()} px")
+        self.metadata_label.setText(f"{self._image_path.name}  ·  {pixmap.width()} × {pixmap.height()} px")
         self.metadata_label.style().unpolish(self.metadata_label)
         self.metadata_label.style().polish(self.metadata_label)
+        self.clear_button.setVisible(True)
         self.image_changed.emit(self._title, self._image_path)
 
     def resizeEvent(self, event) -> None:

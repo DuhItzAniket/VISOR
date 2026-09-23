@@ -45,9 +45,15 @@ def test_main_window_builds_drop_inputs_and_controls():
     window = MainWindow()
     assert window.reference_input.acceptDrops()
     assert window.target_input.acceptDrops()
+    assert hasattr(window, "feature_color_button")
+    assert hasattr(window, "feature_thickness_slider")
     assert window.run_button.isEnabled() is False
     assert window.compare_button.isEnabled() is False
     assert window.benchmark_button.isEnabled() is False
     assert window.cancel_button.isEnabled() is False
+
+    window.reference_input.load_path(__file__.replace("test_benchmark_ui.py", "data/reference.png"))
+    assert window.reference_input.clear_button.isVisible() is True
+
     window.close()
     app.quit()
