@@ -22,7 +22,7 @@ build = ["pyinstaller>=6.10", "pillow>=10"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-visor = ["assets/*.svg", "assets/*.ico"]
+visor = ["assets/*.svg", "assets/*.ico", "assets/icons/*.svg"]
 
 [tool.ruff]
 line-length = 100

@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-M8 — feature analysis, comparison, benchmark, exports, and Windows release path.
+M8 — packaging and release hardening.
 
 ## Completed
 
@@ -18,14 +18,15 @@ M8 — feature analysis, comparison, benchmark, exports, and Windows release pat
 - Added a comparison workflow, deterministic synthetic transformation benchmark with ground-truth corner error, cancellation at safe stage boundaries, and analysis/benchmark exports.
 - Added JSON project sessions, JSON/CSV/image exports, PyInstaller Windows build script, and a multi-resolution application icon.
 - Added core integration, geometry, matching, export, benchmark, and offscreen UI coverage.
+- Wired the structured `AnalysisDetailsPanel` (tab/tree view with engine-specific SIFT and ORB sections) into the main window dock, replacing the plain-text details area.
+- Added a main toolbar with SVG icon actions for Open Reference, Open Target, Run, Compare, Benchmark, Cancel, Export, and Fit View.
+- Included `assets/icons/` in package data.
 
 ## Verification
 
 - Python 3.11.9, OpenCV 4.11, NumPy 1.26, and PySide6 6.11 are available in the current environment.
-- GitHub `origin` returned no branch refs during initial inspection (consistent with an empty repository).
-- `python -m pytest -q`: 13 passed.
+- `python -m pytest -q`: 16 passed.
 - `python -m ruff check src tests`: passed.
-- Python source syntax compilation and `git diff --check` passed.
 
 ## Next
 

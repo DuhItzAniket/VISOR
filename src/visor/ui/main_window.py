@@ -1,9 +1,8 @@
-"""Main application window for the initial image-input milestone."""
+"""Main application window."""
 
 from __future__ import annotations
 
 import math
-from collections import Counter
 from dataclasses import replace
 from pathlib import Path
 from threading import Event
@@ -11,7 +10,7 @@ from typing import cast
 
 import numpy as np
 from PySide6.QtCore import QByteArray, QSettings, Qt, QThread, Signal
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
@@ -32,7 +31,7 @@ from PySide6.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
     QTabWidget,
-    QTextEdit,
+    QToolBar,
     QVBoxLayout,
     QWidget,
 )
@@ -51,9 +50,17 @@ from visor.exporting import (
 )
 from visor.models import AnalysisResult, AnalysisSettings, ComparisonResult, EngineName
 from visor.pipeline import AnalysisCancelled, analyze, compare_engines
+from visor.ui.widgets.details_panel import AnalysisDetailsPanel
 from visor.ui.widgets.image_canvas import ImageCanvas
 from visor.ui.widgets.image_drop import ImageDropWidget
 from visor.visualization import render_localization, render_match_canvas
+
+_ICONS_DIR = Path(__file__).parent.parent / "assets" / "icons"
+
+
+def _icon(name: str) -> QIcon:
+    path = _ICONS_DIR / f"{name}.svg"
+    return QIcon(str(path)) if path.exists() else QIcon()
 
 
 class AnalysisWorker(QThread):
@@ -140,6 +147,7 @@ class MainWindow(QMainWindow):
         self._latest_benchmark: BenchmarkReport | None = None
         self._default_window_state: QByteArray | None = None
         self._build_menu()
+        self._build_toolbar()
         self._build_workspace()
         self._build_details_dock()
         self.setStatusBar(QStatusBar(self))
@@ -153,6 +161,30 @@ class MainWindow(QMainWindow):
         self._restore_window_settings()
         self.statusBar().showMessage("Ready — add a reference and target image to begin.")
         self._apply_theme()
+
+    def _build_toolbar(self) -> None:
+        tb = QToolBar("Main toolbar", self)
+        tb.setObjectName("mainToolbar")
+        tb.setMovable(False)
+        tb.setIconSize(__import__("PySide6.QtCore", fromlist=["QSize"]).QSize(20, 20))
+        self.addToolBar(tb)
+        for icon_name, label, shortcut, slot in (
+            ("open_reference", "Open Reference", "Ctrl+1", lambda: self.reference_input._browse()),
+            ("open_target", "Open Target", "Ctrl+2", lambda: self.target_input._browse()),
+            ("run", "Run Analysis", "F5", self._start_analysis),
+            ("compare", "Compare SIFT / ORB", "", self._start_comparison),
+            ("benchmark", "Benchmark", "", self._start_benchmark),
+            ("cancel", "Cancel", "", self._cancel_running),
+            ("export", "Export", "", self._export_visualization),
+            ("fit_view", "Fit View", "0", self._fit_images),
+        ):
+            action = QAction(_icon(icon_name), label, self)
+            action.setToolTip(label)
+            if shortcut:
+                action.setShortcut(shortcut)
+            action.triggered.connect(slot)
+            tb.addAction(action)
+            setattr(self, f"_tb_{icon_name.replace('-', '_')}", action)
 
     def _build_menu(self) -> None:
         file_menu = self.menuBar().addMenu("&File")
@@ -356,16 +388,14 @@ class MainWindow(QMainWindow):
     def _build_details_dock(self) -> None:
         dock = QDockWidget("Analysis Details", self)
         dock.setObjectName("analysisDetailsDock")
-        self.details_text = QTextEdit()
-        self.details_text.setReadOnly(True)
-        self.details_text.setPlaceholderText("Run an analysis to see engine, matching, geometry, and timing details.")
+        self.details_panel = AnalysisDetailsPanel()
         self.details_tabs = QTabWidget()
-        self.details_tabs.addTab(self.details_text, "Results")
+        self.details_tabs.addTab(self.details_panel, "Results")
         self.details_tabs.addTab(self._configuration_panel(), "Parameters")
         dock.setWidget(self.details_tabs)
         self.details_dock = dock
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, dock)
-        dock.setMinimumWidth(275)
+        dock.setMinimumWidth(300)
         self.localization_view.image_clicked.connect(self._inspect_keypoint)
 
     @staticmethod
@@ -552,74 +582,23 @@ class MainWindow(QMainWindow):
         else:
             self._result_arrays.pop(self.warped_view, None)
             self.warped_view.set_placeholder("Rectified view is unavailable because no valid homography was found.")
+        self.details_panel.populate(result)
+        self.details_tabs.setCurrentIndex(0)
         ref = result.reference_features
         target = result.target_features
         g = result.geometry
         p = result.performance
-        config_text = "\n".join(f"  {key}: {value}" for key, value in result.engine_configuration.items())
-        ref_stats = self._keypoint_statistics(ref.keypoints)
-        target_stats = self._keypoint_statistics(target.keypoints)
-        corners = "\n".join(f"  {name}: ({x:.1f}, {y:.1f}) px" for name, (x, y) in zip(("Top-left", "Top-right", "Bottom-right", "Bottom-left"), g.projected_corners)) or "  Unavailable"
-        reprojection = f"{g.reprojection_error_px:.2f} px" if g.reprojection_error_px is not None else "unavailable"
-        self.details_text.setPlainText(
-            f"{result.engine} ENGINE\n"
-            f"Reference keypoints: {len(ref.keypoints):,}\nTarget keypoints: {len(target.keypoints):,}\n"
-            f"Descriptor: {ref.descriptor_info.dimensions} dimensions · {ref.descriptor_info.dtype} · {ref.descriptor_info.distance}\n\n"
-            f"{result.engine} CONFIGURATION\n{config_text}\n\n"
-            f"KEYPOINT STATISTICS\nReference: {ref_stats}\nTarget: {target_stats}\n"
-            f"Descriptor memory: {ref.descriptor_info.bytes_used:,} bytes (reference), {target.descriptor_info.bytes_used:,} bytes (target)\n\n"
-            f"MATCHING\nMatcher: {result.match_set.matcher}\nFilter: {result.match_set.filter_name} ({result.match_set.threshold:.2f})\n"
-            f"KNN candidate pairs: {result.match_set.candidate_count:,}\nGood matches: {result.match_set.good_count:,}\n\n"
-            f"GEOMETRY\nStatus: {g.message}\nInliers: {g.inlier_count:,} · Outliers: {g.outlier_count:,}\n"
-            f"Inlier ratio: {g.inlier_ratio:.1%}\nMean inlier reprojection error: {reprojection}\n"
-        )
-        # Replace the compact initial geometry block with complete location and timing details.
-        self.details_text.append(
-            f"Projected corners:\n{corners}\n\nPERFORMANCE\n"
-            f"Image loading: {p.image_loading_ms:.1f} ms\n"
-            f"Extraction reference: {p.extraction_reference_ms:.1f} ms\n"
-            f"Extraction target: {p.extraction_target_ms:.1f} ms\nMatching: {p.matching_ms:.1f} ms\n"
-            f"Geometry: {p.geometry_ms:.1f} ms\nTotal: {p.total_ms:.1f} ms\n\n"
-            "Geometry values are image-space estimates under a planar homography assumption."
-        )
         self.statusBar().showMessage(
             f"{result.engine} complete — {len(ref.keypoints):,}/{len(target.keypoints):,} keypoints, "
             f"{result.match_set.good_count:,} good matches, {g.inlier_count:,} inliers · {p.total_ms:.0f} ms"
         )
 
-    @staticmethod
-    def _keypoint_statistics(keypoints: tuple) -> str:
-        if not keypoints:
-            return "no descriptors"
-        mean_size = sum(point.size for point in keypoints) / len(keypoints)
-        mean_response = sum(point.response for point in keypoints) / len(keypoints)
-        sine = sum(math.sin(math.radians(point.angle)) for point in keypoints)
-        cosine = sum(math.cos(math.radians(point.angle)) for point in keypoints)
-        mean_angle = math.degrees(math.atan2(sine, cosine)) % 360
-        octave_counts = Counter(point.octave for point in keypoints)
-        octaves = ", ".join(f"{level}: {count}" for level, count in octave_counts.most_common(5))
-        return f"{len(keypoints):,} points · mean size {mean_size:.2f} px · response {mean_response:.4f} · mean angle {mean_angle:.1f}° · octave counts [{octaves}]"
-
     def _show_comparison(self, comparison: ComparisonResult) -> None:
         self._show_result(comparison.orb)
-        sift, orb = comparison.sift, comparison.orb
+        self.details_panel.populate_comparison(comparison)
         self.details_tabs.setCurrentIndex(0)
-        sift_error = "unavailable" if sift.geometry.reprojection_error_px is None else f"{sift.geometry.reprojection_error_px:.2f} px"
-        orb_error = "unavailable" if orb.geometry.reprojection_error_px is None else f"{orb.geometry.reprojection_error_px:.2f} px"
-        self.details_text.setPlainText(
-            "SIFT vs ORB — same image pair and matching threshold\n\n"
-            "Metric                         SIFT             ORB\n"
-            f"Keypoints (reference)     {len(sift.reference_features.keypoints):>8,}      {len(orb.reference_features.keypoints):>8,}\n"
-            f"Keypoints (target)         {len(sift.target_features.keypoints):>8,}      {len(orb.target_features.keypoints):>8,}\n"
-            f"Good matches               {sift.match_set.good_count:>8,}      {orb.match_set.good_count:>8,}\n"
-            f"Geometric inliers          {sift.geometry.inlier_count:>8,}      {orb.geometry.inlier_count:>8,}\n"
-            f"Inlier ratio               {sift.geometry.inlier_ratio:>7.1%}      {orb.geometry.inlier_ratio:>7.1%}\n"
-            f"Mean reprojection error    {sift_error:>14}      {orb_error:>14}\n"
-            f"Geometry valid             {sift.geometry.valid!s:>8}      {orb.geometry.valid!s:>8}\n"
-            f"Total time (ms)            {sift.performance.total_ms:>8.1f}      {orb.performance.total_ms:>8.1f}\n\n"
-            "Images shown in the result tabs are from ORB. Use Run Analysis to inspect SIFT views."
-        )
         self._latest_comparison = comparison
+        sift, orb = comparison.sift, comparison.orb
         self.statusBar().showMessage(
             f"Comparison complete — SIFT {sift.geometry.inlier_count} inliers/{sift.performance.total_ms:.0f} ms; "
             f"ORB {orb.geometry.inlier_count} inliers/{orb.performance.total_ms:.0f} ms"
@@ -745,12 +724,7 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("No target keypoint is within 30 px of the selected coordinate.")
             return
         self.details_tabs.setCurrentIndex(0)
-        self.details_text.append(
-            f"\nSELECTED {self._latest_result.engine} KEYPOINT #{index}\n"
-            f"X: {point.x:.2f} px\nY: {point.y:.2f} px\nSize: {point.size:.2f} px\n"
-            f"Angle: {point.angle:.1f}°\nResponse: {point.response:.6f}\n"
-            f"Pyramid octave: {point.octave}\nClass ID: {point.class_id}"
-        )
+        self.details_panel.append_keypoint(self._latest_result.engine, index, point)
         self.statusBar().showMessage(f"Selected {self._latest_result.engine} target keypoint #{index} at ({point.x:.1f}, {point.y:.1f}) px")
 
     def _on_image_changed(self, role: str, path: object) -> None:
@@ -930,7 +904,10 @@ class MainWindow(QMainWindow):
             QTabBar::tab:selected { color: #edf2f8; background: #293545; }
             QGraphicsView#resultImage { background: #141920; color: #8290a2; border: 0; }
             QDockWidget { color: #dce3ec; }
-            QTextEdit { color: #c8d1dd; background: #171c23; border: 1px solid #29313b; font-family: Consolas; font-size: 11px; }
+            QToolBar { background: #171c23; border-bottom: 1px solid #29313b; spacing: 4px; padding: 3px 6px; }
+            QToolBar QToolButton { color: #cbd2dc; background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 4px 6px; }
+            QToolBar QToolButton:hover { background: #293240; border-color: #3c4c61; }
+            QToolBar QToolButton:pressed { background: #1e2a38; }
             QSplitter::handle { background: #11151b; width: 10px; }
             """
         )
