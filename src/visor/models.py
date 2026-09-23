@@ -10,7 +10,7 @@ from typing import Literal
 import numpy as np
 from numpy.typing import NDArray
 
-EngineName = Literal["SIFT", "ORB"]
+EngineName = Literal["SIFT", "ORB", "SuperPoint+LightGlue"]
 FloatArray = NDArray[np.float32]
 ByteArray = NDArray[np.uint8]
 DescriptorArray = NDArray[np.float32] | NDArray[np.uint8]
@@ -51,8 +51,6 @@ class MatchInfo:
     train_index: int
     distance: float
     ratio: float | None
-
-
 @dataclass(frozen=True)
 class MatchSet:
     matches: tuple[MatchInfo, ...]

@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-v0.1.0 released — all M0–M9 milestones complete.
+M10 complete — SuperPoint+LightGlue learned engine added.
 
 ## Completed
 
@@ -23,22 +23,22 @@ v0.1.0 released — all M0–M9 milestones complete.
 - Included `assets/icons/` in package data and PyInstaller bundle; fixed `_MEIPASS` icon resolution for the standalone build.
 - Built and verified `dist/VISOR/VISOR.exe` one-folder Windows distribution with all assets bundled.
 
-- Updated README with full feature list, keyboard shortcuts, architecture overview, export table, and troubleshooting guide.
-- Expanded ARCHITECTURE.md with full module map, data flow diagram, threading model, and extension model.
-- Added M6–M8 entries to IMPLEMENTATION_LOG.md; added toolbar and details panel entries to DECISIONS.md.
-- Wrote v0.1.0 CHANGELOG and tagged the release.
+- Added `visor.learned_engines` module with `SuperPointLightGlueEngine` implementing the `FeatureEngine` protocol via SuperPoint extraction and LightGlue joint matching.
+- Added graceful unavailability guard: engine raises `LearnedEngineUnavailable` when `torch`/`lightglue` are absent; UI disables the selector item with an install hint.
+- Added `SuperPoint+LightGlue` to `EngineName` literal and pipeline dispatch (`_analyze_learned` branch).
+- Added `[learned]` optional dependency group in `pyproject.toml`.
+- Added 5 new tests for the learned engine (extract, match, pipeline integration, config validation, unavailability).
+- Total: 21 tests passing.
 
 ## Verification
 
-- Python 3.11.9, OpenCV 4.11, NumPy 1.26, and PySide6 6.11 are available in the current environment.
-- `python -m pytest -q`: 16 passed.
+- Python 3.11.9, PyTorch 2.2.2+cu118, LightGlue 0.0, OpenCV 4.11, PySide6 6.11.
+- `python -m pytest -q`: 21 passed.
 - `python -m ruff check src tests`: passed.
-- `dist/VISOR/VISOR.exe` built successfully; `visor/assets/icons/` present in `_internal/`.
-- Tagged `v0.1.0` on `main`.
 
 ## Next
 
-Test the packaged build on a clean Windows machine. Future milestones: learned feature engines (SuperPoint + LightGlue, XFeat), HTML/PDF report export, Windows installer.
+Add ALIKED+LightGlue as a second learned engine (M10 continuation), then M11 HTML/PDF report export.
 
 ## Known limitations
 

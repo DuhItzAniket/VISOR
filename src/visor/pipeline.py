@@ -13,6 +13,7 @@ import numpy as np
 
 from visor.engines import ORBConfiguration, ORBFeatureEngine, SIFTConfiguration, SIFTFeatureEngine
 from visor.geometry import estimate_homography
+from visor.learned_engines import SuperPointConfiguration, SuperPointLightGlueEngine
 from visor.matching import match_features
 from visor.models import (
     AnalysisResult,
@@ -20,6 +21,8 @@ from visor.models import (
     ByteArray,
     ComparisonResult,
     EngineName,
+    MatchInfo,
+    MatchSet,
     PerformanceMetrics,
 )
 from visor.visualization import render_localization, render_match_canvas
@@ -74,11 +77,20 @@ def analyze_images(
     orb_config: ORBConfiguration | None = None,
     image_loading_ms: float = 0.0,
     cancel_event: Event | None = None,
+    sp_config: SuperPointConfiguration | None = None,
 ) -> AnalysisResult:
     settings = settings or AnalysisSettings()
     total_start = perf_counter()
     reference_gray = cast(ByteArray, cv2.cvtColor(reference_image, cv2.COLOR_BGR2GRAY))
     target_gray = cast(ByteArray, cv2.cvtColor(target_image, cv2.COLOR_BGR2GRAY))
+
+    if engine_name == "SuperPoint+LightGlue":
+        return _analyze_learned(
+            reference_path, target_path, reference_image, target_image,
+            reference_gray, target_gray, settings, sp_config, image_loading_ms,
+            total_start, cancel_event,
+        )
+
     engine = SIFTFeatureEngine(sift_config) if engine_name == "SIFT" else ORBFeatureEngine(orb_config)
     _check_cancel(cancel_event)
     reference_features = engine.extract(reference_gray)
@@ -116,6 +128,70 @@ def analyze_images(
         asdict(engine.config),
         reference_image,
         target_image,
+    )
+
+
+def _analyze_learned(
+    reference_path: Path,
+    target_path: Path,
+    reference_image: ByteArray,
+    target_image: ByteArray,
+    reference_gray: ByteArray,
+    target_gray: ByteArray,
+    settings: AnalysisSettings,
+    sp_config: SuperPointConfiguration | None,
+    image_loading_ms: float,
+    total_start: float,
+    cancel_event: Event | None,
+) -> AnalysisResult:
+    """Pipeline branch for SuperPoint+LightGlue."""
+    engine = SuperPointLightGlueEngine(sp_config)
+    _check_cancel(cancel_event)
+    ref_features, tgt_features, raw_matches = engine.extract_and_match(reference_gray, target_gray)
+    _check_cancel(cancel_event)
+
+    # Build a MatchSet from LightGlue's (M,2) index pairs
+    match_infos = tuple(
+        MatchInfo(int(m[0]), int(m[1]), 0.0, None)
+        for m in raw_matches
+    )
+    match_set = MatchSet(
+        match_infos, len(ref_features.keypoints), len(match_infos),
+        "LightGlue", "confidence threshold", 0.0,
+        ref_features.extraction_ms + tgt_features.extraction_ms,
+    )
+    _check_cancel(cancel_event)
+
+    geometry, geometry_ms = estimate_homography(
+        ref_features, tgt_features, match_set,
+        (reference_image.shape[1], reference_image.shape[0]), settings.ransac_threshold,
+        (target_image.shape[1], target_image.shape[0]),
+    )
+    matches_image = render_match_canvas(
+        reference_image, target_image, ref_features, tgt_features, match_set, geometry, settings,
+    )
+    localization_image = render_localization(target_image, tgt_features, geometry, settings)
+    warped_image = None
+    if geometry.valid and geometry.projected_corners:
+        assert geometry.homography is not None
+        warped_image = cast(ByteArray, cv2.warpPerspective(
+            target_image, np.linalg.inv(geometry.homography),
+            (reference_image.shape[1], reference_image.shape[0]),
+        ))
+    total_ms = (perf_counter() - total_start) * 1000 + image_loading_ms
+    performance = PerformanceMetrics(
+        image_loading_ms, ref_features.extraction_ms, tgt_features.extraction_ms,
+        match_set.duration_ms, geometry_ms, total_ms,
+    )
+    from dataclasses import asdict
+    engine_config: dict[str, object] = asdict(engine.config) if sp_config is not None else asdict(SuperPointConfiguration())
+    return AnalysisResult(
+        "SuperPoint+LightGlue", reference_path, target_path,
+        (reference_image.shape[1], reference_image.shape[0]),
+        (target_image.shape[1], target_image.shape[0]),
+        ref_features, tgt_features, match_set, geometry, performance,
+        matches_image, localization_image, warped_image, settings, engine_config,
+        reference_image, target_image,
     )
 
 

@@ -17,6 +17,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=8", "ruff>=0.5", "mypy>=1.11"]
 build = ["pyinstaller>=6.10", "pillow>=10"]
+learned = ["torch>=2.0", "torchvision>=0.15"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
