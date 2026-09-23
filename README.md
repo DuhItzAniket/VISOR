@@ -5,6 +5,7 @@
 ## Features
 
 - **SIFT and ORB engines** — OpenCV implementations, no model training or weight downloads
+- **Learned engine support** — optional SuperPoint+LightGlue, XFeat, and ALIKED+LightGlue paths when the matching dependencies are installed
 - **Drag-and-drop image input** — drop PNG, JPEG, BMP, TIFF, or WebP into either slot, or use the file picker
 - **Feature Matches view** — side-by-side match lines with inlier (green) / outlier (red-blue) coloring
 - **Localization view** — projected reference polygon and center point drawn on the target image

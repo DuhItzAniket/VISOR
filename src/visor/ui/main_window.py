@@ -21,6 +21,8 @@ from PySide6.QtWidgets import (
     QGroupBox,
     QHBoxLayout,
     QLabel,
+    QListWidget,
+    QListWidgetItem,
     QMainWindow,
     QMessageBox,
     QPushButton,
@@ -154,6 +156,7 @@ class MainWindow(QMainWindow):
         self._latest_result: AnalysisResult | None = None
         self._latest_comparison: ComparisonResult | None = None
         self._latest_benchmark: BenchmarkReport | None = None
+        self._pair_history: list[tuple[Path, Path]] = []
         self._default_window_state: QByteArray | None = None
         self._build_menu()
         self._build_toolbar()
@@ -368,6 +371,30 @@ class MainWindow(QMainWindow):
         input_layout.addWidget(self.reference_input, 1)
         input_layout.addWidget(self.target_input, 1)
 
+        pair_panel = QWidget()
+        pair_panel.setObjectName("pairHistoryPanel")
+        pair_layout = QVBoxLayout(pair_panel)
+        pair_layout.setContentsMargins(0, 8, 0, 0)
+        pair_layout.setSpacing(6)
+        pair_header = QHBoxLayout()
+        pair_title = QLabel("Recent pairs")
+        pair_title.setObjectName("mutedText")
+        pair_header.addWidget(pair_title)
+        pair_header.addStretch(1)
+        self.add_pair_button = QPushButton("Add current pair")
+        self.add_pair_button.clicked.connect(self._add_current_pair_to_history)
+        self.clear_pair_button = QPushButton("Clear")
+        self.clear_pair_button.clicked.connect(self._clear_pair_history)
+        pair_header.addWidget(self.add_pair_button)
+        pair_header.addWidget(self.clear_pair_button)
+        pair_layout.addLayout(pair_header)
+        self.pair_list = QListWidget()
+        self.pair_list.setMinimumHeight(110)
+        self.pair_list.setToolTip("Select a saved image pair to reload it for inspection")
+        self.pair_list.itemDoubleClicked.connect(self._load_selected_pair)
+        pair_layout.addWidget(self.pair_list)
+        input_layout.addWidget(pair_panel)
+
         overlay_controls = QWidget()
         overlay_controls.setObjectName("overlayControls")
         overlay_layout = QHBoxLayout(overlay_controls)
@@ -375,7 +402,7 @@ class MainWindow(QMainWindow):
         overlay_layout.setSpacing(10)
         overlay_label = QLabel("Overlay")
         overlay_label.setObjectName("mutedText")
-        self.feature_color_button = QPushButton("🎨")
+        self.feature_color_button = QPushButton("Rainbow")
         self.feature_color_button.setCheckable(True)
         self.feature_color_button.setChecked(False)
         self.feature_color_button.setToolTip("Toggle rainbow feature colors")
@@ -385,9 +412,14 @@ class MainWindow(QMainWindow):
         self.feature_thickness_slider.setValue(1)
         self.feature_thickness_slider.setToolTip("Feature line thickness")
         self.feature_thickness_slider.valueChanged.connect(self._refresh_visualization)
+        self.feature_thickness_value = QLabel("1 px")
+        self.feature_thickness_value.setObjectName("mutedText")
+        self.feature_thickness_slider.valueChanged.connect(self._update_feature_thickness_label)
         overlay_layout.addWidget(overlay_label)
         overlay_layout.addWidget(self.feature_color_button)
+        overlay_layout.addWidget(QLabel("Thickness"))
         overlay_layout.addWidget(self.feature_thickness_slider, 1)
+        overlay_layout.addWidget(self.feature_thickness_value)
         input_layout.addWidget(overlay_controls)
 
         welcome = QWidget()
@@ -535,6 +567,11 @@ class MainWindow(QMainWindow):
             self.feature_thickness_slider.setValue(self.match_line_thickness.value())
         if hasattr(self, "feature_color_button"):
             self.feature_color_button.setChecked(self.view_toggles.get("rainbow_feature_colors", QAction(self)).isChecked())
+        self._update_feature_thickness_label()
+
+    def _update_feature_thickness_label(self) -> None:
+        if hasattr(self, "feature_thickness_value") and hasattr(self, "feature_thickness_slider"):
+            self.feature_thickness_value.setText(f"{self.feature_thickness_slider.value()} px")
 
     def _reset_configuration(self) -> None:
         self.ratio_control.setValue(0.75)
@@ -636,9 +673,56 @@ class MainWindow(QMainWindow):
         self.cancel_button.setEnabled(False)
         self._cancel_event = None
 
+    def _clear_result_views(self) -> None:
+        self._result_arrays = {}
+        self._latest_result = None
+        self._latest_comparison = None
+        for view in (self.matches_view, self.localization_view, self.warped_view):
+            view.set_placeholder("No analysis loaded for this viewport yet.")
+
+    def _add_current_pair_to_history(self) -> None:
+        if "Reference image" not in self._paths or "Target image" not in self._paths:
+            return
+        reference = self._paths["Reference image"]
+        target = self._paths["Target image"]
+        pair = (reference, target)
+        if pair in self._pair_history:
+            self._sync_pair_list()
+            return
+        self._pair_history.append(pair)
+        self._sync_pair_list()
+        self.statusBar().showMessage(f"Saved pair: {reference.name} ↔ {target.name}")
+
+    def _sync_pair_list(self) -> None:
+        self.pair_list.clear()
+        for reference, target in self._pair_history:
+            label = f"{reference.name}  ↔  {target.name}"
+            self.pair_list.addItem(label)
+
+    def _clear_pair_history(self) -> None:
+        self._pair_history.clear()
+        self.pair_list.clear()
+        self.statusBar().showMessage("Pair history cleared.")
+
+    def _load_selected_pair(self, item: QListWidgetItem) -> None:
+        index = self.pair_list.row(item)
+        if not 0 <= index < len(self._pair_history):
+            return
+        reference, target = self._pair_history[index]
+        self.reference_input.load_path(reference)
+        self.target_input.load_path(target)
+        self.statusBar().showMessage(f"Loaded pair from history: {reference.name} ↔ {target.name}")
+
     def _show_error(self, message: str) -> None:
         self.statusBar().showMessage(f"Analysis failed: {message}")
-        self.details_text.setPlainText(f"Analysis could not be completed.\n\n{message}")
+        if hasattr(self, "details_panel"):
+            self.details_panel.clear()
+            self.details_panel.set_mode("tree")
+            self.details_panel._data = [
+                ("Error", [("Message", [("Details", message)])]),
+            ]
+            self.details_panel._render()
+            self.details_tabs.setCurrentIndex(0)
 
     def _show_cancelled(self) -> None:
         self.statusBar().showMessage("Analysis cancelled at a safe processing boundary.")
@@ -816,12 +900,14 @@ class MainWindow(QMainWindow):
     def _on_image_changed(self, role: str, path: object) -> None:
         if isinstance(path, Path):
             self._paths[role] = path
-            self._latest_result = None
-            self._latest_comparison = None
+            self._clear_result_views()
             self._latest_benchmark = None
             self.statusBar().showMessage(f"Loaded {role.lower()}: {path.name}")
+            if "Reference image" in self._paths and "Target image" in self._paths:
+                self._add_current_pair_to_history()
         else:
             self._paths.pop(role, None)
+            self._clear_result_views()
             self.statusBar().showMessage(f"Unable to load {role.lower()} image.")
         if hasattr(self, "run_button"):
             ready = "Reference image" in self._paths and "Target image" in self._paths and self._worker is None

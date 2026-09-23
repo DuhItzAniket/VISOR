@@ -71,6 +71,8 @@ def analyze(
     sift_config: SIFTConfiguration | None = None,
     orb_config: ORBConfiguration | None = None,
     cancel_event: Event | None = None,
+    sp_config: SuperPointConfiguration | None = None,
+    xfeat_config: XFeatConfiguration | None = None,
 ) -> AnalysisResult:
     engine_name = _validate_engine_name(engine_name)
     settings = settings or AnalysisSettings()
@@ -79,7 +81,20 @@ def analyze(
     target_image = _read_image(target_path)
     _check_cancel(cancel_event)
     loading_ms = (perf_counter() - load_start) * 1000
-    return analyze_images(reference_path, target_path, reference_image, target_image, engine_name, settings, sift_config, orb_config, loading_ms, cancel_event)
+    return analyze_images(
+        reference_path,
+        target_path,
+        reference_image,
+        target_image,
+        engine_name,
+        settings,
+        sift_config,
+        orb_config,
+        loading_ms,
+        cancel_event,
+        sp_config,
+        xfeat_config,
+    )
 
 
 def analyze_images(

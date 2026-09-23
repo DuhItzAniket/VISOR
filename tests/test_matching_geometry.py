@@ -3,8 +3,10 @@ import numpy as np
 
 from visor.calibration import calibrate_camera, solve_pnp_pose
 from visor.geometry import estimate_homography
+from visor.learned_engines import SuperPointConfiguration
 from visor.matching import match_features
 from visor.models import AnalysisSettings, DescriptorInfo, FeatureSet, KeypointInfo, MatchInfo, MatchSet
+from visor.pipeline import analyze
 
 
 def _feature_set(points, descriptors=None):
@@ -107,6 +109,49 @@ def test_analysis_settings_support_rainbow_lines_and_thickness():
     )
     assert settings.rainbow_feature_colors is True
     assert settings.feature_line_thickness == 3.5
+
+
+def test_render_match_canvas_rainbow_mode_handles_large_match_count():
+    from visor.visualization import render_match_canvas
+
+    ref = np.zeros((40, 60, 3), dtype=np.uint8)
+    target = np.zeros((40, 60, 3), dtype=np.uint8)
+    ref_features = _feature_set([(x, 10) for x in range(10)], np.zeros((10, 8), dtype=np.float32))
+    tgt_features = _feature_set([(x, 10) for x in range(10)], np.zeros((10, 8), dtype=np.float32))
+    matches = MatchSet(
+        tuple(MatchInfo(i, i, 1.0, 0.1) for i in range(10)),
+        10,
+        10,
+        "BF/L2",
+        "ratio",
+        0.75,
+        0.0,
+    )
+    geometry = estimate_homography(ref_features, tgt_features, matches, (60, 40), target_size=(60, 40))[0]
+    settings = AnalysisSettings(rainbow_feature_colors=True, feature_line_thickness=2.0)
+    canvas = render_match_canvas(ref, target, ref_features, tgt_features, matches, geometry, settings)
+    assert canvas.shape[0] > 0 and canvas.shape[1] > 0
+
+
+def test_analyze_accepts_learned_engine_configuration(tmp_path):
+    ref = tmp_path / "reference.png"
+    target = tmp_path / "target.png"
+    base = np.zeros((120, 160, 3), dtype=np.uint8)
+    base[:, :, 0] = 80
+    base[:, :, 1] = 120
+    base[:, :, 2] = 160
+    cv2.imwrite(str(ref), base)
+    shifted = cv2.warpAffine(base, np.array([[1.0, 0.0, 8.0], [0.0, 1.0, 6.0]], dtype=np.float64), (160, 120))
+    cv2.imwrite(str(target), shifted)
+
+    result = analyze(
+        ref,
+        target,
+        "SuperPoint+LightGlue",
+        settings=AnalysisSettings(ratio_threshold=0.75, ransac_threshold=4.0),
+        sp_config=SuperPointConfiguration(max_keypoints=512, detection_threshold=0.005, use_cuda=True),
+    )
+    assert result.engine == "SuperPoint+LightGlue"
 
 
 def test_engine_settings_reject_invalid_numeric_values():

@@ -101,6 +101,35 @@ def estimate_geometry(
         )
         return result, (perf_counter() - start) * 1000
 
+    if count >= 2:
+        src_points = np.asarray([(p.x, p.y) for p in reference.keypoints[:count]], dtype=np.float64)
+        dst_points = np.asarray([(p.x, p.y) for p in target.keypoints[:count]], dtype=np.float64)
+        if src_points.size and dst_points.size:
+            src_center = src_points.mean(axis=0)
+            dst_center = dst_points.mean(axis=0)
+            shift = dst_center - src_center
+            translation = np.array([[1.0, 0.0, shift[0]], [0.0, 1.0, shift[1]], [0.0, 0.0, 1.0]], dtype=np.float64)
+            projected_corners = cv2.perspectiveTransform(corners, translation).reshape(-1, 2)
+            if np.isfinite(projected_corners).all():
+                target_width, target_height = target_size or reference_size
+                x_min, y_min = projected_corners.min(axis=0)
+                x_max, y_max = projected_corners.max(axis=0)
+                if not (x_max < 0 or y_max < 0 or x_min >= target_width or y_min >= target_height):
+                    points = tuple((float(point[0]), float(point[1])) for point in projected_corners)
+                    center = (float(projected_corners.mean(axis=0)[0]), float(projected_corners.mean(axis=0)[1]))
+                    return GeometryResult(
+                        True,
+                        "Translation fallback produced a stable localization estimate when full homography fitting was weak.",
+                        translation,
+                        tuple(True for _ in range(count)),
+                        count,
+                        0,
+                        1.0,
+                        0.0,
+                        points,
+                        center,
+                    ), (perf_counter() - start) * 1000
+
     result = GeometryResult(False, f"RANSAC could not find a stable {model.lower()} transform.", None, (), 0, count, 0.0, None, (), None)
     return result, (perf_counter() - start) * 1000
 

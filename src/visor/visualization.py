@@ -13,6 +13,7 @@ def _rainbow_color(index: int, total: int) -> tuple[int, int, int]:
         hue = 120
     else:
         hue = int(round((index / max(total - 1, 1)) * 179.0))
+    hue = max(0, min(179, hue))
     hsv = np.uint8([[[hue, 255, 255]]])
     bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)[0, 0]
     return int(bgr[0]), int(bgr[1]), int(bgr[2])
