@@ -10,7 +10,13 @@ from typing import Literal
 import numpy as np
 from numpy.typing import NDArray
 
-EngineName = Literal["SIFT", "ORB", "SuperPoint+LightGlue"]
+EngineName = Literal["SIFT", "ORB", "SuperPoint+LightGlue", "ALIKED+LightGlue"]
+VALID_ENGINE_NAMES: tuple[EngineName, ...] = (
+    "SIFT",
+    "ORB",
+    "SuperPoint+LightGlue",
+    "ALIKED+LightGlue",
+)
 FloatArray = NDArray[np.float32]
 ByteArray = NDArray[np.uint8]
 DescriptorArray = NDArray[np.float32] | NDArray[np.uint8]

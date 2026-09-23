@@ -13,7 +13,12 @@ import numpy as np
 
 from visor.engines import ORBConfiguration, ORBFeatureEngine, SIFTConfiguration, SIFTFeatureEngine
 from visor.geometry import estimate_homography
-from visor.learned_engines import SuperPointConfiguration, SuperPointLightGlueEngine
+from visor.learned_engines import (
+    ALIKEDConfiguration,
+    ALIKEDLightGlueEngine,
+    SuperPointConfiguration,
+    SuperPointLightGlueEngine,
+)
 from visor.matching import match_features
 from visor.models import (
     AnalysisResult,
@@ -24,6 +29,7 @@ from visor.models import (
     MatchInfo,
     MatchSet,
     PerformanceMetrics,
+    VALID_ENGINE_NAMES,
 )
 from visor.visualization import render_localization, render_match_canvas
 
@@ -48,6 +54,13 @@ def _read_image(path: Path) -> ByteArray:
     return cast(ByteArray, image)
 
 
+def _validate_engine_name(engine_name: str) -> EngineName:
+    if engine_name not in VALID_ENGINE_NAMES:
+        valid = ", ".join(VALID_ENGINE_NAMES)
+        raise ValueError(f"Unsupported engine name: {engine_name!r}. Choose from: {valid}.")
+    return cast(EngineName, engine_name)
+
+
 def analyze(
     reference_path: Path,
     target_path: Path,
@@ -57,6 +70,7 @@ def analyze(
     orb_config: ORBConfiguration | None = None,
     cancel_event: Event | None = None,
 ) -> AnalysisResult:
+    engine_name = _validate_engine_name(engine_name)
     settings = settings or AnalysisSettings()
     load_start = perf_counter()
     reference_image = _read_image(reference_path)
@@ -79,15 +93,16 @@ def analyze_images(
     cancel_event: Event | None = None,
     sp_config: SuperPointConfiguration | None = None,
 ) -> AnalysisResult:
+    engine_name = _validate_engine_name(engine_name)
     settings = settings or AnalysisSettings()
     total_start = perf_counter()
     reference_gray = cast(ByteArray, cv2.cvtColor(reference_image, cv2.COLOR_BGR2GRAY))
     target_gray = cast(ByteArray, cv2.cvtColor(target_image, cv2.COLOR_BGR2GRAY))
 
-    if engine_name == "SuperPoint+LightGlue":
+    if engine_name in ("SuperPoint+LightGlue", "ALIKED+LightGlue"):
         return _analyze_learned(
             reference_path, target_path, reference_image, target_image,
-            reference_gray, target_gray, settings, sp_config, image_loading_ms,
+            reference_gray, target_gray, settings, engine_name, sp_config, image_loading_ms,
             total_start, cancel_event,
         )
 
@@ -139,15 +154,26 @@ def _analyze_learned(
     reference_gray: ByteArray,
     target_gray: ByteArray,
     settings: AnalysisSettings,
+    engine_name: EngineName,
     sp_config: SuperPointConfiguration | None,
     image_loading_ms: float,
     total_start: float,
     cancel_event: Event | None,
 ) -> AnalysisResult:
-    """Pipeline branch for SuperPoint+LightGlue."""
-    engine = SuperPointLightGlueEngine(sp_config)
+    """Pipeline branch for learned feature engines (SuperPoint+LightGlue, ALIKED+LightGlue)."""
+    from dataclasses import asdict as _asdict
+    if engine_name == "ALIKED+LightGlue":
+        aliked_cfg = ALIKEDConfiguration(
+            max_keypoints=sp_config.max_keypoints if sp_config else 1024,
+            use_cuda=sp_config.use_cuda if sp_config else True,
+        )
+        engine_obj: SuperPointLightGlueEngine | ALIKEDLightGlueEngine = ALIKEDLightGlueEngine(aliked_cfg)
+        engine_config: dict[str, object] = _asdict(aliked_cfg)
+    else:
+        engine_obj = SuperPointLightGlueEngine(sp_config)
+        engine_config = _asdict(sp_config) if sp_config is not None else _asdict(SuperPointConfiguration())
     _check_cancel(cancel_event)
-    ref_features, tgt_features, raw_matches = engine.extract_and_match(reference_gray, target_gray)
+    ref_features, tgt_features, raw_matches = engine_obj.extract_and_match(reference_gray, target_gray)
     _check_cancel(cancel_event)
 
     # Build a MatchSet from LightGlue's (M,2) index pairs
@@ -183,10 +209,8 @@ def _analyze_learned(
         image_loading_ms, ref_features.extraction_ms, tgt_features.extraction_ms,
         match_set.duration_ms, geometry_ms, total_ms,
     )
-    from dataclasses import asdict
-    engine_config: dict[str, object] = asdict(engine.config) if sp_config is not None else asdict(SuperPointConfiguration())
     return AnalysisResult(
-        "SuperPoint+LightGlue", reference_path, target_path,
+        engine_name, reference_path, target_path,
         (reference_image.shape[1], reference_image.shape[0]),
         (target_image.shape[1], target_image.shape[0]),
         ref_features, tgt_features, match_set, geometry, performance,

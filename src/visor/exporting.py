@@ -13,7 +13,7 @@ import numpy as np
 
 from visor.benchmark import BenchmarkReport
 from visor.engines import ORBConfiguration, SIFTConfiguration
-from visor.models import AnalysisResult, AnalysisSettings, ComparisonResult, EngineName
+from visor.models import AnalysisResult, AnalysisSettings, ComparisonResult, EngineName, VALID_ENGINE_NAMES
 
 APP_VERSION = "0.1.0"
 PROJECT_FORMAT_VERSION = 1
@@ -167,7 +167,7 @@ def load_project(path: Path) -> ProjectSession:
     if not reference.is_file() or not target.is_file():
         raise ValueError("The project references an image file that cannot be found.")
     engine = data.get("engine")
-    if engine not in ("SIFT", "ORB"):
+    if engine not in VALID_ENGINE_NAMES:
         raise ValueError("The project file contains an unknown feature engine.")
     return ProjectSession(
         str(reference), str(target), engine,

@@ -295,9 +295,12 @@ class MainWindow(QMainWindow):
         self.engine_selector.addItems(["SIFT", "ORB"])
         if is_learned_available():
             self.engine_selector.addItem("SuperPoint+LightGlue")
+            self.engine_selector.addItem("ALIKED+LightGlue")
         else:
             self.engine_selector.addItem("SuperPoint+LightGlue (install lightglue)")
-            self.engine_selector.model().item(2).setEnabled(False)  # type: ignore[union-attr]
+            self.engine_selector.addItem("ALIKED+LightGlue (install lightglue)")
+            for i in (2, 3):
+                self.engine_selector.model().item(i).setEnabled(False)  # type: ignore[union-attr]
         self.engine_selector.setToolTip("Feature extraction and descriptor matching engine")
         self.engine_selector.currentIndexChanged.connect(self._engine_changed)
         header.addWidget(self.engine_selector, 0, Qt.AlignmentFlag.AlignTop)
@@ -525,7 +528,7 @@ class MainWindow(QMainWindow):
         if reference is None or target is None or self._worker is not None:
             return
         engine_text = self.engine_selector.currentText()
-        if engine_text not in ("SIFT", "ORB", "SuperPoint+LightGlue"):
+        if engine_text not in ("SIFT", "ORB", "SuperPoint+LightGlue", "ALIKED+LightGlue"):
             self.statusBar().showMessage("Selected engine is not available. Install lightglue to use SuperPoint+LightGlue.")
             return
         engine = cast(EngineName, engine_text)

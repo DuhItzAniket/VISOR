@@ -1,14 +1,14 @@
 """Tests for the SuperPoint+LightGlue learned engine."""
 
-import numpy as np
 import cv2
+import numpy as np
 import pytest
 
 from visor.learned_engines import (
+    LearnedEngineUnavailable,
     SuperPointConfiguration,
     SuperPointLightGlueEngine,
     is_learned_available,
-    LearnedEngineUnavailable,
 )
 
 pytestmark = pytest.mark.skipif(
@@ -75,3 +75,43 @@ def test_learned_engine_unavailable_raises_clearly(monkeypatch):
     monkeypatch.setattr(le, "_LIGHTGLUE_AVAILABLE", False)
     with pytest.raises(LearnedEngineUnavailable):
         SuperPointLightGlueEngine()
+
+
+# ---------------------------------------------------------------------------
+# ALIKED + LightGlue tests
+# ---------------------------------------------------------------------------
+
+def test_aliked_extract_returns_128d_feature_set():
+    from visor.learned_engines import ALIKEDConfiguration, ALIKEDLightGlueEngine
+    engine = ALIKEDLightGlueEngine(ALIKEDConfiguration(max_keypoints=256, use_cuda=False))
+    gray = _textured_gray(seed=1)
+    result = engine.extract(gray)
+    assert result.descriptor_info.dimensions == 128
+    assert result.descriptor_info.dtype == "FLOAT32"
+    assert result.extraction_ms >= 0
+    assert len(result.keypoints) > 0
+
+
+def test_aliked_lightglue_matches_identical_images():
+    from visor.learned_engines import ALIKEDConfiguration, ALIKEDLightGlueEngine
+    engine = ALIKEDLightGlueEngine(ALIKEDConfiguration(max_keypoints=256, use_cuda=False))
+    gray = _textured_gray(seed=2)
+    ref_fs, tgt_fs, matches = engine.extract_and_match(gray, gray)
+    assert len(ref_fs.keypoints) > 0
+    assert matches.shape[1] == 2
+    assert len(matches) > 5
+
+
+def test_aliked_pipeline_integration(textured_pair):
+    from visor.pipeline import analyze
+    reference, target, _, _, _ = textured_pair
+    result = analyze(reference, target, "ALIKED+LightGlue")
+    assert result.engine == "ALIKED+LightGlue"
+    assert result.match_set.matcher == "LightGlue"
+    assert result.performance.total_ms > 0
+
+
+def test_aliked_config_rejects_invalid():
+    from visor.learned_engines import ALIKEDConfiguration
+    with pytest.raises(ValueError):
+        ALIKEDConfiguration(max_keypoints=0)

@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from visor.engines import ORBConfiguration, SIFTConfiguration
 from visor.exporting import (
     ProjectSession,
@@ -54,3 +56,32 @@ def test_visualization_filters_can_change_without_reanalysis(textured_pair):
     )
     assert overlay.shape == result.matches_image.shape
     assert not (overlay == result.matches_image).all()
+
+
+def test_invalid_engine_name_is_rejected(textured_pair):
+    reference, target, _, _, _ = textured_pair
+    with pytest.raises(ValueError, match="engine"):
+        analyze(reference, target, "UnknownEngine")
+
+
+def test_load_project_accepts_learned_engine_names(tmp_path):
+    reference_path = tmp_path / "reference.png"
+    target_path = tmp_path / "target.png"
+    reference_path.write_bytes(b"\x89PNG\r\n\x1a\n" + b"fake")
+    target_path.write_bytes(b"\x89PNG\r\n\x1a\n" + b"fake")
+    project_path = tmp_path / "learned.visor"
+    project_path.write_text(
+        json.dumps({
+            "format_version": 1,
+            "application_version": "0.1.0",
+            "reference_path": str(reference_path),
+            "target_path": str(target_path),
+            "engine": "SuperPoint+LightGlue",
+            "settings": {},
+            "sift": {},
+            "orb": {},
+        }),
+        encoding="utf-8",
+    )
+    loaded = load_project(project_path)
+    assert loaded.engine == "SuperPoint+LightGlue"
