@@ -13,6 +13,7 @@ python -m PyInstaller `
     --icon src/visor/assets/visor.ico `
     --add-data "src/visor/assets/visor.ico;visor/assets" `
     --add-data "src/visor/assets/visor.svg;visor/assets" `
+    --add-data "src/visor/assets/icons;visor/assets/icons" `
     --collect-all cv2 `
     src/visor/__main__.py
 
