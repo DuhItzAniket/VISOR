@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-M8 complete — Windows standalone build verified.
+v0.1.0 released — all M0–M9 milestones complete.
 
 ## Completed
 
@@ -23,16 +23,22 @@ M8 complete — Windows standalone build verified.
 - Included `assets/icons/` in package data and PyInstaller bundle; fixed `_MEIPASS` icon resolution for the standalone build.
 - Built and verified `dist/VISOR/VISOR.exe` one-folder Windows distribution with all assets bundled.
 
+- Updated README with full feature list, keyboard shortcuts, architecture overview, export table, and troubleshooting guide.
+- Expanded ARCHITECTURE.md with full module map, data flow diagram, threading model, and extension model.
+- Added M6–M8 entries to IMPLEMENTATION_LOG.md; added toolbar and details panel entries to DECISIONS.md.
+- Wrote v0.1.0 CHANGELOG and tagged the release.
+
 ## Verification
 
 - Python 3.11.9, OpenCV 4.11, NumPy 1.26, and PySide6 6.11 are available in the current environment.
 - `python -m pytest -q`: 16 passed.
 - `python -m ruff check src tests`: passed.
 - `dist/VISOR/VISOR.exe` built successfully; `visor/assets/icons/` present in `_internal/`.
+- Tagged `v0.1.0` on `main`.
 
 ## Next
 
-Test the packaged build on a clean Windows machine. Then proceed to M9: documentation polish, screenshots in README, and a tagged v0.1.0 release.
+Test the packaged build on a clean Windows machine. Future milestones: learned feature engines (SuperPoint + LightGlue, XFeat), HTML/PDF report export, Windows installer.
 
 ## Known limitations
 
