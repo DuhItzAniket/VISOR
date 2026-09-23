@@ -131,6 +131,6 @@ This installs build dependencies, regenerates the application icon, and produces
 Future milestones (not yet implemented):
 
 - **M10** — Learned feature engines: SuperPoint + LightGlue, XFeat, ALIKED
-- **M11** — HTML/PDF report export
+- **M11** — HTML report export (implemented in the current milestone)
 - **M12** — Windows installer (NSIS or Inno Setup)
 - **M13** — Camera calibration and PnP for non-planar scenes

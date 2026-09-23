@@ -8,6 +8,16 @@ import numpy as np
 from visor.models import AnalysisSettings, ByteArray, FeatureSet, GeometryResult, MatchSet
 
 
+def _rainbow_color(index: int, total: int) -> tuple[int, int, int]:
+    if total <= 1:
+        hue = 120
+    else:
+        hue = int(round((index / max(total - 1, 1)) * 179.0))
+    hsv = np.uint8([[[hue, 255, 255]]])
+    bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)[0, 0]
+    return int(bgr[0]), int(bgr[1]), int(bgr[2])
+
+
 def render_match_canvas(
     reference_image: np.ndarray,
     target_image: np.ndarray,
@@ -41,11 +51,15 @@ def render_match_canvas(
         second = target_features.keypoints[match.train_index]
         start = (round(first.x), round(first.y))
         end = (round(second.x) + ref_w, round(second.y))
-        color = (70, 205, 135) if is_inlier else (80, 95, 220) if is_known else (190, 180, 65)
+        if settings.rainbow_feature_colors:
+            color = _rainbow_color(index, max(1, len(selected)))
+        else:
+            color = (70, 205, 135) if is_inlier else (80, 95, 220) if is_known else (190, 180, 65)
+        line_width = max(1, int(round(settings.feature_line_thickness)))
         if settings.show_match_lines:
-            cv2.line(canvas, start, end, color, 1, cv2.LINE_AA)
-        cv2.circle(canvas, start, 3, color, -1, cv2.LINE_AA)
-        cv2.circle(canvas, end, 3, color, -1, cv2.LINE_AA)
+            cv2.line(canvas, start, end, color, line_width, cv2.LINE_AA)
+        cv2.circle(canvas, start, max(2, line_width), color, -1, cv2.LINE_AA)
+        cv2.circle(canvas, end, max(2, line_width), color, -1, cv2.LINE_AA)
     if len(matches.matches) > maximum_drawn:
         cv2.putText(canvas, f"Showing {maximum_drawn:,} best of {len(matches.matches):,} good matches",
                     (12, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (235, 240, 245), 1, cv2.LINE_AA)
@@ -64,7 +78,17 @@ def render_localization(
             cv2.circle(canvas, (round(point.x), round(point.y)), 2, (175, 135, 70), 1, cv2.LINE_AA)
     if settings.show_geometry and geometry.valid and geometry.projected_corners:
         polygon = np.round(np.asarray(geometry.projected_corners)).astype(np.int32).reshape(-1, 1, 2)
-        cv2.polylines(canvas, [polygon], True, (64, 210, 146), 3, cv2.LINE_AA)
+        outline_width = max(2, int(round(settings.feature_line_thickness * 1.5)))
+        overlay = canvas.copy()
+        cv2.fillPoly(overlay, [polygon], (38, 118, 220))
+        cv2.addWeighted(overlay, 0.12, canvas, 0.88, 0, canvas)
+        cv2.polylines(canvas, [polygon], True, (64, 210, 146), outline_width, cv2.LINE_AA)
+        x_values = np.asarray([point[0] for point in geometry.projected_corners], dtype=np.float32)
+        y_values = np.asarray([point[1] for point in geometry.projected_corners], dtype=np.float32)
+        x1, y1 = int(np.floor(x_values.min())), int(np.floor(y_values.min()))
+        x2, y2 = int(np.ceil(x_values.max())), int(np.ceil(y_values.max()))
+        cv2.rectangle(canvas, (x1, y1), (x2, y2), (36, 180, 255), outline_width, cv2.LINE_AA)
         if geometry.center:
-            cv2.circle(canvas, tuple(round(value) for value in geometry.center), 6, (50, 180, 255), -1, cv2.LINE_AA)
+            cv2.circle(canvas, tuple(round(value) for value in geometry.center), max(5, outline_width + 2), (50, 180, 255), -1, cv2.LINE_AA)
+            cv2.putText(canvas, "Object", tuple(round(value) for value in geometry.center), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
     return canvas

@@ -18,6 +18,8 @@ from visor.learned_engines import (
     ALIKEDLightGlueEngine,
     SuperPointConfiguration,
     SuperPointLightGlueEngine,
+    XFeatConfiguration,
+    XFeatEngine,
 )
 from visor.matching import match_features
 from visor.models import (
@@ -92,6 +94,7 @@ def analyze_images(
     image_loading_ms: float = 0.0,
     cancel_event: Event | None = None,
     sp_config: SuperPointConfiguration | None = None,
+    xfeat_config: XFeatConfiguration | None = None,
 ) -> AnalysisResult:
     engine_name = _validate_engine_name(engine_name)
     settings = settings or AnalysisSettings()
@@ -99,10 +102,10 @@ def analyze_images(
     reference_gray = cast(ByteArray, cv2.cvtColor(reference_image, cv2.COLOR_BGR2GRAY))
     target_gray = cast(ByteArray, cv2.cvtColor(target_image, cv2.COLOR_BGR2GRAY))
 
-    if engine_name in ("SuperPoint+LightGlue", "ALIKED+LightGlue"):
+    if engine_name in ("SuperPoint+LightGlue", "XFeat", "ALIKED+LightGlue"):
         return _analyze_learned(
             reference_path, target_path, reference_image, target_image,
-            reference_gray, target_gray, settings, engine_name, sp_config, image_loading_ms,
+            reference_gray, target_gray, settings, engine_name, sp_config, xfeat_config, image_loading_ms,
             total_start, cancel_event,
         )
 
@@ -156,19 +159,24 @@ def _analyze_learned(
     settings: AnalysisSettings,
     engine_name: EngineName,
     sp_config: SuperPointConfiguration | None,
+    xfeat_config: XFeatConfiguration | None,
     image_loading_ms: float,
     total_start: float,
     cancel_event: Event | None,
 ) -> AnalysisResult:
-    """Pipeline branch for learned feature engines (SuperPoint+LightGlue, ALIKED+LightGlue)."""
+    """Pipeline branch for learned feature engines (SuperPoint+LightGlue, XFeat, ALIKED+LightGlue)."""
     from dataclasses import asdict as _asdict
     if engine_name == "ALIKED+LightGlue":
         aliked_cfg = ALIKEDConfiguration(
             max_keypoints=sp_config.max_keypoints if sp_config else 1024,
             use_cuda=sp_config.use_cuda if sp_config else True,
         )
-        engine_obj: SuperPointLightGlueEngine | ALIKEDLightGlueEngine = ALIKEDLightGlueEngine(aliked_cfg)
+        engine_obj: SuperPointLightGlueEngine | XFeatEngine | ALIKEDLightGlueEngine = ALIKEDLightGlueEngine(aliked_cfg)
         engine_config: dict[str, object] = _asdict(aliked_cfg)
+    elif engine_name == "XFeat":
+        xfeat_cfg = xfeat_config or XFeatConfiguration()
+        engine_obj = XFeatEngine(xfeat_cfg)
+        engine_config = _asdict(xfeat_cfg)
     else:
         engine_obj = SuperPointLightGlueEngine(sp_config)
         engine_config = _asdict(sp_config) if sp_config is not None else _asdict(SuperPointConfiguration())

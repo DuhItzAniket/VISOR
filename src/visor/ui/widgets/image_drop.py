@@ -49,17 +49,40 @@ class ImageDropWidget(QFrame):
         self.browse_button.setObjectName("secondaryButton")
         self.browse_button.clicked.connect(self._browse)
 
+        self.clear_button = QPushButton("Remove")
+        self.clear_button.setObjectName("secondaryButton")
+        self.clear_button.setToolTip("Clear this image slot")
+        self.clear_button.clicked.connect(self.clear_image)
+
+        action_row = QWidget()
+        action_layout = QVBoxLayout(action_row)
+        action_layout.setContentsMargins(0, 0, 0, 0)
+        action_layout.setSpacing(6)
+        action_layout.addWidget(self.browse_button)
+        action_layout.addWidget(self.clear_button)
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(14, 13, 14, 13)
         layout.setSpacing(8)
         layout.addWidget(self.title_label)
         layout.addWidget(self.preview, 1)
         layout.addWidget(self.metadata_label)
-        layout.addWidget(self.browse_button)
+        layout.addWidget(action_row)
 
     @property
     def image_path(self) -> Path | None:
         return self._image_path
+
+    def clear_image(self) -> None:
+        """Remove the current image and emit a clear notification to the app."""
+        self._image_path = None
+        self.preview.clear()
+        self.preview.setText("Drop an image here\nor choose a file")
+        self.metadata_label.setObjectName("mutedText")
+        self.metadata_label.setText("PNG, JPEG, BMP, TIFF, or WebP")
+        self.metadata_label.style().unpolish(self.metadata_label)
+        self.metadata_label.style().polish(self.metadata_label)
+        self.image_changed.emit(self._title, None)
 
     def _browse(self) -> None:
         filename, _ = QFileDialog.getOpenFileName(self, f"Choose {self._title}", "", IMAGE_FILTER)
@@ -89,15 +112,12 @@ class ImageDropWidget(QFrame):
         """Load and preview an image, reporting a useful error for invalid files."""
         pixmap = QPixmap(str(path))
         if pixmap.isNull():
-            self._image_path = None
-            self.preview.clear()
-            self.preview.setText("Drop an image here\nor choose a file")
+            self.clear_image()
             self.metadata_label.setText("Could not read this image. Choose a supported image file.")
             self.metadata_label.setObjectName("errorText")
             self.metadata_label.style().unpolish(self.metadata_label)
             self.metadata_label.style().polish(self.metadata_label)
             logger.warning("Unable to load image for %s: %s", self._title, path)
-            self.image_changed.emit(self._title, None)
             return
 
         self._image_path = path.resolve()

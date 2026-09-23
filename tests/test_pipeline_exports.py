@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import pytest
 
@@ -6,6 +7,7 @@ from visor.engines import ORBConfiguration, SIFTConfiguration
 from visor.exporting import (
     ProjectSession,
     export_csv,
+    export_html_report,
     export_json,
     export_visualization,
     load_project,
@@ -56,6 +58,27 @@ def test_visualization_filters_can_change_without_reanalysis(textured_pair):
     )
     assert overlay.shape == result.matches_image.shape
     assert not (overlay == result.matches_image).all()
+
+
+def test_html_report_exports_analysis_summary(textured_pair, tmp_path):
+    reference, target, _, _, _ = textured_pair
+    result = analyze(reference, target, "ORB")
+    report_path = tmp_path / "analysis_report.html"
+    export_html_report(result, report_path)
+    assert report_path.is_file() and report_path.stat().st_size > 0
+    html = report_path.read_text(encoding="utf-8")
+    assert "<html" in html.lower()
+    assert "ORB" in html
+    assert "geometry" in html.lower()
+
+
+def test_windows_installer_manifest_is_present():
+    installer = Path(__file__).resolve().parents[1] / "scripts" / "VISOR.iss"
+    assert installer.exists()
+    content = installer.read_text(encoding="utf-8")
+    assert "AppName=VISOR" in content
+    assert "OutputBaseFilename=VISOR-setup" in content
+    assert "Source: \"dist\\VISOR\\VISOR.exe\"" in content
 
 
 def test_invalid_engine_name_is_rejected(textured_pair):

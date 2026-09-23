@@ -10,11 +10,12 @@ from typing import Literal
 import numpy as np
 from numpy.typing import NDArray
 
-EngineName = Literal["SIFT", "ORB", "SuperPoint+LightGlue", "ALIKED+LightGlue"]
+EngineName = Literal["SIFT", "ORB", "SuperPoint+LightGlue", "XFeat", "ALIKED+LightGlue"]
 VALID_ENGINE_NAMES: tuple[EngineName, ...] = (
     "SIFT",
     "ORB",
     "SuperPoint+LightGlue",
+    "XFeat",
     "ALIKED+LightGlue",
 )
 FloatArray = NDArray[np.float32]
@@ -101,12 +102,16 @@ class AnalysisSettings:
     show_outliers: bool = True
     show_keypoints: bool = False
     show_geometry: bool = True
+    rainbow_feature_colors: bool = False
+    feature_line_thickness: float = 1.0
 
     def __post_init__(self) -> None:
         if not isfinite(self.ratio_threshold) or not 0 < self.ratio_threshold < 1:
             raise ValueError("Ratio threshold must be finite and between zero and one.")
         if not isfinite(self.ransac_threshold) or self.ransac_threshold <= 0:
             raise ValueError("RANSAC threshold must be finite and positive.")
+        if not isfinite(self.feature_line_thickness) or self.feature_line_thickness <= 0:
+            raise ValueError("Feature line thickness must be finite and positive.")
 
 
 @dataclass(frozen=True)

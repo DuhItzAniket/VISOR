@@ -24,6 +24,7 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QPushButton,
+    QSlider,
     QSpinBox,
     QSplitter,
     QStackedWidget,
@@ -43,12 +44,13 @@ from visor.exporting import (
     export_benchmark_csv,
     export_comparison_csv,
     export_csv,
+    export_html_report,
     export_json,
     export_visualization,
     load_project,
     save_project,
 )
-from visor.learned_engines import is_learned_available
+from visor.learned_engines import is_learned_available, is_xfeat_available
 from visor.models import AnalysisResult, AnalysisSettings, ComparisonResult, EngineName
 from visor.pipeline import AnalysisCancelled, analyze, compare_engines
 from visor.ui.widgets.details_panel import AnalysisDetailsPanel
@@ -215,6 +217,7 @@ class MainWindow(QMainWindow):
         export_menu = file_menu.addMenu("Export")
         for title, callback in (
             ("Analysis as JSON…", self._export_json),
+            ("Analysis report (HTML)…", self._export_html_report),
             ("Metrics as CSV…", self._export_csv),
             ("SIFT vs ORB comparison CSV…", self._export_comparison_csv),
             ("Benchmark results CSV…", self._export_benchmark_csv),
@@ -246,6 +249,7 @@ class MainWindow(QMainWindow):
             ("Outliers", "show_outliers", True),
             ("Keypoints", "show_keypoints", False),
             ("Localization geometry", "show_geometry", True),
+            ("Rainbow feature lines", "rainbow_feature_colors", False),
         ):
             action = QAction(title, self)
             action.setCheckable(True)
@@ -293,13 +297,26 @@ class MainWindow(QMainWindow):
         header.addStretch(1)
         self.engine_selector = QComboBox()
         self.engine_selector.addItems(["SIFT", "ORB"])
-        if is_learned_available():
-            self.engine_selector.addItem("SuperPoint+LightGlue")
-            self.engine_selector.addItem("ALIKED+LightGlue")
+        learned_available = is_learned_available()
+        if learned_available:
+            if is_xfeat_available():
+                self.engine_selector.addItem("XFeat")
+            else:
+                self.engine_selector.addItem("XFeat (install xfeat)")
+                self.engine_selector.model().item(2).setEnabled(False)  # type: ignore[union-attr]
+            if is_learned_available():
+                self.engine_selector.addItem("SuperPoint+LightGlue")
+                self.engine_selector.addItem("ALIKED+LightGlue")
+            else:
+                self.engine_selector.addItem("SuperPoint+LightGlue (install lightglue)")
+                self.engine_selector.addItem("ALIKED+LightGlue (install lightglue)")
+                for i in (3, 4):
+                    self.engine_selector.model().item(i).setEnabled(False)  # type: ignore[union-attr]
         else:
+            self.engine_selector.addItem("XFeat (install xfeat)")
             self.engine_selector.addItem("SuperPoint+LightGlue (install lightglue)")
             self.engine_selector.addItem("ALIKED+LightGlue (install lightglue)")
-            for i in (2, 3):
+            for i in (2, 3, 4):
                 self.engine_selector.model().item(i).setEnabled(False)  # type: ignore[union-attr]
         self.engine_selector.setToolTip("Feature extraction and descriptor matching engine")
         self.engine_selector.currentIndexChanged.connect(self._engine_changed)
@@ -437,8 +454,14 @@ class MainWindow(QMainWindow):
         common_form = QFormLayout(common)
         self.ratio_control = self._float_control(0.50, 0.99, 0.75)
         self.ransac_control = self._float_control(0.5, 20.0, 4.0)
+        self.match_line_thickness = QSlider(Qt.Orientation.Horizontal)
+        self.match_line_thickness.setRange(1, 12)
+        self.match_line_thickness.setValue(1)
+        self.match_line_thickness.setToolTip("Adjust the visible thickness of feature match lines.")
+        self.match_line_thickness.valueChanged.connect(self._refresh_visualization)
         common_form.addRow("Ratio threshold", self.ratio_control)
         common_form.addRow("RANSAC threshold (px)", self.ransac_control)
+        common_form.addRow("Feature line thickness", self.match_line_thickness)
         layout.addWidget(common)
 
         self.engine_settings = QStackedWidget()
@@ -486,6 +509,7 @@ class MainWindow(QMainWindow):
     def _reset_configuration(self) -> None:
         self.ratio_control.setValue(0.75)
         self.ransac_control.setValue(4.0)
+        self.match_line_thickness.setValue(1)
         self.sift_features.setValue(0)
         self.sift_layers.setValue(3)
         self.sift_contrast.setValue(0.04)
@@ -510,6 +534,8 @@ class MainWindow(QMainWindow):
             self.view_toggles["show_outliers"].isChecked(),
             self.view_toggles["show_keypoints"].isChecked(),
             self.view_toggles["show_geometry"].isChecked(),
+            self.view_toggles.get("rainbow_feature_colors", QAction(self)).isChecked(),
+            float(self.match_line_thickness.value()),
         )
         sift = SIFTConfiguration(
             self.sift_features.value(), self.sift_layers.value(), self.sift_contrast.value(),
@@ -528,8 +554,8 @@ class MainWindow(QMainWindow):
         if reference is None or target is None or self._worker is not None:
             return
         engine_text = self.engine_selector.currentText()
-        if engine_text not in ("SIFT", "ORB", "SuperPoint+LightGlue", "ALIKED+LightGlue"):
-            self.statusBar().showMessage("Selected engine is not available. Install lightglue to use SuperPoint+LightGlue.")
+        if engine_text not in ("SIFT", "ORB", "SuperPoint+LightGlue", "XFeat", "ALIKED+LightGlue"):
+            self.statusBar().showMessage("Selected engine is not available. Install the required optional dependencies to use learned engines.")
             return
         engine = cast(EngineName, engine_text)
         settings, sift, orb = self._read_configurations()
@@ -684,6 +710,8 @@ class MainWindow(QMainWindow):
             show_outliers=self.view_toggles["show_outliers"].isChecked(),
             show_keypoints=self.view_toggles["show_keypoints"].isChecked(),
             show_geometry=self.view_toggles["show_geometry"].isChecked(),
+            rainbow_feature_colors=self.view_toggles.get("rainbow_feature_colors").isChecked(),
+            feature_line_thickness=float(self.match_line_thickness.value()),
         )
         result = replace(
             result,
@@ -815,6 +843,20 @@ class MainWindow(QMainWindow):
 
     def _export_json(self) -> None:
         self._export_analysis(export_json, "JSON files (*.json)", "analysis.json")
+
+    def _export_html_report(self) -> None:
+        if self._latest_result is None:
+            self.statusBar().showMessage("Run an analysis before exporting a report.")
+            return
+        filename, _ = QFileDialog.getSaveFileName(self, "Export HTML report", "analysis_report.html", "HTML files (*.html)")
+        if not filename:
+            return
+        try:
+            export_html_report(self._latest_result, Path(filename))
+        except (OSError, ValueError) as exc:
+            QMessageBox.critical(self, "Export failed", str(exc))
+            return
+        self.statusBar().showMessage(f"HTML report exported: {Path(filename).name}")
 
     def _export_csv(self) -> None:
         self._export_analysis(export_csv, "CSV files (*.csv)", "metrics.csv")

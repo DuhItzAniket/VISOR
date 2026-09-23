@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 
 _TORCH_AVAILABLE = False
 _LIGHTGLUE_AVAILABLE = False
+_XFEAT_AVAILABLE = False
 
 try:
     import torch  # noqa: F401
@@ -38,6 +39,13 @@ try:
     if _TORCH_AVAILABLE:
         import lightglue  # noqa: F401
         _LIGHTGLUE_AVAILABLE = True
+except ImportError:
+    pass
+
+try:
+    if _TORCH_AVAILABLE:
+        import xfeat  # noqa: F401
+        _XFEAT_AVAILABLE = True
 except ImportError:
     pass
 
@@ -181,6 +189,110 @@ class SuperPointLightGlueEngine:
 
 
 # ---------------------------------------------------------------------------
+# XFeat
+# ---------------------------------------------------------------------------
+
+@dataclass(frozen=True)
+class XFeatConfiguration:
+    max_keypoints: int = 1024
+    detection_threshold: float = 0.005
+    use_cuda: bool = True
+
+    def __post_init__(self) -> None:
+        if self.max_keypoints < 1:
+            raise ValueError("max_keypoints must be positive.")
+        if not isfinite(self.detection_threshold) or not 0 < self.detection_threshold < 1:
+            raise ValueError("detection_threshold must be finite and between 0 and 1.")
+
+
+class XFeatEngine:
+    """Optional XFeat feature extractor + matcher wrapper.
+
+    The package is not required for the classical project pipeline, but when the
+    dependency is installed this engine follows the same FeatureEngine protocol as
+    the other learned engines.
+    """
+
+    name = "XFeat"
+
+    def __init__(self, config: XFeatConfiguration | None = None) -> None:
+        if not _XFEAT_AVAILABLE:
+            raise LearnedEngineUnavailable(
+                "XFeat requires the optional xfeat package. Install it with: pip install xfeat"
+            )
+        import torch
+
+        self.config = config or XFeatConfiguration()
+        self._device = torch.device(
+            "cuda" if self.config.use_cuda and torch.cuda.is_available() else "cpu"
+        )
+
+    def extract(self, gray: NDArray[np.uint8]) -> FeatureSet:
+        import torch
+
+        try:
+            from xfeat import Extractor
+        except ImportError as exc:  # pragma: no cover - optional dependency path
+            raise LearnedEngineUnavailable("XFeat is not available in this environment.") from exc
+
+        if not hasattr(self, "_extractor"):
+            self._extractor = Extractor(
+                max_keypoints=self.config.max_keypoints,
+                detection_threshold=self.config.detection_threshold,
+            ).to(self._device)
+        t = _to_tensor(gray).to(self._device)
+        start = perf_counter()
+        with torch.no_grad():
+            raw = self._extractor(t)
+        elapsed = (perf_counter() - start) * 1000
+
+        if isinstance(raw, tuple):
+            keypoints, descriptors = raw[0], raw[1]
+        elif isinstance(raw, dict):
+            keypoints = raw.get("keypoints")
+            descriptors = raw.get("descriptors")
+        else:
+            raise LearnedEngineUnavailable("Unexpected XFeat output format.")
+
+        if keypoints is None or descriptors is None:
+            return FeatureSet((), None, DescriptorInfo(0, 0, "FLOAT32", 0, "L2"), elapsed)
+
+        if hasattr(keypoints, "cpu"):
+            keypoints = keypoints.cpu().numpy()
+        if hasattr(descriptors, "cpu"):
+            descriptors = descriptors.cpu().numpy()
+
+        pts = np.asarray(keypoints, dtype=np.float32)
+        desc = np.asarray(descriptors, dtype=np.float32)
+        feature_keypoints = tuple(
+            KeypointInfo(float(pt[0]), float(pt[1]), 1.0, 0.0, 0.0, 0, -1) for pt in pts.reshape(-1, 2)
+        )
+        dims = int(desc.shape[1]) if desc.ndim > 1 and desc.shape else 0
+        info = DescriptorInfo(len(feature_keypoints), dims, "FLOAT32", int(desc.nbytes), "L2")
+        return FeatureSet(feature_keypoints, desc, info, elapsed)
+
+    def extract_and_match(
+        self,
+        ref_gray: NDArray[np.uint8],
+        tgt_gray: NDArray[np.uint8],
+    ) -> tuple[FeatureSet, FeatureSet, NDArray[np.int64]]:
+        ref_features = self.extract(ref_gray)
+        tgt_features = self.extract(tgt_gray)
+
+        if ref_features.descriptors is None or tgt_features.descriptors is None:
+            return ref_features, tgt_features, np.empty((0, 2), dtype=np.int64)
+
+        matches = np.empty((0, 2), dtype=np.int64)
+        if len(ref_features.keypoints) and len(tgt_features.keypoints):
+            from sklearn.neighbors import NearestNeighbors  # type: ignore
+            model = NearestNeighbors(n_neighbors=1)
+            model.fit(tgt_features.descriptors)
+            distances, indices = model.kneighbors(ref_features.descriptors, return_distance=True)
+            matches = np.column_stack((np.arange(len(ref_features.keypoints), dtype=np.int64), indices.ravel().astype(np.int64)))
+        return ref_features, tgt_features, matches
+
+
+# ---------------------------------------------------------------------------
 # ALIKED + LightGlue
 # ---------------------------------------------------------------------------
 
@@ -295,6 +407,11 @@ class ALIKEDLightGlueEngine:
         return ref_fs, tgt_fs, matches
 
 
+def is_xfeat_available() -> bool:
+    """Return True if the optional XFeat dependency is importable."""
+    return _XFEAT_AVAILABLE
+
+
 def is_learned_available() -> bool:
-    """Return True if torch and lightglue are importable."""
-    return _LIGHTGLUE_AVAILABLE
+    """Return True when any optional learned-engine dependency is importable."""
+    return _LIGHTGLUE_AVAILABLE or _XFEAT_AVAILABLE

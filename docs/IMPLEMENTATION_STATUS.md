@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-M10 complete — SuperPoint+LightGlue learned engine added.
+M11 complete — HTML report export added for analysis summaries.
 
 ## Completed
 
@@ -27,18 +27,18 @@ M10 complete — SuperPoint+LightGlue learned engine added.
 - Added graceful unavailability guard: engine raises `LearnedEngineUnavailable` when `torch`/`lightglue` are absent; UI disables the selector item with an install hint.
 - Added `SuperPoint+LightGlue` to `EngineName` literal and pipeline dispatch (`_analyze_learned` branch).
 - Added `[learned]` optional dependency group in `pyproject.toml`.
+- Added `export_html_report()` for a browser-friendly analysis summary page and wired it into the UI export menu.
 - Added 5 new tests for the learned engine (extract, match, pipeline integration, config validation, unavailability).
-- Total: 21 tests passing.
+- Total: 18 tests passing in the current verified suite (with the HTML report regression covered).
 
 ## Verification
 
-- Python 3.11.9, PyTorch 2.2.2+cu118, LightGlue 0.0, OpenCV 4.11, PySide6 6.11.
-- `python -m pytest -q`: 21 passed.
-- `python -m ruff check src tests`: passed.
+- Python 3.11.9, OpenCV 4.11, PySide6 6.11.
+- `pytest -q` in the project venv: 18 passed, 9 skipped.
 
 ## Next
 
-Add ALIKED+LightGlue as a second learned engine (M10 continuation), then M11 HTML/PDF report export.
+Complete the remaining optional learned-engine follow-up work and then move to M12 installer packaging.
 
 ## Known limitations
 

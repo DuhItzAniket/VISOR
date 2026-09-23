@@ -1,8 +1,10 @@
+import cv2
 import numpy as np
 
+from visor.calibration import calibrate_camera, solve_pnp_pose
 from visor.geometry import estimate_homography
 from visor.matching import match_features
-from visor.models import DescriptorInfo, FeatureSet, KeypointInfo, MatchInfo, MatchSet
+from visor.models import AnalysisSettings, DescriptorInfo, FeatureSet, KeypointInfo, MatchInfo, MatchSet
 
 
 def _feature_set(points, descriptors=None):
@@ -53,6 +55,34 @@ def test_homography_reports_reference_completely_outside_target():
     assert "outside" in result.message
 
 
+def test_calibrate_camera_and_solve_pnp_on_synthetic_points():
+    board = np.array([
+        [x * 0.05, y * 0.05, 0.0]
+        for y in range(6)
+        for x in range(8)
+    ], dtype=np.float64)
+    camera_matrix = np.array([
+        [800.0, 0.0, 320.0],
+        [0.0, 800.0, 240.0],
+        [0.0, 0.0, 1.0],
+    ], dtype=np.float64)
+    dist_coeffs = np.zeros(5, dtype=np.float64)
+    rvec = np.array([0.25, -0.15, 0.35], dtype=np.float64)
+    tvec = np.array([0.04, -0.03, 1.1], dtype=np.float64)
+    image_points, _ = cv2.projectPoints(board, rvec, tvec, camera_matrix, dist_coeffs)
+    image_points = image_points.reshape(-1, 2)
+
+    K, dist, rms_error = calibrate_camera([board], [image_points], (640, 480))
+    assert K.shape == (3, 3)
+    assert dist.shape == (5,)
+    assert rms_error >= 0.0
+
+    solution = solve_pnp_pose(board, image_points, K, dist)
+    assert solution is not None
+    assert solution[0].shape == (3, 1)
+    assert solution[1].shape == (3, 1)
+
+
 def test_invalid_ratio_threshold_fails_clearly():
     features = _feature_set([], None)
     try:
@@ -61,6 +91,22 @@ def test_invalid_ratio_threshold_fails_clearly():
         assert "Ratio threshold" in str(exc)
     else:
         raise AssertionError("invalid ratio threshold should be rejected")
+
+
+def test_analysis_settings_support_rainbow_lines_and_thickness():
+    settings = AnalysisSettings(
+        ratio_threshold=0.75,
+        ransac_threshold=4.0,
+        show_match_lines=True,
+        show_inliers=True,
+        show_outliers=True,
+        show_keypoints=False,
+        show_geometry=True,
+        rainbow_feature_colors=True,
+        feature_line_thickness=3.5,
+    )
+    assert settings.rainbow_feature_colors is True
+    assert settings.feature_line_thickness == 3.5
 
 
 def test_engine_settings_reject_invalid_numeric_values():

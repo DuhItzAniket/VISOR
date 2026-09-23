@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import html
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -103,6 +104,66 @@ def export_csv(result: AnalysisResult, path: Path) -> None:
         writer = csv.DictWriter(stream, fieldnames=fields.keys())
         writer.writeheader()
         writer.writerow(fields)
+
+
+def export_html_report(result: AnalysisResult, path: Path) -> None:
+    """Write a human-readable HTML report covering the core analysis summary."""
+    doc = analysis_document(result)
+    geometry = doc["geometry"]
+    perf = doc["performance_ms"]
+    rows = [
+        ("Engine", html.escape(str(doc["engine"]))),
+        ("Reference image", html.escape(str(doc["inputs"]["reference_path"]))),
+        ("Target image", html.escape(str(doc["inputs"]["target_path"]))),
+        ("Reference size", f"{doc['inputs']['reference_size_px'][0]} × {doc['inputs']['reference_size_px'][1]} px"),
+        ("Target size", f"{doc['inputs']['target_size_px'][0]} × {doc['inputs']['target_size_px'][1]} px"),
+        ("Reference keypoints", str(doc["features"]["reference_count"])),
+        ("Target keypoints", str(doc["features"]["target_count"])),
+        ("Good matches", str(doc["matching"]["good_matches"])),
+        ("Inlier ratio", f"{geometry['inlier_ratio']:.3f}"),
+        ("Homography valid", "Yes" if geometry["valid"] else "No"),
+        ("Message", html.escape(str(geometry["message"]))),
+        ("Total time", f"{perf['total_ms']:.2f} ms"),
+    ]
+    summary_rows = "\n".join(
+        f"<tr><th>{label}</th><td>{value}</td></tr>" for label, value in rows
+    )
+    homography = geometry["homography"]
+    homography_html = "—" if homography is None else json.dumps(homography)
+    html_text = f"""<!doctype html>
+<html lang=\"en\">
+<head>
+  <meta charset=\"utf-8\" />
+  <title>VISOR Analysis Report</title>
+  <style>
+    body {{ font-family: Arial, sans-serif; margin: 2rem; color: #1f2933; background: #f5f7fa; }}
+    h1 {{ color: #102a43; }}
+    table {{ border-collapse: collapse; width: 100%; background: white; border: 1px solid #d9e2ec; }}
+    th, td {{ border-bottom: 1px solid #e4e7eb; padding: 0.75rem 1rem; text-align: left; vertical-align: top; }}
+    th {{ background: #eaf2ff; width: 220px; }}
+    .panel {{ background: white; border: 1px solid #d9e2ec; padding: 1rem 1.25rem; margin-top: 1rem; }}
+    .muted {{ color: #52606d; }}
+  </style>
+</head>
+<body>
+  <h1>VISOR Analysis Report</h1>
+  <p class=\"muted\">Application version: {html.escape(str(doc['application_version']))} | Schema: {html.escape(str(doc['schema_version']))}</p>
+  <div class=\"panel\">
+    <table>
+      {summary_rows}
+    </table>
+  </div>
+  <div class=\"panel\">
+    <h2>Geometry</h2>
+    <p><strong>Inlier count:</strong> {geometry['inliers']} | <strong>Outlier count:</strong> {geometry['outliers']}</p>
+    <p><strong>Mean inlier reprojection error:</strong> {geometry['mean_inlier_reprojection_error_px']}</p>
+    <p><strong>Projected corners:</strong> {html.escape(str(geometry['projected_corners_px']))}</p>
+    <p><strong>Homography:</strong> {html.escape(homography_html)}</p>
+  </div>
+</body>
+</html>
+"""
+    path.write_text(html_text, encoding="utf-8")
 
 
 def export_comparison_csv(result: ComparisonResult, path: Path) -> None:
