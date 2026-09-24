@@ -4,7 +4,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 from threading import Event
 
-from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QApplication, QLabel
 
 from visor.benchmark import _scenarios, run_benchmark
 from visor.pipeline import AnalysisCancelled, analyze
@@ -47,6 +47,16 @@ def test_main_window_builds_drop_inputs_and_controls():
     assert window.target_input.acceptDrops()
     assert hasattr(window, "feature_color_button")
     assert hasattr(window, "feature_thickness_slider")
+    assert hasattr(window, "engine_console")
+    assert hasattr(window, "log_engine_event")
+    assert hasattr(window, "install_learned_button")
+    label_texts = [label.text() for label in window.findChildren(QLabel)]
+    assert "Planar feature analysis" not in label_texts
+    assert "Image inputs" not in label_texts
+    assert window.run_button.isHidden() is False
+    assert window.compare_button.isHidden() is False
+    assert window.benchmark_button.isHidden() is False
+    assert window.cancel_button.isHidden() is False
     assert window.run_button.isEnabled() is False
     assert window.compare_button.isEnabled() is False
     assert window.benchmark_button.isEnabled() is False
@@ -54,6 +64,8 @@ def test_main_window_builds_drop_inputs_and_controls():
 
     window.reference_input.load_path(__file__.replace("test_benchmark_ui.py", "data/reference.png"))
     assert window.reference_input.clear_button.isVisible() is True
+    window.log_engine_event("status", "UI test trace")
+    assert "UI test trace" in window.engine_console.toPlainText()
 
     window.close()
     app.quit()

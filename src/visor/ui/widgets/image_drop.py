@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QHBoxLayout,
+    QSizePolicy,
     QVBoxLayout,
     QWidget,
 )
@@ -31,6 +32,8 @@ class ImageDropWidget(QFrame):
         self.setObjectName("imageDropWidget")
         self.setAcceptDrops(True)
         self.setMinimumHeight(230)
+        self.setMinimumWidth(260)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self._image_path: Path | None = None
         self._title = title
 

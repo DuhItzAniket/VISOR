@@ -14,7 +14,6 @@ python -m PyInstaller `
     --add-data "src/visor/assets/visor.ico;visor/assets" `
     --add-data "src/visor/assets/visor.svg;visor/assets" `
     --add-data "src/visor/assets/icons;visor/assets/icons" `
-    --collect-all cv2 `
     src/visor/__main__.py
 
 Write-Host "Build complete: $repoRoot\dist\VISOR\VISOR.exe"

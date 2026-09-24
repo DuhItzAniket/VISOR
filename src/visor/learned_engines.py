@@ -8,7 +8,9 @@ engines raise ``LearnedEngineUnavailable`` on construction.
 
 from __future__ import annotations
 
+import importlib.util
 import logging
+import sys
 from dataclasses import dataclass
 from math import isfinite
 from time import perf_counter
@@ -35,23 +37,31 @@ try:
 except ImportError:
     pass
 
-try:
-    if _TORCH_AVAILABLE:
-        import lightglue  # noqa: F401
-        _LIGHTGLUE_AVAILABLE = True
-except ImportError:
-    pass
-
-try:
-    if _TORCH_AVAILABLE:
-        import xfeat  # noqa: F401
-        _XFEAT_AVAILABLE = True
-except ImportError:
-    pass
+if _TORCH_AVAILABLE:
+    _LIGHTGLUE_AVAILABLE = importlib.util.find_spec("lightglue") is not None
+    _XFEAT_AVAILABLE = importlib.util.find_spec("xfeat") is not None
 
 
 class LearnedEngineUnavailable(RuntimeError):
     """Raised when a learned engine is requested but its dependencies are missing."""
+
+
+def _ensure_runtime_usable(engine_name: str) -> None:
+    """Guard against the PyInstaller/TorchScript incompatibility in packaged builds."""
+    if getattr(sys, "frozen", False):
+        raise LearnedEngineUnavailable(
+            f"{engine_name} is disabled in the packaged EXE because PyInstaller cannot load "
+            "TorchScript-backed LightGlue/Kornia modules. Run the app from the project venv to use learned engines."
+        )
+    if not _LIGHTGLUE_AVAILABLE and engine_name != "XFeat":
+        raise LearnedEngineUnavailable(
+            f"{engine_name} requires torch and lightglue. Install with: "
+            "pip install git+https://github.com/cvg/LightGlue.git"
+        )
+    if engine_name == "XFeat" and not _XFEAT_AVAILABLE:
+        raise LearnedEngineUnavailable(
+            "XFeat requires the optional xfeat package. Install it with: pip install xfeat"
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -101,11 +111,7 @@ class SuperPointLightGlueEngine:
     name = "SuperPoint+LightGlue"
 
     def __init__(self, config: SuperPointConfiguration | None = None) -> None:
-        if not _LIGHTGLUE_AVAILABLE:
-            raise LearnedEngineUnavailable(
-                "SuperPoint+LightGlue requires torch and lightglue. "
-                "Install with: pip install git+https://github.com/cvg/LightGlue.git"
-            )
+        _ensure_runtime_usable(self.name)
         import torch
         from lightglue import LightGlue, SuperPoint
 
@@ -216,10 +222,7 @@ class XFeatEngine:
     name = "XFeat"
 
     def __init__(self, config: XFeatConfiguration | None = None) -> None:
-        if not _XFEAT_AVAILABLE:
-            raise LearnedEngineUnavailable(
-                "XFeat requires the optional xfeat package. Install it with: pip install xfeat"
-            )
+        _ensure_runtime_usable(self.name)
         import torch
 
         self.config = config or XFeatConfiguration()
@@ -319,11 +322,7 @@ class ALIKEDLightGlueEngine:
     name = "ALIKED+LightGlue"
 
     def __init__(self, config: ALIKEDConfiguration | None = None) -> None:
-        if not _LIGHTGLUE_AVAILABLE:
-            raise LearnedEngineUnavailable(
-                "ALIKED+LightGlue requires torch and lightglue. "
-                "Install with: pip install git+https://github.com/cvg/LightGlue.git"
-            )
+        _ensure_runtime_usable(self.name)
         import torch
         from lightglue import ALIKED, LightGlue
 
@@ -405,6 +404,11 @@ class ALIKEDLightGlueEngine:
         tgt_fs = FeatureSet(tgt_kp, tgt_desc, DescriptorInfo(len(tgt_kp), tgt_dims, "FLOAT32", tgt_desc.nbytes, "L2"), half)
         matches: NDArray[np.int64] = match_data["matches"].cpu().numpy()
         return ref_fs, tgt_fs, matches
+
+
+def is_lightglue_available() -> bool:
+    """Return True if LightGlue is importable."""
+    return _LIGHTGLUE_AVAILABLE
 
 
 def is_xfeat_available() -> bool:

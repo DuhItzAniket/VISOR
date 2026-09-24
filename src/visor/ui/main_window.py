@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import math
+import shutil
+import subprocess
+import sys
 from dataclasses import replace
 from pathlib import Path
 from threading import Event
@@ -10,7 +13,7 @@ from typing import cast
 
 import numpy as np
 from PySide6.QtCore import QByteArray, QSettings, Qt, QThread, Signal
-from PySide6.QtGui import QAction, QIcon
+from PySide6.QtGui import QAction, QIcon, QTextCursor
 from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
@@ -25,6 +28,7 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QMainWindow,
     QMessageBox,
+    QPlainTextEdit,
     QPushButton,
     QSlider,
     QSpinBox,
@@ -52,7 +56,7 @@ from visor.exporting import (
     load_project,
     save_project,
 )
-from visor.learned_engines import is_learned_available, is_xfeat_available
+from visor.learned_engines import is_learned_available, is_lightglue_available, is_xfeat_available
 from visor.models import AnalysisResult, AnalysisSettings, ComparisonResult, EngineName
 from visor.pipeline import AnalysisCancelled, analyze, compare_engines
 from visor.ui.widgets.details_panel import AnalysisDetailsPanel
@@ -159,7 +163,6 @@ class MainWindow(QMainWindow):
         self._pair_history: list[tuple[Path, Path]] = []
         self._default_window_state: QByteArray | None = None
         self._build_menu()
-        self._build_toolbar()
         self._build_workspace()
         self._build_details_dock()
         self.setStatusBar(QStatusBar(self))
@@ -171,6 +174,7 @@ class MainWindow(QMainWindow):
         self._default_window_state = self.saveState()
         self._window_settings = QSettings("VISOR", "VISOR")
         self._restore_window_settings()
+        self._update_learned_install_visibility()
         self.show()
         self.statusBar().showMessage("Ready — add a reference and target image to begin.")
         self._apply_theme()
@@ -287,20 +291,25 @@ class MainWindow(QMainWindow):
         outer.setSpacing(18)
 
         header = QHBoxLayout()
-        brand = QVBoxLayout()
-        eyebrow = QLabel("VISUAL OBJECT REGISTRATION & ANALYSIS")
-        eyebrow.setObjectName("eyebrow")
-        heading = QLabel("Image workspace")
-        heading.setObjectName("pageTitle")
-        subheading = QLabel("Load a reference and a target image to prepare an analysis.")
-        subheading.setObjectName("mutedText")
-        brand.addWidget(eyebrow)
-        brand.addWidget(heading)
-        brand.addWidget(subheading)
-        header.addLayout(brand)
         header.addStretch(1)
         self.engine_selector = QComboBox()
         self.engine_selector.addItems(["SIFT", "ORB"])
+        self.run_button = QPushButton("Run analysis")
+        self.run_button.setObjectName("primaryButton")
+        self.run_button.setEnabled(False)
+        self.run_button.clicked.connect(self._start_analysis)
+        self.compare_button = QPushButton("Compare SIFT / ORB")
+        self.compare_button.setObjectName("secondaryButton")
+        self.compare_button.setEnabled(False)
+        self.compare_button.clicked.connect(self._start_comparison)
+        self.benchmark_button = QPushButton("Benchmark")
+        self.benchmark_button.setObjectName("secondaryButton")
+        self.benchmark_button.setEnabled(False)
+        self.benchmark_button.clicked.connect(self._start_benchmark)
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.setObjectName("secondaryButton")
+        self.cancel_button.setEnabled(False)
+        self.cancel_button.clicked.connect(self._cancel_running)
         learned_available = is_learned_available()
         if learned_available:
             if is_xfeat_available():
@@ -324,30 +333,24 @@ class MainWindow(QMainWindow):
                 self.engine_selector.model().item(i).setEnabled(False)  # type: ignore[union-attr]
         self.engine_selector.setToolTip("Feature extraction and descriptor matching engine")
         self.engine_selector.currentIndexChanged.connect(self._engine_changed)
+        self.install_learned_button = QPushButton("Install learned engines")
+        self.install_learned_button.setObjectName("secondaryButton")
+        self.install_learned_button.clicked.connect(self._install_learned_engines)
+        self.install_learned_button.setVisible(False)
         header.addWidget(self.engine_selector, 0, Qt.AlignmentFlag.AlignTop)
-        self.run_button = QPushButton("Run analysis")
-        self.run_button.setObjectName("primaryButton")
-        self.run_button.setEnabled(False)
-        self.run_button.clicked.connect(self._start_analysis)
+        header.addWidget(self.install_learned_button, 0, Qt.AlignmentFlag.AlignTop)
         header.addWidget(self.run_button, 0, Qt.AlignmentFlag.AlignTop)
-        self.compare_button = QPushButton("Compare SIFT / ORB")
-        self.compare_button.setObjectName("secondaryButton")
-        self.compare_button.setEnabled(False)
-        self.compare_button.clicked.connect(self._start_comparison)
         header.addWidget(self.compare_button, 0, Qt.AlignmentFlag.AlignTop)
-        self.benchmark_button = QPushButton("Benchmark")
-        self.benchmark_button.setObjectName("secondaryButton")
-        self.benchmark_button.setEnabled(False)
-        self.benchmark_button.clicked.connect(self._start_benchmark)
         header.addWidget(self.benchmark_button, 0, Qt.AlignmentFlag.AlignTop)
-        self.cancel_button = QPushButton("Cancel")
-        self.cancel_button.setObjectName("secondaryButton")
-        self.cancel_button.setEnabled(False)
-        self.cancel_button.clicked.connect(self._cancel_running)
         header.addWidget(self.cancel_button, 0, Qt.AlignmentFlag.AlignTop)
-        version = QLabel("CLASSICAL FEATURES  ·  SIFT / ORB")
-        version.setObjectName("badge")
-        header.addWidget(version, 0, Qt.AlignmentFlag.AlignTop)
+        self.fit_view_button = QPushButton("Fit View")
+        self.fit_view_button.setObjectName("secondaryButton")
+        self.fit_view_button.clicked.connect(self._fit_images)
+        header.addWidget(self.fit_view_button, 0, Qt.AlignmentFlag.AlignTop)
+        self.export_button = QPushButton("Export")
+        self.export_button.setObjectName("secondaryButton")
+        self.export_button.clicked.connect(self._export_visualization)
+        header.addWidget(self.export_button, 0, Qt.AlignmentFlag.AlignTop)
         outer.addLayout(header)
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
@@ -356,32 +359,49 @@ class MainWindow(QMainWindow):
         input_panel.setObjectName("inputPanel")
         input_layout = QVBoxLayout(input_panel)
         input_layout.setContentsMargins(18, 18, 18, 18)
-        input_layout.setSpacing(14)
-        panel_title = QLabel("Image inputs")
-        panel_title.setObjectName("sectionTitle")
-        input_hint = QLabel("Drop a local image into either area, or browse to select it.")
-        input_hint.setObjectName("mutedText")
-        input_hint.setWordWrap(True)
+        input_layout.setSpacing(10)
         self.reference_input = ImageDropWidget("Reference image")
         self.target_input = ImageDropWidget("Target image")
         self.reference_input.image_changed.connect(self._on_image_changed)
         self.target_input.image_changed.connect(self._on_image_changed)
-        input_layout.addWidget(panel_title)
-        input_layout.addWidget(input_hint)
-        input_layout.addWidget(self.reference_input, 1)
-        input_layout.addWidget(self.target_input, 1)
+
+        image_row = QWidget()
+        image_row_layout = QHBoxLayout(image_row)
+        image_row_layout.setContentsMargins(0, 0, 0, 0)
+        image_row_layout.setSpacing(10)
+        self.reference_input.setMinimumWidth(220)
+        self.target_input.setMinimumWidth(220)
+        self.reference_input.setMinimumHeight(170)
+        self.target_input.setMinimumHeight(170)
+        image_row_layout.addWidget(self.reference_input, 1)
+        image_row_layout.addWidget(self.target_input, 1)
+        image_row_layout.setStretch(0, 1)
+        image_row_layout.setStretch(1, 1)
+        image_row.setMinimumHeight(190)
+        image_row.setMaximumHeight(210)
+        input_layout.addWidget(image_row)
 
         pair_panel = QWidget()
+        self.recent_pairs_panel = pair_panel
         pair_panel.setObjectName("pairHistoryPanel")
+        pair_panel.setMinimumHeight(70)
+        pair_panel.setMaximumHeight(170)
         pair_layout = QVBoxLayout(pair_panel)
-        pair_layout.setContentsMargins(0, 8, 0, 0)
-        pair_layout.setSpacing(6)
+        pair_layout.setContentsMargins(0, 6, 0, 0)
+        pair_layout.setSpacing(4)
         pair_header = QHBoxLayout()
         pair_title = QLabel("Recent pairs")
         pair_title.setObjectName("mutedText")
+        self.recent_pairs_toggle = QPushButton("▾")
+        self.recent_pairs_toggle.setCheckable(True)
+        self.recent_pairs_toggle.setChecked(False)
+        self.recent_pairs_toggle.setFixedSize(20, 20)
+        self.recent_pairs_toggle.setToolTip("Show or hide recent pairs")
+        self.recent_pairs_toggle.toggled.connect(self._toggle_recent_pairs)
+        pair_header.addWidget(self.recent_pairs_toggle)
         pair_header.addWidget(pair_title)
         pair_header.addStretch(1)
-        self.add_pair_button = QPushButton("Add current pair")
+        self.add_pair_button = QPushButton("+ pair")
         self.add_pair_button.clicked.connect(self._add_current_pair_to_history)
         self.clear_pair_button = QPushButton("Clear")
         self.clear_pair_button.clicked.connect(self._clear_pair_history)
@@ -389,10 +409,12 @@ class MainWindow(QMainWindow):
         pair_header.addWidget(self.clear_pair_button)
         pair_layout.addLayout(pair_header)
         self.pair_list = QListWidget()
-        self.pair_list.setMinimumHeight(110)
+        self.pair_list.setMinimumHeight(70)
+        self.pair_list.setMaximumHeight(130)
         self.pair_list.setToolTip("Select a saved image pair to reload it for inspection")
         self.pair_list.itemDoubleClicked.connect(self._load_selected_pair)
         pair_layout.addWidget(self.pair_list)
+        pair_panel.setVisible(False)
         input_layout.addWidget(pair_panel)
 
         overlay_controls = QWidget()
@@ -422,36 +444,37 @@ class MainWindow(QMainWindow):
         overlay_layout.addWidget(self.feature_thickness_value)
         input_layout.addWidget(overlay_controls)
 
-        welcome = QWidget()
-        welcome.setObjectName("welcomePanel")
-        welcome_layout = QVBoxLayout(welcome)
-        welcome_layout.setContentsMargins(28, 28, 28, 28)
-        welcome_layout.addStretch(1)
-        canvas_mark = QLabel("VISOR")
-        canvas_mark.setObjectName("canvasMark")
-        canvas_mark.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        welcome_layout.addWidget(canvas_mark)
-        welcome_title = QLabel("Planar feature analysis")
-        welcome_title.setObjectName("welcomeTitle")
-        welcome_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        welcome_layout.addWidget(welcome_title)
-        welcome_body = QLabel(
-            "Add two images to prepare a comparison. VISOR will use local features and, when supported by the image pair, estimate a planar mapping."
-        )
-        welcome_body.setObjectName("mutedText")
-        welcome_body.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        welcome_body.setWordWrap(True)
-        welcome_body.setMaximumWidth(440)
-        welcome_layout.addWidget(welcome_body, 0, Qt.AlignmentFlag.AlignHCenter)
-        assumption = QLabel("Homography estimates apply to planar scenes; they do not recover general 3D pose.")
-        assumption.setObjectName("assumption")
-        assumption.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        assumption.setWordWrap(True)
-        welcome_layout.addWidget(assumption, 0, Qt.AlignmentFlag.AlignHCenter)
-        welcome_layout.addStretch(1)
+        self.engine_console = QPlainTextEdit()
+        self.engine_console.setObjectName("engineConsole")
+        self.engine_console.setReadOnly(True)
+        self.engine_console.setMaximumBlockCount(200)
+        self.engine_console.setPlaceholderText("Engine console ready. Background activity will appear here.")
+        self.engine_console.setMinimumHeight(140)
+        engine_console_box = QWidget()
+        engine_console_layout = QVBoxLayout(engine_console_box)
+        engine_console_layout.setContentsMargins(0, 8, 0, 0)
+        engine_console_title = QLabel("Engine console")
+        engine_console_title.setObjectName("sectionTitle")
+        engine_console_layout.addWidget(engine_console_title)
+        engine_console_layout.addWidget(self.engine_console)
+        input_layout.addWidget(engine_console_box)
+        self.log_engine_event("INFO", "Engine console ready.")
+
+        self.overview_panel = QWidget()
+        self.overview_panel.setObjectName("welcomePanel")
+        overview_layout = QVBoxLayout(self.overview_panel)
+        overview_layout.setContentsMargins(18, 18, 18, 18)
+        overview_layout.setSpacing(10)
+        self.overview_summary = QLabel()
+        self.overview_summary.setObjectName("mutedText")
+        self.overview_summary.setWordWrap(True)
+        self.overview_summary.setAlignment(Qt.AlignmentFlag.AlignTop)
+        overview_layout.addWidget(self.overview_summary)
+        overview_layout.addStretch(1)
+        self._update_overview_summary()
 
         self.result_tabs = QTabWidget()
-        self.result_tabs.addTab(welcome, "Overview")
+        self.result_tabs.addTab(self.overview_panel, "Overview")
         self.matches_view = self._image_view("Run an analysis to inspect feature correspondences.")
         self.localization_view = self._image_view("A projected reference outline appears when a valid planar mapping is found.")
         self.warped_view = self._image_view("Rectified view is available after a valid homography.")
@@ -463,6 +486,22 @@ class MainWindow(QMainWindow):
         splitter.setSizes([390, 770])
         outer.addWidget(splitter, 1)
         self.setCentralWidget(root)
+
+    def _toggle_recent_pairs(self, checked: bool) -> None:
+        if hasattr(self, "recent_pairs_panel"):
+            self.recent_pairs_panel.setVisible(checked)
+        self.recent_pairs_toggle.setText("▾" if checked else "▸")
+
+    def log_engine_event(self, level: str, message: str) -> None:
+        text = self.engine_console.toPlainText().strip()
+        if text:
+            body = f"{text}\n[{level.upper()}] {message}"
+        else:
+            body = f"[{level.upper()}] {message}"
+        self.engine_console.setPlainText(body)
+        cursor = self.engine_console.textCursor()
+        cursor.movePosition(QTextCursor.MoveOperation.End)
+        self.engine_console.setTextCursor(cursor)
 
     def _image_view(self, message: str) -> ImageCanvas:
         view = ImageCanvas(message)
@@ -637,6 +676,7 @@ class MainWindow(QMainWindow):
         self.benchmark_button.setEnabled(False)
         self.cancel_button.setEnabled(True)
         self.statusBar().showMessage(f"Running {engine} feature analysis…")
+        self.log_engine_event("INFO", f"Running {engine} feature analysis on {reference.name} ↔ {target.name}.")
         self._cancel_event = Event()
         self._worker = AnalysisWorker(reference, target, engine, settings, sift, orb, self._cancel_event)
         self._worker.completed.connect(self._show_result)
@@ -656,6 +696,7 @@ class MainWindow(QMainWindow):
         self.benchmark_button.setEnabled(False)
         self.cancel_button.setEnabled(True)
         self.statusBar().showMessage("Comparing SIFT and ORB on the same image pair…")
+        self.log_engine_event("INFO", f"Comparing classical SIFT and ORB on {reference.name} ↔ {target.name}.")
         self._cancel_event = Event()
         self._worker = ComparisonWorker(reference, target, settings, sift, orb, self._cancel_event)
         self._worker.completed.connect(self._show_comparison)
@@ -715,6 +756,7 @@ class MainWindow(QMainWindow):
 
     def _show_error(self, message: str) -> None:
         self.statusBar().showMessage(f"Analysis failed: {message}")
+        self.log_engine_event("ERROR", message)
         if hasattr(self, "details_panel"):
             self.details_panel.clear()
             self.details_panel.set_mode("tree")
@@ -726,6 +768,7 @@ class MainWindow(QMainWindow):
 
     def _show_cancelled(self) -> None:
         self.statusBar().showMessage("Analysis cancelled at a safe processing boundary.")
+        self.log_engine_event("INFO", "Analysis cancelled at a safe processing boundary.")
 
     def _cancel_running(self) -> None:
         if self._cancel_event is not None:
@@ -733,9 +776,31 @@ class MainWindow(QMainWindow):
             self.cancel_button.setEnabled(False)
             self.statusBar().showMessage("Cancellation requested; waiting for the active OpenCV operation to finish…")
 
+    def _update_overview_summary(self) -> None:
+        if not hasattr(self, "overview_summary"):
+            return
+        reference = self._paths.get("Reference image")
+        target = self._paths.get("Target image")
+        engine = self.engine_selector.currentText() if hasattr(self, "engine_selector") else "SIFT"
+        summary_lines = [
+            "<b>Session summary</b>",
+            f"Reference: {reference.name if reference else 'Not selected'}",
+            f"Target: {target.name if target else 'Not selected'}",
+            f"Selected engine: {engine}",
+            "Quick actions: load a reference and target image, run the analysis, then export or fit the view when needed.",
+        ]
+        if self._latest_result is not None:
+            result = self._latest_result
+            summary_lines.append(
+                f"Last run: {result.engine} | {len(result.reference_features.keypoints):,} / {len(result.target_features.keypoints):,} keypoints | "
+                f"{result.match_set.good_count:,} good matches | {result.geometry.inlier_count:,} inliers"
+            )
+        self.overview_summary.setText("<br>".join(summary_lines))
+
     def _show_result(self, result: AnalysisResult) -> None:
         self._latest_result = result
         self._latest_comparison = None
+        self._update_overview_summary()
         self._result_arrays = {
             self.matches_view: result.matches_image,
             self.localization_view: result.localization_image,
@@ -753,10 +818,12 @@ class MainWindow(QMainWindow):
         target = result.target_features
         g = result.geometry
         p = result.performance
-        self.statusBar().showMessage(
+        summary = (
             f"{result.engine} complete — {len(ref.keypoints):,}/{len(target.keypoints):,} keypoints, "
             f"{result.match_set.good_count:,} good matches, {g.inlier_count:,} inliers · {p.total_ms:.0f} ms"
         )
+        self.statusBar().showMessage(summary)
+        self.log_engine_event("OK", summary)
 
     def _show_comparison(self, comparison: ComparisonResult) -> None:
         self._show_result(comparison.orb)
@@ -764,10 +831,12 @@ class MainWindow(QMainWindow):
         self.details_tabs.setCurrentIndex(0)
         self._latest_comparison = comparison
         sift, orb = comparison.sift, comparison.orb
-        self.statusBar().showMessage(
+        summary = (
             f"Comparison complete — SIFT {sift.geometry.inlier_count} inliers/{sift.performance.total_ms:.0f} ms; "
             f"ORB {orb.geometry.inlier_count} inliers/{orb.performance.total_ms:.0f} ms"
         )
+        self.statusBar().showMessage(summary)
+        self.log_engine_event("OK", summary)
 
     def _start_benchmark(self) -> None:
         reference = self._paths.get("Reference image")
@@ -780,6 +849,7 @@ class MainWindow(QMainWindow):
         self.benchmark_button.setEnabled(False)
         self.cancel_button.setEnabled(True)
         self.statusBar().showMessage("Benchmarking SIFT and ORB across controlled image transformations…")
+        self.log_engine_event("INFO", f"Benchmarking image transformations from {reference.name}.")
         self._cancel_event = Event()
         self._worker = BenchmarkWorker(reference, settings, sift, orb, self._cancel_event)
         self._worker.completed.connect(self._show_benchmark)
@@ -852,6 +922,80 @@ class MainWindow(QMainWindow):
         self._result_arrays[self.localization_view] = result.localization_image
         self._refresh_result_views()
 
+    @staticmethod
+    def _find_repo_root() -> Path | None:
+        search_roots = [Path.cwd()]
+        current = Path.cwd()
+        while True:
+            search_roots.append(current)
+            if (current / "pyproject.toml").exists() and (current / "src" / "visor").exists():
+                return current
+            if current.parent == current:
+                break
+            current = current.parent
+        for path in search_roots:
+            if (path / "pyproject.toml").exists() and (path / "src" / "visor").exists():
+                return path
+        return None
+
+    def _update_learned_install_visibility(self) -> None:
+        if not hasattr(self, "install_learned_button"):
+            return
+        missing = not is_lightglue_available() or not is_xfeat_available()
+        if not missing:
+            self.install_learned_button.setVisible(False)
+            return
+        self.install_learned_button.setVisible(True)
+
+    def _install_learned_engines(self) -> None:
+        repo_root = self._find_repo_root()
+        if repo_root is None:
+            QMessageBox.critical(self, "Install learned engines", "Could not locate the VISOR project root.")
+            return
+        venv_python = repo_root / ".venv" / "Scripts" / "python.exe"
+        if not venv_python.exists():
+            venv_python = None
+            py_launcher = shutil.which("py")
+            if py_launcher is not None:
+                try:
+                    subprocess.run([py_launcher, "-3", "-m", "venv", str(repo_root / ".venv")], check=True, cwd=str(repo_root))
+                    venv_python = repo_root / ".venv" / "Scripts" / "python.exe"
+                except (FileNotFoundError, subprocess.CalledProcessError):
+                    venv_python = None
+            if venv_python is None:
+                python_exe = shutil.which("python")
+                if python_exe is not None:
+                    try:
+                        subprocess.run([python_exe, "-m", "venv", str(repo_root / ".venv")], check=True, cwd=str(repo_root))
+                        venv_python = repo_root / ".venv" / "Scripts" / "python.exe"
+                    except (FileNotFoundError, subprocess.CalledProcessError):
+                        venv_python = None
+        if venv_python is None or not venv_python.exists():
+            QMessageBox.critical(self, "Install learned engines", "Could not create the local Python environment required for learned engines.")
+            return
+
+        install_cmd = [
+            str(venv_python),
+            "-m", "pip", "install",
+            "--upgrade", "pip", "setuptools", "wheel",
+            "git+https://github.com/cvg/LightGlue.git",
+            "xfeat",
+        ]
+        try:
+            subprocess.run(install_cmd, cwd=str(repo_root), check=True)
+        except subprocess.CalledProcessError:
+            QMessageBox.critical(self, "Install learned engines", "The learned-engine install failed. Please retry or install them manually in the project venv.")
+            return
+
+        self.statusBar().showMessage("Learned engines installed. Restarting the app with the project environment…")
+        self.install_learned_button.setEnabled(False)
+        if getattr(sys, "frozen", False):
+            subprocess.Popen([str(venv_python), "-m", "visor"], cwd=str(repo_root), creationflags=subprocess.CREATE_NEW_CONSOLE if hasattr(subprocess, "CREATE_NEW_CONSOLE") else 0)
+            self.close()
+            return
+        self._update_learned_install_visibility()
+        self.statusBar().showMessage("Learned engines are ready. Restart the app to use XFeat, SuperPoint+LightGlue, and ALIKED+LightGlue.")
+
     def _fit_images(self) -> None:
         for view in (self.matches_view, self.localization_view, self.warped_view):
             view.fit_image()
@@ -909,6 +1053,7 @@ class MainWindow(QMainWindow):
             self._paths.pop(role, None)
             self._clear_result_views()
             self.statusBar().showMessage(f"Unable to load {role.lower()} image.")
+        self._update_overview_summary()
         if hasattr(self, "run_button"):
             ready = "Reference image" in self._paths and "Target image" in self._paths and self._worker is None
             self.run_button.setEnabled(ready)
@@ -1095,5 +1240,13 @@ class MainWindow(QMainWindow):
             QToolBar QToolButton:hover { background: #293240; border-color: #3c4c61; }
             QToolBar QToolButton:pressed { background: #1e2a38; }
             QSplitter::handle { background: #11151b; width: 10px; }
+            QPlainTextEdit#engineConsole {
+                background: #10161d;
+                color: #dfe8f6;
+                border: 1px solid #303947;
+                border-radius: 6px;
+                font-family: Consolas, "SFMono-Regular", monospace;
+                font-size: 11px;
+            }
             """
         )
