@@ -25,7 +25,7 @@ ScenarioName = Literal[
 @dataclass(frozen=True)
 class BenchmarkRow:
     engine: EngineName
-    scenario: ScenarioName
+    scenario: str  # Classic nine use ScenarioName; sweeps add free-form names.
     keypoints_reference: int
     keypoints_target: int
     good_matches: int
