@@ -13,6 +13,7 @@ import numpy as np
 
 from visor.engines import ORBConfiguration, ORBFeatureEngine, SIFTConfiguration, SIFTFeatureEngine
 from visor.geometry import estimate_homography
+from visor.geometry_decompose import SimilarityEstimate, decompose_homography_estimate
 from visor.geometry_robust import RobustMethod, estimate_with_robust_method
 from visor.learned_engines import (
     ALIKEDConfiguration,
@@ -44,6 +45,16 @@ class AnalysisCancelled(Exception):
 def _check_cancel(cancel_event: Event | None) -> None:
     if cancel_event is not None and cancel_event.is_set():
         raise AnalysisCancelled("Analysis cancelled.")
+
+
+def similarity_of(result_geometry) -> SimilarityEstimate | None:
+    """Decompose a valid homography into labeled planar estimates."""
+    if not result_geometry.valid or result_geometry.homography is None:
+        return None
+    try:
+        return decompose_homography_estimate(result_geometry.homography)
+    except (ValueError, ArithmeticError):
+        return None
 
 
 def _read_image(path: Path) -> ByteArray:
@@ -169,6 +180,7 @@ def analyze_images(
         asdict(engine.config),
         reference_image,
         target_image,
+        similarity_of(geometry),
     )
 
 
@@ -259,6 +271,7 @@ def _analyze_learned(
         ref_features, tgt_features, match_set, geometry, performance,
         matches_image, localization_image, warped_image, settings, engine_config,
         reference_image, target_image,
+        similarity_of(geometry),
     )
 
 

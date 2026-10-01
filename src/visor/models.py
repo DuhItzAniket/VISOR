@@ -10,6 +10,8 @@ from typing import Literal
 import numpy as np
 from numpy.typing import NDArray
 
+from visor.geometry_decompose import SimilarityEstimate
+
 EngineName = Literal[
     "SIFT", "ORB", "SuperPoint+LightGlue", "XFeat", "ALIKED+LightGlue",
     "DISK+LightGlue", "SIFT+LightGlue",
@@ -138,6 +140,7 @@ class AnalysisResult:
     engine_configuration: dict[str, object]
     reference_image: NDArray[np.uint8]
     target_image: NDArray[np.uint8]
+    similarity: SimilarityEstimate | None = None
 
 
 @dataclass(frozen=True)

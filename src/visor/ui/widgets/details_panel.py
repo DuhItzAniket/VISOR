@@ -286,7 +286,7 @@ class AnalysisDetailsPanel(QWidget):
                     ("Memory", f"{target.descriptor_info.bytes_used} bytes"),
                 ])
             ]
-        else:
+        elif engine == "ORB":
             groups = [
                 ("ORB CONFIGURATION", [
                     ("Max features", str(config.get("max_features", 1500))),
@@ -308,6 +308,23 @@ class AnalysisDetailsPanel(QWidget):
                 ]),
                 ("DESCRIPTOR", [
                     ("Length", f"{ref.descriptor_info.dimensions} bytes / {ref.descriptor_info.dimensions * 8} bits"),
+                    ("Type", ref.descriptor_info.dtype),
+                    ("Distance", ref.descriptor_info.distance),
+                    ("Memory", f"{target.descriptor_info.bytes_used} bytes"),
+                ])
+            ]
+        else:
+            groups = [
+                ("CONFIGURATION", [(str(key), str(value)) for key, value in sorted(config.items(), key=lambda item: str(item[0]))] or [("Preset", "defaults")]),
+                ("KEYPOINT STATISTICS", [
+                    ("Total", str(len(target.keypoints))),
+                    ("Mean size", f"{mean_size:.2f} px"),
+                    ("Mean response", f"{mean_response:.6f}"),
+                    ("Mean angle", f"{mean_angle:.1f}°"),
+                    ("Octave distribution", octaves),
+                ]),
+                ("DESCRIPTOR", [
+                    ("Dimensions", str(ref.descriptor_info.dimensions)),
                     ("Type", ref.descriptor_info.dtype),
                     ("Distance", ref.descriptor_info.distance),
                     ("Memory", f"{target.descriptor_info.bytes_used} bytes"),
@@ -346,13 +363,27 @@ class AnalysisDetailsPanel(QWidget):
                 ("Bottom-left", "unavailable"),
             ]
             
+        similarity = result.similarity
+        if similarity is not None:
+            estimates: list[tuple[str, str]] = [
+                ("Rotation", f"{similarity.rotation_deg:.1f}° (estimate)"),
+                ("Scale", f"{similarity.scale:.3f} (estimate)"),
+                ("Scale X / Y", f"{similarity.scale_x:.3f} / {similarity.scale_y:.3f}"),
+                ("Translation", f"({similarity.translate_x:.1f}, {similarity.translate_y:.1f}) px (estimate)"),
+                ("Near-similarity", "yes" if similarity.is_similarity else "no"),
+                ("Scope", "planar-scene assumption; image-space, not 3D pose"),
+            ]
+        else:
+            estimates = [("Estimates", "unavailable — geometry invalid")]
+
         groups = [
             ("STATUS", [
                 ("Valid", "yes" if g.valid else "no"),
                 ("Message", g.message),
             ]),
             ("INLIERS", inliers),
-            ("LOCALIZATION", loc)
+            ("LOCALIZATION", loc),
+            ("SIMILARITY ESTIMATES", estimates),
         ]
         return f"Geometry ({result.engine})", groups
 

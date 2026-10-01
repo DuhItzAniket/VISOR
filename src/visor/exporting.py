@@ -14,7 +14,13 @@ import numpy as np
 
 from visor.benchmark import BenchmarkReport
 from visor.engines import ORBConfiguration, SIFTConfiguration
-from visor.models import AnalysisResult, AnalysisSettings, ComparisonResult, EngineName, VALID_ENGINE_NAMES
+from visor.models import (
+    VALID_ENGINE_NAMES,
+    AnalysisResult,
+    AnalysisSettings,
+    ComparisonResult,
+    EngineName,
+)
 
 APP_VERSION = "0.1.0"
 PROJECT_FORMAT_VERSION = 1
@@ -67,6 +73,13 @@ def analysis_document(result: AnalysisResult) -> dict[str, Any]:
             "projected_corners_px": geometry.projected_corners,
             "center_px": geometry.center,
             "homography": None if geometry.homography is None else geometry.homography.tolist(),
+            "similarity_estimates": None if result.similarity is None else {
+                "rotation_deg": result.similarity.rotation_deg,
+                "scale": result.similarity.scale,
+                "translate_px": [result.similarity.translate_x, result.similarity.translate_y],
+                "is_similarity": result.similarity.is_similarity,
+                "scope": "planar-scene image-space estimate, not 3D pose",
+            },
         },
         "performance_ms": asdict(result.performance),
     }
