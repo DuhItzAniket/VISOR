@@ -28,10 +28,10 @@ Fresh project verification ran successfully on the active workspace:
 
 ## Current focus
 
-1. Extend the multi-pair history/workflow and keep stale-result refresh semantics robust.
-2. Expand the sample-data and GPU-first tuning strategy for the RTX 4050 workflow.
-3. Document the exact handoff and reproduction steps for the next AI or IDE instance.
-4. Keep the Git main-branch workflow clean and push verified updates.
+1. App polish and workflow cleanup are in place: the compact image workflow, overlay controls, and engine console remain aligned with the verified app state.
+2. Final engine tuning is now documented as a repo-local venv workflow: the app uses a local `.venv` for learned engines instead of forcing TorchScript-heavy modules into the packaged EXE.
+3. Launch and handoff documentation is now tracked in the repo checklist so the next IDE or user instance can reproduce the environment and build steps exactly.
+4. The Git main-branch workflow remains clean and pushed after verification.
 
 ## Known limitations
 

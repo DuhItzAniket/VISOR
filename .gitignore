@@ -9,6 +9,10 @@ venv/
 build/
 dist/
 *.spec
+Sample/Dataset/
+rebuild_*.txt
+rebuild_*.log
+*.visor
 .idea/
 .vscode/
 *.log

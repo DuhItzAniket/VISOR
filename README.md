@@ -26,6 +26,29 @@
 
 See [Implementation Status](docs/IMPLEMENTATION_STATUS.md) and [Project Plan](docs/PROJECT_PLAN.md).
 
+## Quick launch checklist
+
+Use this order for a clean first-time setup:
+
+1. Create the project environment:
+   ```powershell
+   py -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+   python -m pip install -U pip setuptools wheel
+   python -m pip install -e .
+   ```
+2. Run the source app:
+   ```powershell
+   python -m visor
+   ```
+3. If the learned-engine selector shows missing packages, click **Install learned engines** in the toolbar. The app creates or uses the repo-local `.venv` and installs the required learning dependencies there.
+4. Restart the app after installation.
+5. For the Windows packaged build, run:
+   ```powershell
+   .\scripts\build_windows.ps1
+   ```
+6. Use the generated EXE in `dist\VISOR\VISOR.exe` as a launcher for the source environment workflow; do not expect the frozen EXE to handle TorchScript-heavy learned engines directly.
+
 ## Development setup
 
 Requires Python 3.10 or newer. Install dependencies and launch from the repository root:
