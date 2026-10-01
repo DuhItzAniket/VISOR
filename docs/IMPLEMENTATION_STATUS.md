@@ -2,7 +2,7 @@
 
 ## Current verified state
 
-The project is in a stable, verified Windows desktop-analysis state after the UI/build regression fix and learned-engine validation pass. The current codebase supports the classical SIFT/ORB path and the optional learned-engine path for SuperPoint+LightGlue, XFeat, and ALIKED+LightGlue when their dependencies are available.
+The project is in a stable, verified Windows desktop-analysis state after the classical-expansion pass. SIFT/ORB behavior is pinned by frozen regression goldens. The codebase supports the classical SIFT/ORB path, guarded AKAZE/BRISK entries, optional matching/robust-estimator variants, and the venv-only learned path for SuperPoint+LightGlue, XFeat, ALIKED+LightGlue, DISK+LightGlue, and SIFT+LightGlue when their dependencies are available.
 
 ## Completed
 
@@ -23,7 +23,7 @@ Fresh project verification ran successfully on the active workspace:
 
 - Python environment: workspace-selected `.venv`
 - Command: `pytest -q`
-- Result: 33 passed in 22.43s
+- Result: 92 passed in 29.79s
 - Exit code: 0
 
 ## Current focus
@@ -37,4 +37,5 @@ Fresh project verification ran successfully on the active workspace:
 
 - A full 5k–10k image-pair training dataset is not yet curated inside the repo; the sample folders are a starting point for larger-scale tuning.
 - Learned-engine quality depends on installed optional packages and the available GPU/runtime environment.
-- The project remains a planar-scene registration tool; it does not claim general 3D pose recovery.
+- AKAZE and BRISK stay disabled because the pinned opencv-contrib-python 5.0 wheel does not ship them; they activate automatically on a build that does.
+- The project remains a planar-scene registration tool; it does not claim general 3D pose recovery. Similarity values are image-space estimates.

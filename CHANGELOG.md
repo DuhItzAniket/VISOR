@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- Frozen SIFT/ORB regression goldens (`tests/test_classical_frozen.py`) so engine work can't silently shift classical numbers
+- Central engine registry with guarded AKAZE/BRISK entries that stay disabled on OpenCV builds without them
+- Optional matchers (cross-check, FLANN, symmetric ratio) and robust estimators (MAGSAC, LMEDS) behind frozen defaults
+- Planar similarity estimates (rotation/scale/translation) on every analysis result, details dock, and JSON export
+- Multi-pair batch runner with `manifest.csv`, batch CSV export, and desktop UI
+- Rotation/scale robustness sweeps beside the nine-scenario benchmark, with desktop UI
+- DISK+LightGlue and SIFT+LightGlue venv-only engines reusing the installed lightglue package
+- Planar reference tracking across video files with per-frame reporting
+- Tested camera calibration (synthetic intrinsics/pose recovery, chessboard folders) with a desktop action
+- Engine selector lists new engines with missing-dependency reasons; project files restore any engine by name
+
 ## v0.1.0 — 2026-09-23
 
 First release of VISOR — Visual Object Registration & Analysis.

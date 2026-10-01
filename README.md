@@ -4,8 +4,12 @@
 
 ## Features
 
-- **SIFT and ORB engines** — OpenCV implementations, no model training or weight downloads
-- **Learned engine support** — optional SuperPoint+LightGlue, XFeat, and ALIKED+LightGlue paths when the matching dependencies are installed
+- **SIFT and ORB engines** — OpenCV implementations, no model training or weight downloads; covered by frozen regression goldens so tuning work can't shift their numbers
+- **Guarded AKAZE / BRISK entries** — registered in the engine list but disabled with a reason on OpenCV builds that don't ship them (like the current 5.0 wheel)
+- **Learned engine support** — optional SuperPoint+LightGlue, XFeat, ALIKED+LightGlue, plus DISK+LightGlue and SIFT+LightGlue paths when the matching dependencies are installed
+- **Matching options** — default ratio test, plus opt-in cross-check, FLANN, and symmetric ratio matching
+- **Robust estimators** — RANSAC default with opt-in MAGSAC and LMEDS
+- **Planar similarity estimates** — rotation/scale/translation breakdown of every valid homography, labeled as image-space estimates under a planar assumption
 - **Drag-and-drop image input** — drop PNG, JPEG, BMP, TIFF, or WebP into either slot, or use the file picker
 - **Feature Matches view** — side-by-side match lines with inlier (green) / outlier (red-blue) coloring
 - **Localization view** — projected reference polygon and center point drawn on the target image
@@ -14,6 +18,10 @@
 - **Keypoint inspection** — click a point in the Localization view to read the nearest target keypoint's coordinates, size, angle, response, and octave
 - **SIFT vs ORB comparison** — runs both engines on the same pair and shows a side-by-side metrics table
 - **Benchmark Lab** — generates nine controlled transformations (baseline, rotation+scale, perspective, brightness, contrast, blur, noise, crop, resolution reduction) and measures both engines against known synthetic geometry
+- **Robustness sweep** — rotation (10–90°) and scale (0.5–1.5×) curves with the same corner-RMSE scoring
+- **Batch runs** — `Sample/manifest.example.csv` style manifests evaluated pair-by-pair with CSV export
+- **Video tracking** — follows the reference polygon across video frames with per-frame inlier reporting
+- **Camera calibration** — chessboard-folder calibration showing intrinsics, distortion, and RMS error for non-planar experiments
 - **Visualization toggles** — show/hide match lines, inliers, outliers, keypoints, and localization geometry without re-running analysis
 - **Export** — JSON analysis, CSV metrics, comparison CSV, benchmark CSV, and PNG/JPEG visualization
 - **Project save/load** — stores image paths and all parameters in a `.visor` file
@@ -126,7 +134,7 @@ PySide6 UI (main_window, image_canvas, image_drop, details_panel)
     └── exporting  (JSON, CSV, project save/load)
 ```
 
-Core vision modules have no Qt dependency. The UI consumes typed `AnalysisResult` / `ComparisonResult` / `BenchmarkReport` records.
+Core vision modules have no Qt dependency. The UI consumes typed `AnalysisResult` / `ComparisonResult` / `BenchmarkReport` / `BatchReport` / `TrackReport` records. Optional engines register in `engine_registry`; matching variants live in `matching_strategies`; robust estimators in `geometry_robust`; planar decomposition in `geometry_decompose`.
 
 See [Architecture](docs/ARCHITECTURE.md) for the full module map.
 
