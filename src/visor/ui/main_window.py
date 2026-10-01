@@ -43,6 +43,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from visor import engines_classical_extra as classical_extra
 from visor.benchmark import BenchmarkReport, run_benchmark
 from visor.engines import ORBConfiguration, SIFTConfiguration
 from visor.exporting import (
@@ -56,8 +57,17 @@ from visor.exporting import (
     load_project,
     save_project,
 )
-from visor.learned_engines import is_learned_available, is_lightglue_available, is_xfeat_available
-from visor.models import AnalysisResult, AnalysisSettings, ComparisonResult, EngineName
+from visor.geometry_robust import RobustMethod
+from visor.learned_engines import is_lightglue_available, is_xfeat_available
+from visor.learned_extra import is_disk_available
+from visor.matching_strategies import MatchingOptions
+from visor.models import (
+    VALID_ENGINE_NAMES,
+    AnalysisResult,
+    AnalysisSettings,
+    ComparisonResult,
+    EngineName,
+)
 from visor.pipeline import AnalysisCancelled, analyze, compare_engines
 from visor.ui.widgets.details_panel import AnalysisDetailsPanel
 from visor.ui.widgets.image_canvas import ImageCanvas
@@ -87,6 +97,8 @@ class AnalysisWorker(QThread):
         self, reference: Path, target: Path, engine: EngineName,
         settings: AnalysisSettings, sift: SIFTConfiguration, orb: ORBConfiguration,
         cancel_event: Event,
+        matching_options: MatchingOptions | None = None,
+        robust_method: RobustMethod = "RANSAC",
     ) -> None:
         super().__init__()
         self.reference = reference
@@ -96,10 +108,15 @@ class AnalysisWorker(QThread):
         self.sift = sift
         self.orb = orb
         self.cancel_event = cancel_event
+        self.matching_options = matching_options
+        self.robust_method = robust_method
 
     def run(self) -> None:
         try:
-            self.completed.emit(analyze(self.reference, self.target, self.engine, self.settings, self.sift, self.orb, self.cancel_event))
+            self.completed.emit(analyze(
+                self.reference, self.target, self.engine, self.settings, self.sift, self.orb,
+                self.cancel_event, None, None, self.matching_options, self.robust_method,
+            ))
         except AnalysisCancelled:
             self.cancelled.emit()
         except Exception as exc:  # noqa: BLE001 — keep worker failures on the UI thread
@@ -112,15 +129,22 @@ class ComparisonWorker(QThread):
     cancelled = Signal()
 
     def __init__(self, reference: Path, target: Path, settings: AnalysisSettings,
-                 sift: SIFTConfiguration, orb: ORBConfiguration, cancel_event: Event) -> None:
+                 sift: SIFTConfiguration, orb: ORBConfiguration, cancel_event: Event,
+                 matching_options: MatchingOptions | None = None,
+                 robust_method: RobustMethod = "RANSAC") -> None:
         super().__init__()
         self.reference, self.target = reference, target
         self.settings, self.sift, self.orb = settings, sift, orb
         self.cancel_event = cancel_event
+        self.matching_options = matching_options
+        self.robust_method = robust_method
 
     def run(self) -> None:
         try:
-            self.completed.emit(compare_engines(self.reference, self.target, self.settings, self.sift, self.orb, self.cancel_event))
+            self.completed.emit(compare_engines(
+                self.reference, self.target, self.settings, self.sift, self.orb,
+                self.cancel_event, self.matching_options, self.robust_method,
+            ))
         except AnalysisCancelled:
             self.cancelled.emit()
         except Exception as exc:  # noqa: BLE001 — keep worker failures on the UI thread
@@ -310,27 +334,22 @@ class MainWindow(QMainWindow):
         self.cancel_button.setObjectName("secondaryButton")
         self.cancel_button.setEnabled(False)
         self.cancel_button.clicked.connect(self._cancel_running)
-        learned_available = is_learned_available()
-        if learned_available:
-            if is_xfeat_available():
-                self.engine_selector.addItem("XFeat")
+        optional_entries: list[tuple[str, bool, str]] = [
+            ("XFeat", is_xfeat_available(), "install xfeat"),
+            ("SuperPoint+LightGlue", is_lightglue_available(), "install lightglue"),
+            ("ALIKED+LightGlue", is_lightglue_available(), "install lightglue"),
+            ("DISK+LightGlue", is_disk_available(), "install lightglue"),
+            ("SIFT+LightGlue", is_lightglue_available(), "install lightglue"),
+            ("AKAZE", classical_extra.is_akaze_available(), "needs an OpenCV build with AKAZE"),
+            ("BRISK", classical_extra.is_brisk_available(), "needs an OpenCV build with BRISK"),
+        ]
+        for name, available, hint in optional_entries:
+            if available:
+                self.engine_selector.addItem(name)
             else:
-                self.engine_selector.addItem("XFeat (install xfeat)")
-                self.engine_selector.model().item(2).setEnabled(False)  # type: ignore[union-attr]
-            if is_learned_available():
-                self.engine_selector.addItem("SuperPoint+LightGlue")
-                self.engine_selector.addItem("ALIKED+LightGlue")
-            else:
-                self.engine_selector.addItem("SuperPoint+LightGlue (install lightglue)")
-                self.engine_selector.addItem("ALIKED+LightGlue (install lightglue)")
-                for i in (3, 4):
-                    self.engine_selector.model().item(i).setEnabled(False)  # type: ignore[union-attr]
-        else:
-            self.engine_selector.addItem("XFeat (install xfeat)")
-            self.engine_selector.addItem("SuperPoint+LightGlue (install lightglue)")
-            self.engine_selector.addItem("ALIKED+LightGlue (install lightglue)")
-            for i in (2, 3, 4):
-                self.engine_selector.model().item(i).setEnabled(False)  # type: ignore[union-attr]
+                self.engine_selector.addItem(f"{name} ({hint})")
+                item = self.engine_selector.model().item(self.engine_selector.count() - 1)  # type: ignore[union-attr]
+                item.setEnabled(False)
         self.engine_selector.setToolTip("Feature extraction and descriptor matching engine")
         self.engine_selector.currentIndexChanged.connect(self._engine_changed)
         self.install_learned_button = QPushButton("Install learned engines")
@@ -459,6 +478,17 @@ class MainWindow(QMainWindow):
         engine_console_layout.addWidget(self.engine_console)
         input_layout.addWidget(engine_console_box)
         self.log_engine_event("INFO", "Engine console ready.")
+        extras = []
+        if classical_extra.is_akaze_available():
+            extras.append("AKAZE")
+        if classical_extra.is_brisk_available():
+            extras.append("BRISK")
+        if is_disk_available():
+            extras.append("DISK+LightGlue/SIFT+LightGlue")
+        if extras:
+            self.log_engine_event("INFO", f"Optional engines available: {', '.join(extras)}.")
+        else:
+            self.log_engine_event("INFO", "Classical SIFT/ORB active; AKAZE/BRISK not in this OpenCV build.")
 
         self.overview_panel = QWidget()
         self.overview_panel.setObjectName("welcomePanel")
@@ -557,6 +587,14 @@ class MainWindow(QMainWindow):
         common_form.addRow("Ratio threshold", self.ratio_control)
         common_form.addRow("RANSAC threshold (px)", self.ransac_control)
         common_form.addRow("Feature line thickness", self.match_line_thickness)
+        self.matcher_strategy = QComboBox()
+        self.matcher_strategy.addItems(["Default ratio test", "Cross-check", "FLANN", "Symmetric ratio"])
+        self.matcher_strategy.setToolTip("Optional matching strategy. Default reproduces the frozen SIFT/ORB path.")
+        self.robust_estimator = QComboBox()
+        self.robust_estimator.addItems(["RANSAC", "MAGSAC", "LMEDS"])
+        self.robust_estimator.setToolTip("Robust homography estimator. RANSAC is the frozen default.")
+        common_form.addRow("Matcher strategy", self.matcher_strategy)
+        common_form.addRow("Robust estimator", self.robust_estimator)
         layout.addWidget(common)
 
         self.engine_settings = QStackedWidget()
@@ -599,7 +637,8 @@ class MainWindow(QMainWindow):
 
     def _engine_changed(self, index: int) -> None:
         if hasattr(self, "engine_settings"):
-            self.engine_settings.setCurrentIndex(index)
+            name = self.engine_selector.itemText(index)
+            self.engine_settings.setCurrentIndex(0 if name == "SIFT" else 1 if name == "ORB" else self.engine_settings.currentIndex())
 
     def _sync_overlay_controls(self) -> None:
         if hasattr(self, "feature_thickness_slider"):
@@ -633,9 +672,13 @@ class MainWindow(QMainWindow):
         self.orb_score.setCurrentText("HARRIS")
         self.orb_patch.setValue(31)
         self.orb_fast.setValue(20)
+        self.matcher_strategy.setCurrentText("Default ratio test")
+        self.robust_estimator.setCurrentText("RANSAC")
         self.statusBar().showMessage("SIFT, ORB, matching, and geometry parameters restored to defaults.")
 
-    def _read_configurations(self) -> tuple[AnalysisSettings, SIFTConfiguration, ORBConfiguration]:
+    def _read_configurations(
+        self,
+    ) -> tuple[AnalysisSettings, SIFTConfiguration, ORBConfiguration, MatchingOptions, RobustMethod]:
         rainbow_checked = self.view_toggles.get("rainbow_feature_colors", QAction(self)).isChecked()
         if hasattr(self, "feature_color_button"):
             rainbow_checked = self.feature_color_button.isChecked() or rainbow_checked
@@ -658,7 +701,16 @@ class MainWindow(QMainWindow):
             self.orb_edge.value(), self.orb_first_level.value(), int(self.orb_wta.currentText()),
             self.orb_score.currentText(), self.orb_patch.value(), self.orb_fast.value(),
         )
-        return settings, sift, orb
+        strategy = self.matcher_strategy.currentText() if hasattr(self, "matcher_strategy") else "Default ratio test"
+        matching_options = MatchingOptions(
+            ratio_threshold=self.ratio_control.value(),
+            cross_check=strategy == "Cross-check",
+            symmetric_ratio=strategy == "Symmetric ratio",
+            use_flann=strategy == "FLANN",
+        )
+        robust_text = self.robust_estimator.currentText() if hasattr(self, "robust_estimator") else "RANSAC"
+        robust_method: RobustMethod = robust_text if robust_text in ("RANSAC", "MAGSAC", "LMEDS") else "RANSAC"
+        return settings, sift, orb, matching_options, robust_method
 
     def _start_analysis(self) -> None:
         reference = self._paths.get("Reference image")
@@ -666,11 +718,11 @@ class MainWindow(QMainWindow):
         if reference is None or target is None or self._worker is not None:
             return
         engine_text = self.engine_selector.currentText()
-        if engine_text not in ("SIFT", "ORB", "SuperPoint+LightGlue", "XFeat", "ALIKED+LightGlue"):
-            self.statusBar().showMessage("Selected engine is not available. Install the required optional dependencies to use learned engines.")
+        if engine_text not in VALID_ENGINE_NAMES:
+            self.statusBar().showMessage("Selected engine is not available. Install the required optional dependencies to use it.")
             return
         engine = cast(EngineName, engine_text)
-        settings, sift, orb = self._read_configurations()
+        settings, sift, orb, matching_options, robust_method = self._read_configurations()
         self.run_button.setEnabled(False)
         self.compare_button.setEnabled(False)
         self.benchmark_button.setEnabled(False)
@@ -678,7 +730,10 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(f"Running {engine} feature analysis…")
         self.log_engine_event("INFO", f"Running {engine} feature analysis on {reference.name} ↔ {target.name}.")
         self._cancel_event = Event()
-        self._worker = AnalysisWorker(reference, target, engine, settings, sift, orb, self._cancel_event)
+        self._worker = AnalysisWorker(
+            reference, target, engine, settings, sift, orb, self._cancel_event,
+            matching_options, robust_method,
+        )
         self._worker.completed.connect(self._show_result)
         self._worker.failed.connect(self._show_error)
         self._worker.cancelled.connect(self._show_cancelled)
@@ -690,7 +745,7 @@ class MainWindow(QMainWindow):
         target = self._paths.get("Target image")
         if reference is None or target is None or self._worker is not None:
             return
-        settings, sift, orb = self._read_configurations()
+        settings, sift, orb, matching_options, robust_method = self._read_configurations()
         self.run_button.setEnabled(False)
         self.compare_button.setEnabled(False)
         self.benchmark_button.setEnabled(False)
@@ -698,7 +753,10 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage("Comparing SIFT and ORB on the same image pair…")
         self.log_engine_event("INFO", f"Comparing classical SIFT and ORB on {reference.name} ↔ {target.name}.")
         self._cancel_event = Event()
-        self._worker = ComparisonWorker(reference, target, settings, sift, orb, self._cancel_event)
+        self._worker = ComparisonWorker(
+            reference, target, settings, sift, orb, self._cancel_event,
+            matching_options, robust_method,
+        )
         self._worker.completed.connect(self._show_comparison)
         self._worker.failed.connect(self._show_error)
         self._worker.cancelled.connect(self._show_cancelled)
@@ -843,7 +901,7 @@ class MainWindow(QMainWindow):
         if reference is None or self._worker is not None:
             self.statusBar().showMessage("Load a reference image before running the benchmark lab.")
             return
-        settings, sift, orb = self._read_configurations()
+        settings, sift, orb, _, _ = self._read_configurations()
         self.run_button.setEnabled(False)
         self.compare_button.setEnabled(False)
         self.benchmark_button.setEnabled(False)
@@ -1067,7 +1125,7 @@ class MainWindow(QMainWindow):
         filename, _ = QFileDialog.getSaveFileName(self, "Save VISOR project", "analysis.visor", "VISOR project (*.visor)")
         if not filename:
             return
-        settings, sift, orb = self._read_configurations()
+        settings, sift, orb, _, _ = self._read_configurations()
         session = ProjectSession(
             str(self._paths["Reference image"]), str(self._paths["Target image"]),
             cast(EngineName, self.engine_selector.currentText()), settings, sift, orb,
@@ -1088,7 +1146,8 @@ class MainWindow(QMainWindow):
         except (OSError, ValueError, KeyError, TypeError) as exc:
             QMessageBox.critical(self, "Could not open project", str(exc))
             return
-        self.engine_selector.setCurrentIndex(0 if session.engine == "SIFT" else 1)
+        engine_index = self.engine_selector.findText(session.engine)
+        self.engine_selector.setCurrentIndex(max(engine_index, 0))
         self.ratio_control.setValue(session.settings.ratio_threshold)
         self.ransac_control.setValue(session.settings.ransac_threshold)
         for name, action in self.view_toggles.items():
