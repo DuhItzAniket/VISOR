@@ -196,6 +196,32 @@ class SweepWorker(QThread):
             self.failed.emit(str(exc))
 
 
+class VideoWorker(QThread):
+    completed = Signal(object)
+    failed = Signal(str)
+    cancelled = Signal()
+
+    def __init__(self, reference: Path, video: Path, engine: EngineName,
+                 settings: AnalysisSettings, cancel_event: Event) -> None:
+        super().__init__()
+        self.reference, self.video = reference, video
+        self.engine, self.settings = engine, settings
+        self.cancel_event = cancel_event
+
+    def run(self) -> None:
+        try:
+            from visor.video import track_reference_in_video
+            self.completed.emit(track_reference_in_video(
+                self.reference, self.video, self.engine,
+                self.settings.ratio_threshold, self.settings.ransac_threshold,
+                cancel_event=self.cancel_event,
+            ))
+        except AnalysisCancelled:
+            self.cancelled.emit()
+        except Exception as exc:  # noqa: BLE001 — keep worker failures on the UI thread
+            self.failed.emit(str(exc))
+
+
 class BatchWorker(QThread):
     completed = Signal(object)
     failed = Signal(str)
@@ -328,6 +354,9 @@ class MainWindow(QMainWindow):
         batch_action = QAction("Run Batch from Manifest…", self)
         batch_action.triggered.connect(self._start_batch)
         analysis_menu.addAction(batch_action)
+        video_action = QAction("Track Reference in Video…", self)
+        video_action.triggered.connect(self._start_video_tracking)
+        analysis_menu.addAction(video_action)
 
         view_menu = self.menuBar().addMenu("&View")
         self.view_toggles = {}
@@ -1095,6 +1124,62 @@ class MainWindow(QMainWindow):
         save_button = QPushButton("Save batch CSV…")
         save_button.clicked.connect(lambda: self._export_batch_csv(report))
         layout.addWidget(save_button)
+        dialog.exec()
+
+    def _start_video_tracking(self) -> None:
+        reference = self._paths.get("Reference image")
+        if reference is None or self._worker is not None:
+            self.statusBar().showMessage("Load a reference image before tracking video.")
+            return
+        filename, _ = QFileDialog.getOpenFileName(
+            self, "Open video file", "", "Video files (*.avi *.mp4 *.mov *.mkv);;All files (*)",
+        )
+        if not filename:
+            return
+        engine_text = self.engine_selector.currentText()
+        if engine_text not in ("SIFT", "ORB"):
+            self.statusBar().showMessage("Video tracking supports the SIFT and ORB engines.")
+            return
+        settings, _, _, _, _ = self._read_configurations()
+        self.run_button.setEnabled(False)
+        self.compare_button.setEnabled(False)
+        self.benchmark_button.setEnabled(False)
+        self.cancel_button.setEnabled(True)
+        self.statusBar().showMessage(f"Tracking reference in {Path(filename).name}…")
+        self.log_engine_event("INFO", f"Tracking reference {reference.name} in {Path(filename).name}.")
+        self._cancel_event = Event()
+        self._worker = VideoWorker(
+            reference, Path(filename), cast(EngineName, engine_text), settings, self._cancel_event,
+        )
+        self._worker.completed.connect(self._show_track_report)
+        self._worker.failed.connect(self._show_error)
+        self._worker.cancelled.connect(self._show_cancelled)
+        self._worker.finished.connect(self._worker_finished)
+        self._worker.start()
+
+    def _show_track_report(self, report) -> None:  # type: ignore[no-untyped-def]
+        dialog = QDialog(self)
+        dialog.setWindowTitle("VISOR Video Tracking")
+        dialog.resize(800, 440)
+        layout = QVBoxLayout(dialog)
+        valid = sum(1 for frame in report.frames if frame.geometry_valid)
+        note = QLabel(
+            f"{report.engine} tracked {report.reference_path.name} in {report.video_path.name}: "
+            f"{valid}/{len(report.frames)} frames localized in {report.duration_ms:.0f} ms."
+        )
+        note.setWordWrap(True)
+        layout.addWidget(note)
+        headers = ["Frame", "Good", "Inliers", "Inlier %", "Localized", "Center px"]
+        table = QTableWidget(len(report.frames), len(headers))
+        table.setHorizontalHeaderLabels(headers)
+        for row_index, frame in enumerate(report.frames):
+            values = [str(frame.frame_index), str(frame.good_matches), str(frame.inliers),
+                      f"{frame.inlier_ratio:.1%}", "Yes" if frame.geometry_valid else "No",
+                      "—" if frame.center is None else f"({frame.center[0]:.0f}, {frame.center[1]:.0f})"]
+            for column, value in enumerate(values):
+                table.setItem(row_index, column, QTableWidgetItem(value))
+        table.resizeColumnsToContents()
+        layout.addWidget(table)
         dialog.exec()
 
     def _refresh_result_views(self) -> None:
