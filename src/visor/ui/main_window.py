@@ -196,6 +196,27 @@ class SweepWorker(QThread):
             self.failed.emit(str(exc))
 
 
+class CalibrationWorker(QThread):
+    completed = Signal(object)
+    failed = Signal(str)
+    cancelled = Signal()
+
+    def __init__(self, images: list[Path], cancel_event: Event) -> None:
+        super().__init__()
+        self.images = images
+        self.cancel_event = cancel_event
+
+    def run(self) -> None:
+        try:
+            from visor.calibration import calibrate_from_chessboard_images
+            camera, dist, rms, views = calibrate_from_chessboard_images(self.images)
+            self.completed.emit((camera, dist, rms, views))
+        except AnalysisCancelled:
+            self.cancelled.emit()
+        except Exception as exc:  # noqa: BLE001 — keep worker failures on the UI thread
+            self.failed.emit(str(exc))
+
+
 class VideoWorker(QThread):
     completed = Signal(object)
     failed = Signal(str)
@@ -357,6 +378,9 @@ class MainWindow(QMainWindow):
         video_action = QAction("Track Reference in Video…", self)
         video_action.triggered.connect(self._start_video_tracking)
         analysis_menu.addAction(video_action)
+        calibration_action = QAction("Calibrate Camera…", self)
+        calibration_action.triggered.connect(self._start_calibration)
+        analysis_menu.addAction(calibration_action)
 
         view_menu = self.menuBar().addMenu("&View")
         self.view_toggles = {}
@@ -1180,6 +1204,57 @@ class MainWindow(QMainWindow):
                 table.setItem(row_index, column, QTableWidgetItem(value))
         table.resizeColumnsToContents()
         layout.addWidget(table)
+        dialog.exec()
+
+    def _start_calibration(self) -> None:
+        if self._worker is not None:
+            return
+        folder = QFileDialog.getExistingDirectory(self, "Open folder with chessboard images")
+        if not folder:
+            return
+        images = sorted(
+            [path for ext in ("*.png", "*.jpg", "*.jpeg", "*.bmp", "*.tiff")
+             for path in Path(folder).glob(ext)]
+        )
+        if not images:
+            self.statusBar().showMessage("No images found in the selected folder.")
+            return
+        self.run_button.setEnabled(False)
+        self.compare_button.setEnabled(False)
+        self.benchmark_button.setEnabled(False)
+        self.cancel_button.setEnabled(True)
+        self.statusBar().showMessage(f"Calibrating from {len(images)} images…")
+        self.log_engine_event("INFO", f"Calibrating camera from {len(images)} images in {Path(folder).name}.")
+        self._cancel_event = Event()
+        self._worker = CalibrationWorker(images, self._cancel_event)
+        self._worker.completed.connect(self._show_calibration)
+        self._worker.failed.connect(self._show_error)
+        self._worker.cancelled.connect(self._show_cancelled)
+        self._worker.finished.connect(self._worker_finished)
+        self._worker.start()
+
+    def _show_calibration(self, result: tuple) -> None:
+        import numpy as np
+
+        camera, dist, rms, views = result
+        dialog = QDialog(self)
+        dialog.setWindowTitle("VISOR Camera Calibration")
+        dialog.resize(560, 320)
+        layout = QVBoxLayout(dialog)
+        note = QLabel(
+            f"Calibrated from {views} chessboard views. RMS reprojection error: {rms:.2f} px. "
+            "Use these intrinsics for PnP experiments on non-planar scenes."
+        )
+        note.setWordWrap(True)
+        layout.addWidget(note)
+        matrix_text = "\n".join("  ".join(f"{value:10.2f}" for value in row) for row in np.asarray(camera))
+        for title, body in (("Camera matrix", matrix_text),
+                            ("Distortion", "  ".join(f"{value:.4f}" for value in np.asarray(dist).ravel()))):
+            layout.addWidget(QLabel(title))
+            box = QPlainTextEdit()
+            box.setReadOnly(True)
+            box.setPlainText(body)
+            layout.addWidget(box)
         dialog.exec()
 
     def _refresh_result_views(self) -> None:

@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
+from pathlib import Path
 
 import cv2
 import numpy as np
@@ -45,6 +46,44 @@ def calibrate_camera(
         flags=flags,
     )
     return camera_matrix, dist_coeffs, float(rms)
+
+
+def calibrate_from_chessboard_images(
+    paths: Sequence[Path] | Sequence[str],
+    pattern_size: tuple[int, int] = (9, 6),
+    square_size: float = 1.0,
+) -> tuple[NDArray[np.float64], NDArray[np.float64], float, int]:
+    """Detect a chessboard in each image and calibrate from the found views.
+
+    Returns ``(camera_matrix, dist_coeffs, rms, views_used)``. Raises
+    ``ValueError`` when no image yields a detectable pattern.
+    """
+    cols, rows = pattern_size
+    xs, ys = np.meshgrid(np.arange(cols), np.arange(rows))
+    grid = np.stack([xs.ravel(), ys.ravel(), np.zeros(cols * rows)], axis=1).astype(np.float32)
+    grid[:, :2] *= float(square_size)
+    object_samples: list[NDArray[np.float32]] = []
+    image_samples: list[NDArray[np.float32]] = []
+    image_size: tuple[int, int] | None = None
+    for raw in paths:
+        path = Path(raw)
+        image = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
+        if image is None:
+            continue
+        image_size = (image.shape[1], image.shape[0])
+        found, corners = cv2.findChessboardCorners(image, (cols, rows))
+        if not found or corners is None:
+            continue
+        refined = cv2.cornerSubPix(
+            image, corners, (11, 11), (-1, -1),
+            (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001),
+        )
+        object_samples.append(grid)
+        image_samples.append(refined.reshape(-1, 2))
+    if not object_samples or image_size is None:
+        raise ValueError("No usable chessboard views found in the given images.")
+    camera, dist, rms = calibrate_camera(object_samples, image_samples, image_size)
+    return camera, dist, rms, len(object_samples)
 
 
 def solve_pnp_pose(
