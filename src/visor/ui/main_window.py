@@ -44,10 +44,12 @@ from PySide6.QtWidgets import (
 )
 
 from visor import engines_classical_extra as classical_extra
+from visor.batch import BatchReport, load_manifest, run_batch
 from visor.benchmark import BenchmarkReport, run_benchmark
 from visor.engines import ORBConfiguration, SIFTConfiguration
 from visor.exporting import (
     ProjectSession,
+    export_batch_csv,
     export_benchmark_csv,
     export_comparison_csv,
     export_csv,
@@ -69,6 +71,7 @@ from visor.models import (
     EngineName,
 )
 from visor.pipeline import AnalysisCancelled, analyze, compare_engines
+from visor.sweeps import run_robustness_sweep
 from visor.ui.widgets.details_panel import AnalysisDetailsPanel
 from visor.ui.widgets.image_canvas import ImageCanvas
 from visor.ui.widgets.image_drop import ImageDropWidget
@@ -171,6 +174,51 @@ class BenchmarkWorker(QThread):
             self.failed.emit(str(exc))
 
 
+class SweepWorker(QThread):
+    completed = Signal(object)
+    failed = Signal(str)
+    cancelled = Signal()
+
+    def __init__(self, reference: Path, settings: AnalysisSettings,
+                 sift: SIFTConfiguration, orb: ORBConfiguration, cancel_event: Event) -> None:
+        super().__init__()
+        self.reference, self.settings, self.sift, self.orb = reference, settings, sift, orb
+        self.cancel_event = cancel_event
+
+    def run(self) -> None:
+        try:
+            self.completed.emit(run_robustness_sweep(
+                self.reference, ("SIFT", "ORB"), self.settings, self.sift, self.orb, self.cancel_event,
+            ))
+        except AnalysisCancelled:
+            self.cancelled.emit()
+        except Exception as exc:  # noqa: BLE001 — keep worker failures on the UI thread
+            self.failed.emit(str(exc))
+
+
+class BatchWorker(QThread):
+    completed = Signal(object)
+    failed = Signal(str)
+    cancelled = Signal()
+
+    def __init__(self, manifest: Path, settings: AnalysisSettings,
+                 sift: SIFTConfiguration, orb: ORBConfiguration, cancel_event: Event) -> None:
+        super().__init__()
+        self.manifest, self.settings, self.sift, self.orb = manifest, settings, sift, orb
+        self.cancel_event = cancel_event
+
+    def run(self) -> None:
+        try:
+            pairs = load_manifest(self.manifest)
+            self.completed.emit(run_batch(
+                pairs, ("SIFT", "ORB"), self.settings, self.sift, self.orb, self.cancel_event,
+            ))
+        except AnalysisCancelled:
+            self.cancelled.emit()
+        except Exception as exc:  # noqa: BLE001 — keep worker failures on the UI thread
+            self.failed.emit(str(exc))
+
+
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
@@ -184,6 +232,7 @@ class MainWindow(QMainWindow):
         self._latest_result: AnalysisResult | None = None
         self._latest_comparison: ComparisonResult | None = None
         self._latest_benchmark: BenchmarkReport | None = None
+        self._latest_batch: BatchReport | None = None
         self._pair_history: list[tuple[Path, Path]] = []
         self._default_window_state: QByteArray | None = None
         self._build_menu()
@@ -253,6 +302,7 @@ class MainWindow(QMainWindow):
             ("Metrics as CSV…", self._export_csv),
             ("SIFT vs ORB comparison CSV…", self._export_comparison_csv),
             ("Benchmark results CSV…", self._export_benchmark_csv),
+            ("Batch results CSV…", self._export_batch_csv),
             ("Current visualization…", self._export_visualization),
         ):
             action = QAction(title, self)
@@ -272,6 +322,12 @@ class MainWindow(QMainWindow):
         benchmark_action = QAction("Benchmark Lab", self)
         benchmark_action.triggered.connect(self._start_benchmark)
         analysis_menu.addAction(benchmark_action)
+        sweep_action = QAction("Robustness Sweep", self)
+        sweep_action.triggered.connect(self._start_sweep)
+        analysis_menu.addAction(sweep_action)
+        batch_action = QAction("Run Batch from Manifest…", self)
+        batch_action.triggered.connect(self._start_batch)
+        analysis_menu.addAction(batch_action)
 
         view_menu = self.menuBar().addMenu("&View")
         self.view_toggles = {}
@@ -943,6 +999,104 @@ class MainWindow(QMainWindow):
         layout.addWidget(table)
         dialog.exec()
 
+    def _start_sweep(self) -> None:
+        reference = self._paths.get("Reference image")
+        if reference is None or self._worker is not None:
+            self.statusBar().showMessage("Load a reference image before running the robustness sweep.")
+            return
+        settings, sift, orb, _, _ = self._read_configurations()
+        self.run_button.setEnabled(False)
+        self.compare_button.setEnabled(False)
+        self.benchmark_button.setEnabled(False)
+        self.cancel_button.setEnabled(True)
+        self.statusBar().showMessage("Sweeping rotation and scale across SIFT and ORB…")
+        self.log_engine_event("INFO", f"Running rotation/scale sweep from {reference.name}.")
+        self._cancel_event = Event()
+        self._worker = SweepWorker(reference, settings, sift, orb, self._cancel_event)
+        self._worker.completed.connect(self._show_sweep)
+        self._worker.failed.connect(self._show_error)
+        self._worker.cancelled.connect(self._show_cancelled)
+        self._worker.finished.connect(self._worker_finished)
+        self._worker.start()
+
+    def _show_sweep(self, report: BenchmarkReport) -> None:
+        self._latest_benchmark = report
+        dialog = QDialog(self)
+        dialog.setWindowTitle("VISOR Robustness Sweep")
+        dialog.resize(950, 440)
+        layout = QVBoxLayout(dialog)
+        note = QLabel(
+            f"Rotation/scale sweep from {report.reference_path.name}. Corner RMSE against known synthetic geometry. "
+            f"Sweep time: {report.duration_ms:.0f} ms."
+        )
+        note.setWordWrap(True)
+        layout.addWidget(note)
+        headers = ["Engine", "Scenario", "Ref kp", "Target kp", "Good", "Inliers", "Inlier %", "Valid", "Corner RMSE px", "Time ms"]
+        table = QTableWidget(len(report.rows), len(headers))
+        table.setHorizontalHeaderLabels(headers)
+        for row_index, row in enumerate(report.rows):
+            values = [row.engine, row.scenario, str(row.keypoints_reference), str(row.keypoints_target),
+                      str(row.good_matches), str(row.inliers), f"{row.inlier_ratio:.1%}",
+                      "Yes" if row.geometry_valid else "No",
+                      "—" if row.localization_error_px is None else f"{row.localization_error_px:.2f}",
+                      f"{row.total_ms:.1f}"]
+            for column, value in enumerate(values):
+                table.setItem(row_index, column, QTableWidgetItem(value))
+        table.resizeColumnsToContents()
+        layout.addWidget(table)
+        dialog.exec()
+
+    def _start_batch(self) -> None:
+        if self._worker is not None:
+            return
+        filename, _ = QFileDialog.getOpenFileName(self, "Open batch manifest", "", "CSV manifest (*.csv)")
+        if not filename:
+            return
+        settings, sift, orb, _, _ = self._read_configurations()
+        self.run_button.setEnabled(False)
+        self.compare_button.setEnabled(False)
+        self.benchmark_button.setEnabled(False)
+        self.cancel_button.setEnabled(True)
+        self.statusBar().showMessage(f"Running batch from {Path(filename).name}…")
+        self.log_engine_event("INFO", f"Running batch from manifest {Path(filename).name}.")
+        self._cancel_event = Event()
+        self._worker = BatchWorker(Path(filename), settings, sift, orb, self._cancel_event)
+        self._worker.completed.connect(self._show_batch)
+        self._worker.failed.connect(self._show_error)
+        self._worker.cancelled.connect(self._show_cancelled)
+        self._worker.finished.connect(self._worker_finished)
+        self._worker.start()
+
+    def _show_batch(self, report: BatchReport) -> None:
+        self._latest_batch = report
+        dialog = QDialog(self)
+        dialog.setWindowTitle("VISOR Batch Results")
+        dialog.resize(950, 440)
+        layout = QVBoxLayout(dialog)
+        note = QLabel(
+            f"{len(report.pairs)} pairs × engines in {report.duration_ms:.0f} ms. "
+            "Batch reuses the single-pair pipeline, so numbers match interactive runs."
+        )
+        note.setWordWrap(True)
+        layout.addWidget(note)
+        headers = ["Scene", "Reference", "Target", "Engine", "Good", "Inliers", "Inlier %", "Valid", "Reproj px", "Time ms"]
+        table = QTableWidget(len(report.rows), len(headers))
+        table.setHorizontalHeaderLabels(headers)
+        for row_index, row in enumerate(report.rows):
+            values = [row.scene, Path(row.reference).name, Path(row.target).name, row.engine,
+                      str(row.good_matches), str(row.inliers), f"{row.inlier_ratio:.1%}",
+                      "Yes" if row.geometry_valid else "No",
+                      "—" if row.localization_error_px is None else f"{row.localization_error_px:.2f}",
+                      f"{row.total_ms:.1f}"]
+            for column, value in enumerate(values):
+                table.setItem(row_index, column, QTableWidgetItem(value))
+        table.resizeColumnsToContents()
+        layout.addWidget(table)
+        save_button = QPushButton("Save batch CSV…")
+        save_button.clicked.connect(lambda: self._export_batch_csv(report))
+        layout.addWidget(save_button)
+        dialog.exec()
+
     def _refresh_result_views(self) -> None:
         for label in self._result_arrays:
             self._refresh_one_view(label)
@@ -1219,6 +1373,21 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Export failed", str(exc))
             return
         self.statusBar().showMessage(f"Benchmark exported: {Path(filename).name}")
+
+    def _export_batch_csv(self, report: BatchReport | None = None) -> None:
+        report = report if report is not None else self._latest_batch
+        if report is None:
+            self.statusBar().showMessage("Run a batch from a manifest before exporting batch metrics.")
+            return
+        filename, _ = QFileDialog.getSaveFileName(self, "Export batch", "batch.csv", "CSV files (*.csv)")
+        if not filename:
+            return
+        try:
+            export_batch_csv(report, Path(filename))
+        except (OSError, ValueError, IndexError) as exc:
+            QMessageBox.critical(self, "Export failed", str(exc))
+            return
+        self.statusBar().showMessage(f"Batch exported: {Path(filename).name}")
 
     def _export_analysis(self, exporter, file_filter: str, default_name: str) -> None:
         if self._latest_result is None:

@@ -69,3 +69,23 @@ def test_main_window_builds_drop_inputs_and_controls():
 
     window.close()
     app.quit()
+
+
+def test_engine_selector_lists_new_engines_with_disabled_hints():
+    from PySide6.QtWidgets import QApplication
+
+    app = QApplication.instance() or QApplication([])
+    window = MainWindow()
+    entries = [window.engine_selector.itemText(i) for i in range(window.engine_selector.count())]
+    assert entries[:2] == ["SIFT", "ORB"]
+    assert any("DISK+LightGlue" in entry for entry in entries)
+    assert any("SIFT+LightGlue" in entry for entry in entries)
+    # Unavailable engines stay visible but disabled with a reason.
+    for i in range(window.engine_selector.count()):
+        item = window.engine_selector.model().item(i)
+        if "(" in window.engine_selector.itemText(i):
+            assert item.isEnabled() is False
+    assert window.matcher_strategy.count() == 4
+    assert window.robust_estimator.count() == 3
+    window.close()
+    app.quit()

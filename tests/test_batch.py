@@ -53,3 +53,24 @@ def test_example_manifest_loads():
     pairs = load_manifest(Path(__file__).parent.parent / "Sample" / "manifest.example.csv")
     assert len(pairs) == 2
     assert pairs[0].scene == "synthetic-shift"
+
+
+def test_export_batch_csv_round_trips(tmp_path):
+    from visor.exporting import export_batch_csv
+
+    data = Path(__file__).parent / "data"
+    report = run_batch((BatchPair(data / "golden_reference.png", data / "golden_target.png", "golden"),))
+    out = tmp_path / "batch.csv"
+    export_batch_csv(report, out)
+    text = out.read_text(encoding="utf-8-sig")
+    assert "SIFT" in text and "ORB" in text and "golden" in text
+
+
+def test_export_batch_csv_rejects_empty():
+    import pytest as _pytest
+
+    from visor.batch import BatchReport
+    from visor.exporting import export_batch_csv
+
+    with _pytest.raises(ValueError, match="no result rows"):
+        export_batch_csv(BatchReport((), (), 0.0), Path("nowhere.csv"))

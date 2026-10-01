@@ -12,6 +12,7 @@ from typing import Any
 import cv2
 import numpy as np
 
+from visor.batch import BatchReport
 from visor.benchmark import BenchmarkReport
 from visor.engines import ORBConfiguration, SIFTConfiguration
 from visor.models import (
@@ -207,6 +208,16 @@ def export_benchmark_csv(result: BenchmarkReport, path: Path) -> None:
         writer = csv.DictWriter(stream, fieldnames=list(result.rows[0].__dataclass_fields__))
         writer.writeheader()
         for row in result.rows:
+            writer.writerow(asdict(row))
+
+
+def export_batch_csv(report: BatchReport, path: Path) -> None:
+    if not report.rows:
+        raise ValueError("The batch report contains no result rows.")
+    with path.open("w", encoding="utf-8-sig", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(report.rows[0].__dataclass_fields__))
+        writer.writeheader()
+        for row in report.rows:
             writer.writerow(asdict(row))
 
 
