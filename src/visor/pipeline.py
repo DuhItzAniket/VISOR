@@ -117,7 +117,7 @@ def analyze_images(
     reference_gray = cast(ByteArray, cv2.cvtColor(reference_image, cv2.COLOR_BGR2GRAY))
     target_gray = cast(ByteArray, cv2.cvtColor(target_image, cv2.COLOR_BGR2GRAY))
 
-    if engine_name in ("SuperPoint+LightGlue", "XFeat", "ALIKED+LightGlue"):
+    if engine_name in ("SuperPoint+LightGlue", "XFeat", "ALIKED+LightGlue", "DISK+LightGlue", "SIFT+LightGlue"):
         return _analyze_learned(
             reference_path, target_path, reference_image, target_image,
             reference_gray, target_gray, settings, engine_name, sp_config, xfeat_config, image_loading_ms,
@@ -181,13 +181,25 @@ def _analyze_learned(
 ) -> AnalysisResult:
     """Pipeline branch for learned feature engines (SuperPoint+LightGlue, XFeat, ALIKED+LightGlue)."""
     from dataclasses import asdict as _asdict
-    if engine_name == "ALIKED+LightGlue":
+    if engine_name in ("DISK+LightGlue", "SIFT+LightGlue"):
+        from visor.learned_extra import (
+            DISKLightGlueEngine,
+            GenericLightGlueConfiguration,
+            SIFTLightGlueEngine,
+        )
+        generic_cfg = GenericLightGlueConfiguration(
+            max_keypoints=sp_config.max_keypoints if sp_config else 1024,
+            use_cuda=sp_config.use_cuda if sp_config else True,
+        )
+        engine_obj = DISKLightGlueEngine(generic_cfg) if engine_name == "DISK+LightGlue" else SIFTLightGlueEngine(generic_cfg)
+        engine_config = _asdict(generic_cfg)
+    elif engine_name == "ALIKED+LightGlue":
         aliked_cfg = ALIKEDConfiguration(
             max_keypoints=sp_config.max_keypoints if sp_config else 1024,
             use_cuda=sp_config.use_cuda if sp_config else True,
         )
-        engine_obj: SuperPointLightGlueEngine | XFeatEngine | ALIKEDLightGlueEngine = ALIKEDLightGlueEngine(aliked_cfg)
-        engine_config: dict[str, object] = _asdict(aliked_cfg)
+        engine_obj = ALIKEDLightGlueEngine(aliked_cfg)
+        engine_config = _asdict(aliked_cfg)
     elif engine_name == "XFeat":
         xfeat_cfg = xfeat_config or XFeatConfiguration()
         engine_obj = XFeatEngine(xfeat_cfg)
