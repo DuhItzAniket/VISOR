@@ -13,6 +13,7 @@ import numpy as np
 
 from visor.engines import ORBConfiguration, ORBFeatureEngine, SIFTConfiguration, SIFTFeatureEngine
 from visor.geometry import estimate_homography
+from visor.geometry_robust import RobustMethod, estimate_with_robust_method
 from visor.learned_engines import (
     ALIKEDConfiguration,
     ALIKEDLightGlueEngine,
@@ -21,8 +22,9 @@ from visor.learned_engines import (
     XFeatConfiguration,
     XFeatEngine,
 )
-from visor.matching import match_features
+from visor.matching_strategies import MatchingOptions, match_with_options
 from visor.models import (
+    VALID_ENGINE_NAMES,
     AnalysisResult,
     AnalysisSettings,
     ByteArray,
@@ -31,7 +33,6 @@ from visor.models import (
     MatchInfo,
     MatchSet,
     PerformanceMetrics,
-    VALID_ENGINE_NAMES,
 )
 from visor.visualization import render_localization, render_match_canvas
 
@@ -73,6 +74,8 @@ def analyze(
     cancel_event: Event | None = None,
     sp_config: SuperPointConfiguration | None = None,
     xfeat_config: XFeatConfiguration | None = None,
+    matching_options: MatchingOptions | None = None,
+    robust_method: RobustMethod = "RANSAC",
 ) -> AnalysisResult:
     engine_name = _validate_engine_name(engine_name)
     settings = settings or AnalysisSettings()
@@ -94,6 +97,8 @@ def analyze(
         cancel_event,
         sp_config,
         xfeat_config,
+        matching_options,
+        robust_method,
     )
 
 
@@ -110,6 +115,8 @@ def analyze_images(
     cancel_event: Event | None = None,
     sp_config: SuperPointConfiguration | None = None,
     xfeat_config: XFeatConfiguration | None = None,
+    matching_options: MatchingOptions | None = None,
+    robust_method: RobustMethod = "RANSAC",
 ) -> AnalysisResult:
     engine_name = _validate_engine_name(engine_name)
     settings = settings or AnalysisSettings()
@@ -130,12 +137,13 @@ def analyze_images(
     _check_cancel(cancel_event)
     target_features = engine.extract(target_gray)
     _check_cancel(cancel_event)
-    match_set = match_features(reference_features, target_features, engine_name, settings.ratio_threshold)
+    options = matching_options or MatchingOptions(ratio_threshold=settings.ratio_threshold)
+    match_set = match_with_options(reference_features, target_features, engine_name, options)
     _check_cancel(cancel_event)
-    geometry, geometry_ms = estimate_homography(
+    geometry, geometry_ms = estimate_with_robust_method(
         reference_features, target_features, match_set,
         (reference_image.shape[1], reference_image.shape[0]), settings.ransac_threshold,
-        (target_image.shape[1], target_image.shape[0]),
+        (target_image.shape[1], target_image.shape[0]), robust_method,
     )
     matches_image = render_match_canvas(reference_image, target_image, reference_features, target_features, match_set, geometry, settings)
     localization_image = render_localization(target_image, target_features, geometry, settings)
@@ -261,6 +269,8 @@ def compare_engines(
     sift_config: SIFTConfiguration | None = None,
     orb_config: ORBConfiguration | None = None,
     cancel_event: Event | None = None,
+    matching_options: MatchingOptions | None = None,
+    robust_method: RobustMethod = "RANSAC",
 ) -> ComparisonResult:
     """Run both classical engines over the same image pair and settings."""
     settings = settings or AnalysisSettings()
@@ -269,6 +279,37 @@ def compare_engines(
     target = _read_image(target_path)
     _check_cancel(cancel_event)
     loading_ms = (perf_counter() - load_start) * 1000
-    sift = analyze_images(reference_path, target_path, reference, target, "SIFT", settings, sift_config, orb_config, loading_ms, cancel_event)
-    orb = analyze_images(reference_path, target_path, reference, target, "ORB", settings, sift_config, orb_config, loading_ms, cancel_event)
+    sift = analyze_images(reference_path, target_path, reference, target, "SIFT", settings, sift_config, orb_config, loading_ms, cancel_event,
+                          None, None, matching_options, robust_method)
+    orb = analyze_images(reference_path, target_path, reference, target, "ORB", settings, sift_config, orb_config, loading_ms, cancel_event,
+                         None, None, matching_options, robust_method)
     return ComparisonResult(sift, orb)
+
+
+def compare_n_engines(
+    reference_path: Path,
+    target_path: Path,
+    engines: tuple[EngineName, ...] = ("SIFT", "ORB"),
+    settings: AnalysisSettings | None = None,
+    sift_config: SIFTConfiguration | None = None,
+    orb_config: ORBConfiguration | None = None,
+    cancel_event: Event | None = None,
+    matching_options: MatchingOptions | None = None,
+    robust_method: RobustMethod = "RANSAC",
+) -> tuple[AnalysisResult, ...]:
+    """Run any set of engines over the same decoded image pair."""
+    settings = settings or AnalysisSettings()
+    load_start = perf_counter()
+    reference = _read_image(reference_path)
+    target = _read_image(target_path)
+    _check_cancel(cancel_event)
+    loading_ms = (perf_counter() - load_start) * 1000
+    results: list[AnalysisResult] = []
+    for engine in engines:
+        _check_cancel(cancel_event)
+        results.append(analyze_images(
+            reference_path, target_path, reference, target, engine, settings,
+            sift_config, orb_config, loading_ms, cancel_event,
+            None, None, matching_options, robust_method,
+        ))
+    return tuple(results)
