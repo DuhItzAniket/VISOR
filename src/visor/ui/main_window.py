@@ -461,6 +461,10 @@ class MainWindow(QMainWindow):
         self.window_menu = self.menuBar().addMenu("&Window")
 
         help_menu = self.menuBar().addMenu("&Help")
+        engine_status_action = QAction("Engine Availability…", self)
+        engine_status_action.triggered.connect(self._show_engine_status)
+        help_menu.addAction(engine_status_action)
+        help_menu.addSeparator()
         about_action = QAction("About VISOR", self)
         about_action.triggered.connect(self._show_about)
         help_menu.addAction(about_action)
@@ -1675,8 +1679,13 @@ class MainWindow(QMainWindow):
             return
         self.statusBar().showMessage(f"Visualization exported: {Path(filename).name}")
 
+    def _show_engine_status(self) -> None:
+        from visor.ui.engine_status import EngineStatusDialog
+        dlg = EngineStatusDialog(self)
+        dlg.exec()
+
     def _show_about(self) -> None:
-        self.statusBar().showMessage("VISOR 0.1.0 — classical image feature registration workspace")
+        self.statusBar().showMessage("VISOR 0.2.0 — classical + learned image feature registration workspace")
 
     def _apply_theme(self) -> None:
         self.setStyleSheet(
