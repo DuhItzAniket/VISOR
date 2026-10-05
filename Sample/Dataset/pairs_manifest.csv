@@ -1,0 +1,6 @@
+reference,target,scene
+Sample/Reference/reference.jpg,Sample/Target/target.jpg,sample_original
+Sample\Dataset\pairs\pair_1_reference.png,Sample\Dataset\pairs\pair_1_target.png,pair_1
+Sample\Dataset\pairs\pair_2_reference.png,Sample\Dataset\pairs\pair_2_target.png,pair_2
+Sample\Dataset\pairs\pair_3_reference.png,Sample\Dataset\pairs\pair_3_target.png,pair_3
+Sample\Dataset\pairs\pair_4_reference.png,Sample\Dataset\pairs\pair_4_target.png,pair_4

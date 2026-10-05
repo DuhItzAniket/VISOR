@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# PyInstaller
+*.spec
+
+# Test / coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Large data / datasets — keep out of Git
+Sample/Dataset/MegaDepth/
+Sample/Dataset/HPatches/sequences/
+*.h5
+*.hdf5
+
+# Secrets / env files
+.env
+*.pem
+*.key

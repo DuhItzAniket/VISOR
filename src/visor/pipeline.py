@@ -1,0 +1,328 @@
+"""End-to-end classical image registration pipeline."""
+
+from __future__ import annotations
+
+from dataclasses import asdict
+from pathlib import Path
+from threading import Event
+from time import perf_counter
+from typing import cast
+
+import cv2
+import numpy as np
+
+from visor.engines import ORBConfiguration, ORBFeatureEngine, SIFTConfiguration, SIFTFeatureEngine
+from visor.geometry import estimate_homography
+from visor.geometry_decompose import SimilarityEstimate, decompose_homography_estimate
+from visor.geometry_robust import RobustMethod, estimate_with_robust_method
+from visor.learned_engines import (
+    ALIKEDConfiguration,
+    ALIKEDLightGlueEngine,
+    SuperPointConfiguration,
+    SuperPointLightGlueEngine,
+    XFeatConfiguration,
+    XFeatEngine,
+)
+from visor.matching_strategies import MatchingOptions, match_with_options
+from visor.models import (
+    VALID_ENGINE_NAMES,
+    AnalysisResult,
+    AnalysisSettings,
+    ByteArray,
+    ComparisonResult,
+    EngineName,
+    MatchInfo,
+    MatchSet,
+    PerformanceMetrics,
+)
+from visor.visualization import render_localization, render_match_canvas
+
+
+class AnalysisCancelled(Exception):
+    """Raised at safe pipeline boundaries after the user requests cancellation."""
+
+
+def _check_cancel(cancel_event: Event | None) -> None:
+    if cancel_event is not None and cancel_event.is_set():
+        raise AnalysisCancelled("Analysis cancelled.")
+
+
+def similarity_of(result_geometry) -> SimilarityEstimate | None:
+    """Decompose a valid homography into labeled planar estimates."""
+    if not result_geometry.valid or result_geometry.homography is None:
+        return None
+    try:
+        return decompose_homography_estimate(result_geometry.homography)
+    except (ValueError, ArithmeticError):
+        return None
+
+
+def _read_image(path: Path) -> ByteArray:
+    try:
+        encoded = np.fromfile(path, dtype=np.uint8)
+    except OSError as exc:
+        raise ValueError(f"Could not read image: {path.name}") from exc
+    image = cv2.imdecode(encoded, cv2.IMREAD_COLOR)
+    if image is None or image.size == 0:
+        raise ValueError(f"Could not decode image: {path.name}")
+    return cast(ByteArray, image)
+
+
+def _validate_engine_name(engine_name: str) -> EngineName:
+    if engine_name not in VALID_ENGINE_NAMES:
+        valid = ", ".join(VALID_ENGINE_NAMES)
+        raise ValueError(f"Unsupported engine name: {engine_name!r}. Choose from: {valid}.")
+    return cast(EngineName, engine_name)
+
+
+def analyze(
+    reference_path: Path,
+    target_path: Path,
+    engine_name: EngineName,
+    settings: AnalysisSettings | None = None,
+    sift_config: SIFTConfiguration | None = None,
+    orb_config: ORBConfiguration | None = None,
+    cancel_event: Event | None = None,
+    sp_config: SuperPointConfiguration | None = None,
+    xfeat_config: XFeatConfiguration | None = None,
+    matching_options: MatchingOptions | None = None,
+    robust_method: RobustMethod = "RANSAC",
+) -> AnalysisResult:
+    engine_name = _validate_engine_name(engine_name)
+    settings = settings or AnalysisSettings()
+    load_start = perf_counter()
+    reference_image = _read_image(reference_path)
+    target_image = _read_image(target_path)
+    _check_cancel(cancel_event)
+    loading_ms = (perf_counter() - load_start) * 1000
+    return analyze_images(
+        reference_path,
+        target_path,
+        reference_image,
+        target_image,
+        engine_name,
+        settings,
+        sift_config,
+        orb_config,
+        loading_ms,
+        cancel_event,
+        sp_config,
+        xfeat_config,
+        matching_options,
+        robust_method,
+    )
+
+
+def analyze_images(
+    reference_path: Path,
+    target_path: Path,
+    reference_image: ByteArray,
+    target_image: ByteArray,
+    engine_name: EngineName,
+    settings: AnalysisSettings | None = None,
+    sift_config: SIFTConfiguration | None = None,
+    orb_config: ORBConfiguration | None = None,
+    image_loading_ms: float = 0.0,
+    cancel_event: Event | None = None,
+    sp_config: SuperPointConfiguration | None = None,
+    xfeat_config: XFeatConfiguration | None = None,
+    matching_options: MatchingOptions | None = None,
+    robust_method: RobustMethod = "RANSAC",
+) -> AnalysisResult:
+    engine_name = _validate_engine_name(engine_name)
+    settings = settings or AnalysisSettings()
+    total_start = perf_counter()
+    reference_gray = cast(ByteArray, cv2.cvtColor(reference_image, cv2.COLOR_BGR2GRAY))
+    target_gray = cast(ByteArray, cv2.cvtColor(target_image, cv2.COLOR_BGR2GRAY))
+
+    if engine_name in ("SuperPoint+LightGlue", "XFeat", "ALIKED+LightGlue", "DISK+LightGlue", "SIFT+LightGlue"):
+        return _analyze_learned(
+            reference_path, target_path, reference_image, target_image,
+            reference_gray, target_gray, settings, engine_name, sp_config, xfeat_config, image_loading_ms,
+            total_start, cancel_event,
+        )
+
+    engine = SIFTFeatureEngine(sift_config) if engine_name == "SIFT" else ORBFeatureEngine(orb_config)
+    _check_cancel(cancel_event)
+    reference_features = engine.extract(reference_gray)
+    _check_cancel(cancel_event)
+    target_features = engine.extract(target_gray)
+    _check_cancel(cancel_event)
+    options = matching_options or MatchingOptions(ratio_threshold=settings.ratio_threshold)
+    match_set = match_with_options(reference_features, target_features, engine_name, options)
+    _check_cancel(cancel_event)
+    geometry, geometry_ms = estimate_with_robust_method(
+        reference_features, target_features, match_set,
+        (reference_image.shape[1], reference_image.shape[0]), settings.ransac_threshold,
+        (target_image.shape[1], target_image.shape[0]), robust_method,
+    )
+    matches_image = render_match_canvas(reference_image, target_image, reference_features, target_features, match_set, geometry, settings)
+    localization_image = render_localization(target_image, target_features, geometry, settings)
+    warped_image = None
+    if geometry.valid and geometry.projected_corners:
+        # H maps reference coordinates into target coordinates; invert it to rectify target into reference dimensions.
+        assert geometry.homography is not None
+        warped_image = cast(ByteArray, cv2.warpPerspective(
+            target_image, np.linalg.inv(geometry.homography),
+            (reference_image.shape[1], reference_image.shape[0]),
+        ))
+    total_ms = (perf_counter() - total_start) * 1000 + image_loading_ms
+    performance = PerformanceMetrics(
+        image_loading_ms, reference_features.extraction_ms, target_features.extraction_ms,
+        match_set.duration_ms, geometry_ms, total_ms,
+    )
+    return AnalysisResult(
+        engine_name, reference_path, target_path,
+        (reference_image.shape[1], reference_image.shape[0]),
+        (target_image.shape[1], target_image.shape[0]), reference_features, target_features,
+        match_set, geometry, performance, matches_image, localization_image, warped_image,
+        settings,
+        asdict(engine.config),
+        reference_image,
+        target_image,
+        similarity_of(geometry),
+    )
+
+
+def _analyze_learned(
+    reference_path: Path,
+    target_path: Path,
+    reference_image: ByteArray,
+    target_image: ByteArray,
+    reference_gray: ByteArray,
+    target_gray: ByteArray,
+    settings: AnalysisSettings,
+    engine_name: EngineName,
+    sp_config: SuperPointConfiguration | None,
+    xfeat_config: XFeatConfiguration | None,
+    image_loading_ms: float,
+    total_start: float,
+    cancel_event: Event | None,
+) -> AnalysisResult:
+    """Pipeline branch for learned feature engines (SuperPoint+LightGlue, XFeat, ALIKED+LightGlue)."""
+    from dataclasses import asdict as _asdict
+    if engine_name in ("DISK+LightGlue", "SIFT+LightGlue"):
+        from visor.learned_extra import (
+            DISKLightGlueEngine,
+            GenericLightGlueConfiguration,
+            SIFTLightGlueEngine,
+        )
+        generic_cfg = GenericLightGlueConfiguration(
+            max_keypoints=sp_config.max_keypoints if sp_config else 1024,
+            use_cuda=sp_config.use_cuda if sp_config else True,
+        )
+        engine_obj = DISKLightGlueEngine(generic_cfg) if engine_name == "DISK+LightGlue" else SIFTLightGlueEngine(generic_cfg)
+        engine_config = _asdict(generic_cfg)
+    elif engine_name == "ALIKED+LightGlue":
+        aliked_cfg = ALIKEDConfiguration(
+            max_keypoints=sp_config.max_keypoints if sp_config else 1024,
+            use_cuda=sp_config.use_cuda if sp_config else True,
+        )
+        engine_obj = ALIKEDLightGlueEngine(aliked_cfg)
+        engine_config = _asdict(aliked_cfg)
+    elif engine_name == "XFeat":
+        xfeat_cfg = xfeat_config or XFeatConfiguration()
+        engine_obj = XFeatEngine(xfeat_cfg)
+        engine_config = _asdict(xfeat_cfg)
+    else:
+        engine_obj = SuperPointLightGlueEngine(sp_config)
+        engine_config = _asdict(sp_config) if sp_config is not None else _asdict(SuperPointConfiguration())
+    _check_cancel(cancel_event)
+    ref_features, tgt_features, raw_matches = engine_obj.extract_and_match(reference_gray, target_gray)
+    _check_cancel(cancel_event)
+
+    # Build a MatchSet from LightGlue's (M,2) index pairs
+    match_infos = tuple(
+        MatchInfo(int(m[0]), int(m[1]), 0.0, None)
+        for m in raw_matches
+    )
+    match_set = MatchSet(
+        match_infos, len(ref_features.keypoints), len(match_infos),
+        "LightGlue", "confidence threshold", 0.0,
+        ref_features.extraction_ms + tgt_features.extraction_ms,
+    )
+    _check_cancel(cancel_event)
+
+    geometry, geometry_ms = estimate_homography(
+        ref_features, tgt_features, match_set,
+        (reference_image.shape[1], reference_image.shape[0]), settings.ransac_threshold,
+        (target_image.shape[1], target_image.shape[0]),
+    )
+    matches_image = render_match_canvas(
+        reference_image, target_image, ref_features, tgt_features, match_set, geometry, settings,
+    )
+    localization_image = render_localization(target_image, tgt_features, geometry, settings)
+    warped_image = None
+    if geometry.valid and geometry.projected_corners:
+        assert geometry.homography is not None
+        warped_image = cast(ByteArray, cv2.warpPerspective(
+            target_image, np.linalg.inv(geometry.homography),
+            (reference_image.shape[1], reference_image.shape[0]),
+        ))
+    total_ms = (perf_counter() - total_start) * 1000 + image_loading_ms
+    performance = PerformanceMetrics(
+        image_loading_ms, ref_features.extraction_ms, tgt_features.extraction_ms,
+        match_set.duration_ms, geometry_ms, total_ms,
+    )
+    return AnalysisResult(
+        engine_name, reference_path, target_path,
+        (reference_image.shape[1], reference_image.shape[0]),
+        (target_image.shape[1], target_image.shape[0]),
+        ref_features, tgt_features, match_set, geometry, performance,
+        matches_image, localization_image, warped_image, settings, engine_config,
+        reference_image, target_image,
+        similarity_of(geometry),
+    )
+
+
+def compare_engines(
+    reference_path: Path,
+    target_path: Path,
+    settings: AnalysisSettings | None = None,
+    sift_config: SIFTConfiguration | None = None,
+    orb_config: ORBConfiguration | None = None,
+    cancel_event: Event | None = None,
+    matching_options: MatchingOptions | None = None,
+    robust_method: RobustMethod = "RANSAC",
+) -> ComparisonResult:
+    """Run both classical engines over the same image pair and settings."""
+    settings = settings or AnalysisSettings()
+    load_start = perf_counter()
+    reference = _read_image(reference_path)
+    target = _read_image(target_path)
+    _check_cancel(cancel_event)
+    loading_ms = (perf_counter() - load_start) * 1000
+    sift = analyze_images(reference_path, target_path, reference, target, "SIFT", settings, sift_config, orb_config, loading_ms, cancel_event,
+                          None, None, matching_options, robust_method)
+    orb = analyze_images(reference_path, target_path, reference, target, "ORB", settings, sift_config, orb_config, loading_ms, cancel_event,
+                         None, None, matching_options, robust_method)
+    return ComparisonResult(sift, orb)
+
+
+def compare_n_engines(
+    reference_path: Path,
+    target_path: Path,
+    engines: tuple[EngineName, ...] = ("SIFT", "ORB"),
+    settings: AnalysisSettings | None = None,
+    sift_config: SIFTConfiguration | None = None,
+    orb_config: ORBConfiguration | None = None,
+    cancel_event: Event | None = None,
+    matching_options: MatchingOptions | None = None,
+    robust_method: RobustMethod = "RANSAC",
+) -> tuple[AnalysisResult, ...]:
+    """Run any set of engines over the same decoded image pair."""
+    settings = settings or AnalysisSettings()
+    load_start = perf_counter()
+    reference = _read_image(reference_path)
+    target = _read_image(target_path)
+    _check_cancel(cancel_event)
+    loading_ms = (perf_counter() - load_start) * 1000
+    results: list[AnalysisResult] = []
+    for engine in engines:
+        _check_cancel(cancel_event)
+        results.append(analyze_images(
+            reference_path, target_path, reference, target, engine, settings,
+            sift_config, orb_config, loading_ms, cancel_event,
+            None, None, matching_options, robust_method,
+        ))
+    return tuple(results)

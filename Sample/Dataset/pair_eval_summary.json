@@ -1,0 +1,157 @@
+[
+  {
+    "scene": "sample_original",
+    "reference": "c:\\Users\\Luikz\\Downloads\\VISOR\\Sample\\Reference\\reference.jpg",
+    "target": "c:\\Users\\Luikz\\Downloads\\VISOR\\Sample\\Target\\target.jpg",
+    "engines": {
+      "SIFT": {
+        "valid": true,
+        "inlier_count": 2875,
+        "good_matches": 2930,
+        "total_ms": 1129.45
+      },
+      "ORB": {
+        "valid": true,
+        "inlier_count": 478,
+        "good_matches": 494,
+        "total_ms": 582.1
+      },
+      "SuperPoint+LightGlue": {
+        "valid": true,
+        "inlier_count": 434,
+        "good_matches": 494,
+        "total_ms": 965.94
+      },
+      "ALIKED+LightGlue": {
+        "valid": true,
+        "inlier_count": 564,
+        "good_matches": 629,
+        "total_ms": 3990.5
+      }
+    }
+  },
+  {
+    "scene": "pair_1",
+    "reference": "c:\\Users\\Luikz\\Downloads\\VISOR\\Sample\\Dataset\\pairs\\pair_1_reference.png",
+    "target": "c:\\Users\\Luikz\\Downloads\\VISOR\\Sample\\Dataset\\pairs\\pair_1_target.png",
+    "engines": {
+      "SIFT": {
+        "valid": true,
+        "inlier_count": 13384,
+        "good_matches": 13389,
+        "total_ms": 1440.04
+      },
+      "ORB": {
+        "valid": true,
+        "inlier_count": 1195,
+        "good_matches": 1218,
+        "total_ms": 288.22
+      },
+      "SuperPoint+LightGlue": {
+        "valid": true,
+        "inlier_count": 869,
+        "good_matches": 918,
+        "total_ms": 842.94
+      },
+      "ALIKED+LightGlue": {
+        "valid": true,
+        "inlier_count": 964,
+        "good_matches": 964,
+        "total_ms": 3403.84
+      }
+    }
+  },
+  {
+    "scene": "pair_2",
+    "reference": "c:\\Users\\Luikz\\Downloads\\VISOR\\Sample\\Dataset\\pairs\\pair_2_reference.png",
+    "target": "c:\\Users\\Luikz\\Downloads\\VISOR\\Sample\\Dataset\\pairs\\pair_2_target.png",
+    "engines": {
+      "SIFT": {
+        "valid": true,
+        "inlier_count": 13553,
+        "good_matches": 13558,
+        "total_ms": 1322.71
+      },
+      "ORB": {
+        "valid": true,
+        "inlier_count": 1263,
+        "good_matches": 1289,
+        "total_ms": 319.25
+      },
+      "SuperPoint+LightGlue": {
+        "valid": true,
+        "inlier_count": 805,
+        "good_matches": 891,
+        "total_ms": 956.13
+      },
+      "ALIKED+LightGlue": {
+        "valid": true,
+        "inlier_count": 947,
+        "good_matches": 952,
+        "total_ms": 2977.93
+      }
+    }
+  },
+  {
+    "scene": "pair_3",
+    "reference": "c:\\Users\\Luikz\\Downloads\\VISOR\\Sample\\Dataset\\pairs\\pair_3_reference.png",
+    "target": "c:\\Users\\Luikz\\Downloads\\VISOR\\Sample\\Dataset\\pairs\\pair_3_target.png",
+    "engines": {
+      "SIFT": {
+        "valid": true,
+        "inlier_count": 13254,
+        "good_matches": 13260,
+        "total_ms": 1146.92
+      },
+      "ORB": {
+        "valid": true,
+        "inlier_count": 1130,
+        "good_matches": 1162,
+        "total_ms": 273.08
+      },
+      "SuperPoint+LightGlue": {
+        "valid": true,
+        "inlier_count": 773,
+        "good_matches": 869,
+        "total_ms": 763.89
+      },
+      "ALIKED+LightGlue": {
+        "valid": true,
+        "inlier_count": 926,
+        "good_matches": 930,
+        "total_ms": 2943.85
+      }
+    }
+  },
+  {
+    "scene": "pair_4",
+    "reference": "c:\\Users\\Luikz\\Downloads\\VISOR\\Sample\\Dataset\\pairs\\pair_4_reference.png",
+    "target": "c:\\Users\\Luikz\\Downloads\\VISOR\\Sample\\Dataset\\pairs\\pair_4_target.png",
+    "engines": {
+      "SIFT": {
+        "valid": true,
+        "inlier_count": 13138,
+        "good_matches": 13145,
+        "total_ms": 1149.62
+      },
+      "ORB": {
+        "valid": true,
+        "inlier_count": 1091,
+        "good_matches": 1122,
+        "total_ms": 273.89
+      },
+      "SuperPoint+LightGlue": {
+        "valid": true,
+        "inlier_count": 772,
+        "good_matches": 855,
+        "total_ms": 1038.87
+      },
+      "ALIKED+LightGlue": {
+        "valid": true,
+        "inlier_count": 910,
+        "good_matches": 911,
+        "total_ms": 2993.34
+      }
+    }
+  }
+]

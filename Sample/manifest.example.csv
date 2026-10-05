@@ -1,0 +1,3 @@
+reference,target,scene
+../tests/data/golden_reference.png,../tests/data/golden_target.png,synthetic-shift
+Reference/reference.jpg,Target/target.jpg,demo-room
