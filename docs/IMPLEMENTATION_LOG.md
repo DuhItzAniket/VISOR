@@ -39,6 +39,13 @@
 - Added source revision to future build-info reports, an explicit optional-runtime guard for the previously unguarded real-model test, and core test/lint steps in the native build workflow. This allows validating the ordinary desktop build without installing learned dependencies.
 - Public release, signing/notarization, clean-desktop installation/uninstallation and packaged learned-runtime support remain explicitly unverified.
 
+## 2026-10-19 — Correct native regression expectations
+
+- Follow-up local suite: 104 passed, 2 skipped in 36.41s.
+- Adding the core suite to native runners exposed nonportable Windows snapshot counts (run 39301243754). Linux ORB inliers: 744; macOS ARM ORB: 580; Windows recorded baseline: 731. macOS SIFT reference count: 842 vs recorded Windows 843.
+- Kept the original golden values unchanged and scoped exact snapshots to their recorded Windows/OpenCV 4.11 environment. Added independent known-transform accuracy contracts on every platform (maximum corner error under 3 px on the textured mild-warp fixture), inlier consistency, and platform-local default-configuration equivalence.
+- Focused validation: 8 passed in 4.23s; Ruff passed. This replaces a universal-count assumption with mathematical accuracy checks, not a new performance claim.
+
 ## M0 — Repository foundation
 
 - Added project plan, architecture, status, development rules, and ignore patterns.

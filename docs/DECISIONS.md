@@ -1,5 +1,9 @@
 # Architecture Decisions
 
+## 2026-10-19: Scope exact snapshots to the recorded platform
+
+Native CI reproduced different OpenCV feature/RANSAC counts on Windows x64, Linux x64, and macOS ARM despite using the same OpenCV package version. Preserve original Windows/OpenCV 4.11 goldens on that platform; require independent known-transform corner accuracy on every platform. Default-option forwarding is checked against explicit defaults on the current platform. Do not rewrite golden counts to conceal algorithm drift or treat cross-platform count equality as accuracy.
+
 ## 2026-10-19: Fit failure is not a translation estimate
 
 Remove the keypoint-centroid fallback that reported all matches as inliers with zero error after fitting failed. All estimators use `geometry_validation.validate_planar_fit`; MAGSAC/LMEDS no longer silently run a different estimator on failure. The validator checks support, projection, projective horizon and actual target polygon overlap. Object center is the projected reference center. Positive classical goldens remain unchanged; invalid historical results may intentionally become failures. Adaptive threshold selection remains a separately tracked policy issue (I06).

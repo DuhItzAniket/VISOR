@@ -12,14 +12,12 @@ REF = DATA / "golden_reference.png"
 TGT = DATA / "golden_target.png"
 
 
-def test_default_options_reproduce_golden_counts():
-    import json
-
-    golden = json.loads((DATA / "golden_classical.json").read_text())
+def test_explicit_defaults_match_implicit_defaults_on_current_platform():
     for engine in ("SIFT", "ORB"):
         result = analyze(REF, TGT, engine)  # type: ignore[arg-type]
-        assert result.match_set.good_count == golden[engine]["good"]
-        assert result.geometry.inlier_count == golden[engine]["inliers"]
+        explicit = analyze(REF, TGT, engine, matching_options=MatchingOptions(), robust_method="RANSAC")
+        assert result.match_set.matches == explicit.match_set.matches
+        assert result.geometry.inlier_mask == explicit.geometry.inlier_mask
 
 
 def test_cross_check_option_flows_through_pipeline():

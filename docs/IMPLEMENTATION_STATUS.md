@@ -21,6 +21,8 @@ Updated evidence: [native build run 39300439636](https://github.com/DuhItzAniket
 
 Local full regression after geometry/distribution changes: **102 passed, 2 skipped in 36.78s**; Ruff passed. Two additional frozen-runtime policy regressions passed separately. Focused type check for new validator, bundle builder and smoke checker: passed (3 files, imported-module checking excluded). Optional-model tests remain distinct from the standard desktop runtime.
 
+Follow-up local full suite: **104 passed, 2 skipped in 36.41s**. The first native core-suite run (`39301243754`) exposed Windows-specific snapshot assumptions: Linux ORB returned 744 inliers versus the Windows baseline 731; macOS ARM returned 580, and SIFT reference count differed by one. Packaged workflow checks had already passed on all platforms. Exact snapshots are now scoped to Windows/OpenCV 4.11, with new cross-platform known-transform corner-accuracy tests and platform-local implicit/explicit default equivalence. No golden fixture values were changed. Focused follow-up: 8 passed in 4.23s; native revalidation follows.
+
 ## Current verified state
 
 The project is in a stable, verified Windows desktop-analysis state after the Phase 1 fix pass.
