@@ -46,6 +46,14 @@
 - Kept the original golden values unchanged and scoped exact snapshots to their recorded Windows/OpenCV 4.11 environment. Added independent known-transform accuracy contracts on every platform (maximum corner error under 3 px on the textured mild-warp fixture), inlier consistency, and platform-local default-configuration equivalence.
 - Focused validation: 8 passed in 4.23s; Ruff passed. This replaces a universal-count assumption with mathematical accuracy checks, not a new performance claim.
 
+## 2026-10-19 — Final native validation at ba7e05d
+
+- GitHub run 39301662952 succeeded on Windows x64, macOS ARM64 and Ubuntu x64.
+- Windows source core tests: 91 passed, 17 skipped. macOS and Linux source core tests: 89 passed, 19 skipped. Lint passed on all three.
+- All native packages built and bundled workflow checks passed. Artifacts contain Windows setup/portable ZIP, macOS app/DMG and Linux Debian/portable packages, build provenance and smoke reports.
+- Canonical implementation status now summarizes current evidence and preserves the superseded Phase 1 snapshot separately. Desktop guide links the validation artifacts and states signing, manual installation and optional-engine limits.
+- Work is pushed on main; remaining research-driven tasks stay open in the improvement ledger. No signed or production release has been represented as complete.
+
 ## M0 — Repository foundation
 
 - Added project plan, architecture, status, development rules, and ignore patterns.

@@ -1,29 +1,48 @@
 # Implementation Status
 
-## Active improvement review — 2026-10-19
+## Current verified baseline — 2026-10-19
 
-The latest audit starts from `40e68de`. See [research findings](RESEARCH_REVIEW.md) and [task ledger](IMPROVEMENT_PLAN.md).
-The earlier verified snapshot below is historical and does not establish current engine readiness.
+Source commit: `ba7e05d`. [Native verification run 39301662952](https://github.com/DuhItzAniket/VISOR/actions/runs/39301662952) completed successfully on all targets.
 
-Initial audit reproduced a fresh-wheel build failure (`Cannot import 'setuptools.backends.legacy'`) and 10 Ruff findings.
-Code inspection found an unverified translation fallback with invented zero residual/all-inlier metrics and inconsistent validation between robust estimators. I01–I03 are the first implementation batch.
+| Target | Core suite | Lint | Native packages | Bundled workflow check |
+|---|---|---|---|---|
+| Windows x64 (Windows Server 2022 runner) | 91 passed, 17 skipped | Passed | Setup EXE + portable ZIP | Passed |
+| macOS ARM64 (macOS 14 runner) | 89 passed, 19 skipped | Passed | App bundle + DMG | Passed |
+| Linux x64 (Ubuntu 22.04 runner) | 89 passed, 19 skipped | Passed | Debian package + portable tar | Passed |
 
-I01: corrected backend to `setuptools.build_meta` and aligned exported application version with `visor.__version__`.
-Verified `python -m pip wheel . --no-deps --no-build-isolation --wheel-dir build/audit-wheels`; the v0.2.0 wheel includes UI, icon, and `visor` console entry point. This verifies package construction, not a clean-machine desktop installation.
+The core environment excludes optional model dependencies. Skips include optional engine tests; macOS/Linux also skip the exact Windows/OpenCV snapshot checks. Every target runs independent known-transform accuracy checks. Bundled checks load image inputs in Qt, run SIFT/ORB localization, render results, export JSON/CSV, save/load a project and close the window.
 
-Fresh pre-change baseline: **90 passed, 2 skipped in 55.09s**. Dependency readiness remains machine-specific.
+End users launch a standalone application without a separate Python installation. The implementation retains Python/Qt internally. These artifacts are unsigned validation builds, not a signed public release or proof of interactive install/uninstall on all desktops.
 
-I02/I03 implemented: shared geometric validation, removed unverified translation fallback, no silent alternative-estimator fallback, correct perspective center projection, and explicit batch reprojection residual. Focused check: **34 passed in 5.16s**, covering new failure cases, frozen classical positives, alternative estimators, batch and exports. Full-suite post-change validation follows the desktop-distribution work.
+## Improvement work delivered
 
-I13 in progress: shared host-platform builder, corrected Inno Setup recipe, macOS app/DMG and Linux Debian/portable package branches, pinned classical desktop build requirements and manually triggered native-runner workflow. Windows source and bundled workflow smoke checks passed (Qt input, SIFT/ORB localization/rendering/export, project round trip, shutdown). Fixed native-library discovery contamination from an unrelated Poppler `icuuc.dll` on developer PATH. No public release/signing claim is made. Platform jobs still need to run.
+- I01: corrected package backend; wheel construction verified, with application assets and launcher metadata. Exported version follows the application version.
+- I02: common geometric validation across RANSAC/MAGSAC/LMEDS; removed unverified centroid fallback and silent estimator substitution. Checks include support, projective horizon and actual polygon overlap. Center is projected through H.
+- I03: batch reprojection residual has its own field; localization error remains unavailable without external ground truth.
+- I13 build foundation: shared host builder, Windows setup recipe, macOS app/DMG, Linux Debian/portable artifacts, build provenance and native runner workflow.
+- I12/I08 progress: core checks require no models; preserve exact Windows snapshots on their recorded platform and test geometry against known transforms on all targets.
+- Documentation: dated research review, task ledger, deployment guide, restored development rules and changelog. Historical handoff documents point here.
 
-Updated evidence: [native build run 39300439636](https://github.com/DuhItzAniket/VISOR/actions/runs/39300439636) succeeded on Windows x64, macOS ARM64 and Ubuntu x64 at `303ba33`. Each job created its installer/package artifact and passed the bundled workflow check. End-user bundles need no separate Python installation. They currently include SIFT/ORB; packaged learned engines, signing/notarization and clean-desktop installation checks remain outstanding.
+## Verification and evidence
 
-Local full regression after geometry/distribution changes: **102 passed, 2 skipped in 36.78s**; Ruff passed. Two additional frozen-runtime policy regressions passed separately. Focused type check for new validator, bundle builder and smoke checker: passed (3 files, imported-module checking excluded). Optional-model tests remain distinct from the standard desktop runtime.
+- Original pre-change baseline: 90 passed, 2 skipped.
+- Latest local full suite before the final test-only portability change: 104 passed, 2 skipped in 36.41s. Follow-up portable/default-contract tests: 8 passed in 4.23s.
+- Focused new-module Mypy: passed for validator, bundle builder and smoke checker (3 files; imported modules excluded).
+- Fresh wheel build and Windows source/bundled checks passed.
+- First native bundle run `39300439636` passed. Adding full native core tests then exposed Windows-only snapshot assumptions in `39301243754`; original golden values were retained, their scope corrected, and final run `39301662952` passed.
+- Windows build discovery was isolated after detecting an incompatible Poppler ICU DLL on developer PATH.
 
-Follow-up local full suite: **104 passed, 2 skipped in 36.41s**. The first native core-suite run (`39301243754`) exposed Windows-specific snapshot assumptions: Linux ORB returned 744 inliers versus the Windows baseline 731; macOS ARM returned 580, and SIFT reference count differed by one. Packaged workflow checks had already passed on all platforms. Exact snapshots are now scoped to Windows/OpenCV 4.11, with new cross-platform known-transform corner-accuracy tests and platform-local implicit/explicit default equivalence. No golden fixture values were changed. Focused follow-up: 8 passed in 4.23s; native revalidation follows.
+## Next work and limits
 
-## Current verified state
+Follow [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md), supported by [RESEARCH_REVIEW.md](RESEARCH_REVIEW.md).
+
+1. I04–I06: measured learned-engine stage timings, real matcher/confidence/device metadata, upstream-compatible XFeat adapter and explicit effective estimator/threshold provenance.
+2. I07–I08: portable provenance-rich evaluation with held-out annotated/negative pairs. Existing saved sample summaries predate the geometry corrections and must be rerun before drawing conclusions.
+3. I09–I11: capability registry, job lifecycle/stale-result protection and calibrated quality diagnostics.
+4. I12/I13 release gates: dependency/model notices, optional learned runtime in desktop bundles, signing/notarization, user-driven desktop and install/uninstall checks. Standard bundles currently include SIFT/ORB; learned support is not advertised as packaged-ready.
+
+## Historical Phase 1 snapshot (superseded)
+
 
 The project is in a stable, verified Windows desktop-analysis state after the Phase 1 fix pass.
 

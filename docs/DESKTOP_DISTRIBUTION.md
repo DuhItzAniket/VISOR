@@ -17,6 +17,16 @@ PyInstaller's documented model supports self-contained bundles but requires buil
 
 Native build evidence (2026-10-19): [run 39300439636](https://github.com/DuhItzAniket/VISOR/actions/runs/39300439636), source `303ba33`, completed successfully on Windows x64, macOS ARM64, and Ubuntu x64. All three jobs produced packages and passed the bundled workflow check. Artifacts are named `VISOR-Windows-X64`, `VISOR-macOS-ARM64`, and `VISOR-Linux-X64`. These are unsigned validation builds, not a public production release or proof of install/uninstall behavior on every desktop.
 
+Latest validation: [run 39301662952](https://github.com/DuhItzAniket/VISOR/actions/runs/39301662952) at `ba7e05d` also passed the full core regression suite and lint on each native runner before packaging. Windows: 91 passed/17 skipped; macOS and Linux: 89 passed/19 skipped. See [current status](IMPLEMENTATION_STATUS.md) for skip scope and release gates.
+
+Artifacts from the latest run:
+
+- [Windows x64 setup and portable ZIP](https://github.com/DuhItzAniket/VISOR/actions/runs/39301662952/artifacts/12212317478)
+- [macOS Apple Silicon DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/39301662952/artifacts/12211972533)
+- [Linux x64 Debian and portable packages](https://github.com/DuhItzAniket/VISOR/actions/runs/39301662952/artifacts/12211237948)
+
+GitHub may require sign-in to download Actions artifacts; artifacts also have a retention period. These links are validation downloads, not permanent public release URLs.
+
 The runner architecture and dependency versions are recorded in `dist/build-info.json`. Linux artifacts are not guaranteed across every distribution/glibc version. macOS and Windows signing are not configured by the scripts. No package is called production-ready until install/uninstall and desktop behavior have been checked on its intended target system.
 
 ## Building (maintainers only)
