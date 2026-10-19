@@ -13,6 +13,8 @@ Verified `python -m pip wheel . --no-deps --no-build-isolation --wheel-dir build
 
 Fresh pre-change baseline: **90 passed, 2 skipped in 55.09s**. Dependency readiness remains machine-specific.
 
+I02/I03 implemented: shared geometric validation, removed unverified translation fallback, no silent alternative-estimator fallback, correct perspective center projection, and explicit batch reprojection residual. Focused check: **34 passed in 5.16s**, covering new failure cases, frozen classical positives, alternative estimators, batch and exports. Full-suite post-change validation follows the desktop-distribution work.
+
 ## Current verified state
 
 The project is in a stable, verified Windows desktop-analysis state after the Phase 1 fix pass.

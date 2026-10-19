@@ -1,5 +1,13 @@
 # Architecture Decisions
 
+## 2026-10-19: Fit failure is not a translation estimate
+
+Remove the keypoint-centroid fallback that reported all matches as inliers with zero error after fitting failed. All estimators use `geometry_validation.validate_planar_fit`; MAGSAC/LMEDS no longer silently run a different estimator on failure. The validator checks support, projection, projective horizon and actual target polygon overlap. Object center is the projected reference center. Positive classical goldens remain unchanged; invalid historical results may intentionally become failures. Adaptive threshold selection remains a separately tracked policy issue (I06).
+
+## 2026-10-19: Batch residual and localization accuracy are distinct
+
+Pair-only manifests have no external transform truth. `BatchRow.localization_error_px` is retained for compatibility but is now `None`; new `reprojection_error_px` contains the measured inlier residual. Batch CSV gains this column and the UI's existing Reproj px column reads it. Consumers must not use fitted residual as ground-truth localization error.
+
 ## Use built-in OpenCV SIFT and ORB
 
 SIFT and ORB are classical feature algorithms with stable OpenCV implementations. They require no training or downloaded weights and provide a suitable local baseline.

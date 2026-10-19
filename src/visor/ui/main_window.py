@@ -1192,7 +1192,7 @@ class MainWindow(QMainWindow):
             values = [row.scene, Path(row.reference).name, Path(row.target).name, row.engine,
                       str(row.good_matches), str(row.inliers), f"{row.inlier_ratio:.1%}",
                       "Yes" if row.geometry_valid else "No",
-                      "—" if row.localization_error_px is None else f"{row.localization_error_px:.2f}",
+                      "—" if row.reprojection_error_px is None else f"{row.reprojection_error_px:.2f}",
                       f"{row.total_ms:.1f}"]
             for column, value in enumerate(values):
                 table.setItem(row_index, column, QTableWidgetItem(value))
@@ -1421,6 +1421,7 @@ class MainWindow(QMainWindow):
             )
             # Attempt a soft reload of availability flags without full restart
             import importlib
+
             import visor.learned_engines as _le
             import visor.learned_extra as _lx
             try:
@@ -1436,9 +1437,10 @@ class MainWindow(QMainWindow):
 
     def _refresh_engine_selector(self) -> None:
         """Re-evaluate optional engine availability and update the selector items."""
-        from visor.learned_engines import is_lightglue_available as _lg, is_xfeat_available as _xf
-        from visor.learned_extra import is_disk_available as _disk
         from visor import engines_classical_extra as _ce
+        from visor.learned_engines import is_lightglue_available as _lg
+        from visor.learned_engines import is_xfeat_available as _xf
+        from visor.learned_extra import is_disk_available as _disk
         optional_entries: list[tuple[str, bool, str]] = [
             ("XFeat", _xf(), "install XFeat — click 'Install learned engines'"),
             ("SuperPoint+LightGlue", _lg(), "install LightGlue — click 'Install learned engines'"),

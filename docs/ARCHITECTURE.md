@@ -1,5 +1,7 @@
 # Architecture
 
+Current implementation note (2026-10-19): all RANSAC/MAGSAC/LMEDS outputs share `geometry_validation.py`. A failed solver returns failure; alternative methods do not silently switch to RANSAC. Batch metrics separate measured inlier reprojection residual from unknown ground-truth localization error. See the current [research review](RESEARCH_REVIEW.md) and [improvement ledger](IMPROVEMENT_PLAN.md); some extension descriptions below are historical.
+
 ## Layers
 
 ```

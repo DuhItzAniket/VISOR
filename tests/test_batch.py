@@ -36,6 +36,8 @@ def test_batch_matches_single_pair_analysis():
         assert row.good_matches == single.match_set.good_count
         assert row.inliers == single.geometry.inlier_count
         assert row.geometry_valid
+        assert row.localization_error_px is None  # Manifest has no external ground truth.
+        assert row.reprojection_error_px == single.geometry.reprojection_error_px
 
 
 def test_batch_validates_inputs_and_cancels():

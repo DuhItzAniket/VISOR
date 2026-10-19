@@ -38,6 +38,7 @@ class BatchRow:
     geometry_valid: bool
     localization_error_px: float | None
     total_ms: float
+    reprojection_error_px: float | None = None
 
 
 @dataclass(frozen=True)
@@ -95,8 +96,9 @@ def run_batch(
                 inliers=result.geometry.inlier_count,
                 inlier_ratio=result.geometry.inlier_ratio,
                 geometry_valid=result.geometry.valid,
-                localization_error_px=result.geometry.reprojection_error_px,
+                localization_error_px=None,  # No ground-truth transform in a pair-only manifest.
                 total_ms=result.performance.total_ms,
+                reprojection_error_px=result.geometry.reprojection_error_px,
             ))
     _check_cancel(cancel_event)
     return BatchReport(tuple(pairs), tuple(rows), (perf_counter() - start) * 1000)

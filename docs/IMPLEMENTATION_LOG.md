@@ -15,6 +15,14 @@
 - Original full-suite baseline: 90 passed, 2 skipped. No generated wheel/build directory is committed.
 - User added standalone Windows/macOS/Linux distribution requirement; tracked as I13 with native OS validation gates.
 
+## 2026-10-19 — I02/I03 trustworthy geometry and metric naming
+
+- Added common transform validator for all robust estimators; removed false-success centroid translation and silent MAGSAC/LMEDS fallback.
+- Checks include numerical validity, mask/support consistency, horizon crossing, convex area and real polygon intersection with target. Center is projected through the transform.
+- Preserved successful SIFT/ORB golden counts. Added adversarial solver failure, off-image projection, horizon, collinearity, invalid-mask and perspective-center regressions.
+- Batch localization accuracy is unavailable without ground truth; added separately named reprojection residual and updated UI field.
+- Focused verification: 34 passed in 5.16s (geometry validation, classical goldens, robust estimators, batch and exports).
+
 ## M0 — Repository foundation
 
 - Added project plan, architecture, status, development rules, and ignore patterns.
