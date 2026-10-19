@@ -8,6 +8,11 @@ The earlier verified snapshot below is historical and does not establish current
 Initial audit reproduced a fresh-wheel build failure (`Cannot import 'setuptools.backends.legacy'`) and 10 Ruff findings.
 Code inspection found an unverified translation fallback with invented zero residual/all-inlier metrics and inconsistent validation between robust estimators. I01–I03 are the first implementation batch.
 
+I01: corrected backend to `setuptools.build_meta` and aligned exported application version with `visor.__version__`.
+Verified `python -m pip wheel . --no-deps --no-build-isolation --wheel-dir build/audit-wheels`; the v0.2.0 wheel includes UI, icon, and `visor` console entry point. This verifies package construction, not a clean-machine desktop installation.
+
+Fresh pre-change baseline: **90 passed, 2 skipped in 55.09s**. Dependency readiness remains machine-specific.
+
 ## Current verified state
 
 The project is in a stable, verified Windows desktop-analysis state after the Phase 1 fix pass.

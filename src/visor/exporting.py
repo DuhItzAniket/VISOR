@@ -12,6 +12,7 @@ from typing import Any
 import cv2
 import numpy as np
 
+from visor import __version__
 from visor.batch import BatchReport
 from visor.benchmark import BenchmarkReport
 from visor.engines import ORBConfiguration, SIFTConfiguration
@@ -23,7 +24,7 @@ from visor.models import (
     EngineName,
 )
 
-APP_VERSION = "0.1.0"
+APP_VERSION = __version__
 PROJECT_FORMAT_VERSION = 1
 
 

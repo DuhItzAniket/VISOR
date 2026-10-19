@@ -7,6 +7,14 @@
 - Added dated research review, prioritized improvement ledger and restored repository development rules.
 - Reproduced a wheel backend import failure and baseline Ruff findings; prior handoff/status snapshots are now explicitly historical.
 
+## 2026-10-19 — I01 package construction
+
+- Replaced invalid `setuptools.backends.legacy:build` backend with documented `setuptools.build_meta`.
+- Analysis/project export version now follows `visor.__version__` instead of stale v0.1.0.
+- Wheel build passed without installing into or replacing the active environment. Inspected archive: UI, icon, and launcher metadata present.
+- Original full-suite baseline: 90 passed, 2 skipped. No generated wheel/build directory is committed.
+- User added standalone Windows/macOS/Linux distribution requirement; tracked as I13 with native OS validation gates.
+
 ## M0 — Repository foundation
 
 - Added project plan, architecture, status, development rules, and ignore patterns.

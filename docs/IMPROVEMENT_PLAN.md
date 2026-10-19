@@ -6,9 +6,11 @@ Created 2026-10-19 from audit of `40e68de`. Research: [RESEARCH_REVIEW.md](RESEA
 
 Make registration outcomes trustworthy, comparisons reproducible, and desktop workflows maintainable. Complete correctness and measurement work before adding engines or training models.
 
+User requirement added 2026-10-19: distribute standalone desktop applications for Windows, macOS, and Linux. End users must not need Python, pip, a virtual environment, or a terminal. Keep Qt as the desktop foundation, bundle the runtime, and validate builds on their target OS/architecture. Current source language remains Python; a native-language rewrite is not required for this delivery approach and has not been performed.
+
 | ID | Priority | Task and expected files | Acceptance / verification | State |
 |---|---|---|---|---|
-| I01 | P0 | Fix package backend (`pyproject.toml`) | Wheel builds without changing the current environment; version/assets are present | Planned |
+| I01 | P0 | Fix package backend (`pyproject.toml`) | Wheel builds without changing the current environment; version/assets are present | Implemented; wheel verified locally |
 | I02 | P0 | Share geometry validation, remove invented fallback (`geometry.py`, `geometry_robust.py`, new validation module, tests) | Failed/degenerate fits stay failures; mask counts/residuals agree; all estimators reject horizon crossing and outside-target polygons; positive classical regressions remain | Planned |
 | I03 | P1 | Clarify batch residual vs truth error (`batch.py`, export/UI, tests) | No ground truth => localization error unavailable; residual reported with its own name; output contract migration documented | Planned |
 | I04 | P1 | Typed pair matching and honest timing (`models.py`, learned engines, pipeline, details, exports) | Separate measured stages; actual matcher/device/confidence; no fabricated zero distances or split joint timers; mock unit tests plus optional real-model CPU/CUDA checks | Planned |
@@ -20,6 +22,7 @@ Make registration outcomes trustworthy, comparisons reproducible, and desktop wo
 | I10 | P2 | Job lifecycle and responsive desktop (new UI jobs/controller, main window) | Input/config changes invalidate old jobs; cancellation/shutdown responsive; install worker lifecycle covered; incremental refactor under UI regressions | Planned |
 | I11 | P2 | Explainable quality diagnostics (geometry diagnostics/details/export) | Coverage/residual distribution/transform plausibility shown without uncalibrated confidence claims; click-through inlier inspection | Planned |
 | I12 | P2 | Release and CI discipline (workflows/build docs/scripts) | Offline core lane, separate optional learned lane, wheel/install smoke, packaged full workflow verification, dependency/model licenses inventoried | Planned |
+| I13 | P1 | Standalone desktop distribution (platform builder, installer scripts, CI matrix, deployment guide) | Windows setup executable; macOS app/DMG; Linux executable/package; bundled runtime and launcher; artifact workflow smoke check; platform support limited to verified runners/architectures | Planned |
 
 ## Execution batches
 
@@ -27,6 +30,8 @@ Make registration outcomes trustworthy, comparisons reproducible, and desktop wo
 2. **Honest engine contracts:** I04–I06. Preserve the classical path; move learned metrics to a structured pair result. Fix installed/importable/weights-ready distinctions. Record warm and cold timing separately.
 3. **Evaluation:** I07–I08. Evaluate existing engines with consistent budgets and truth-backed accuracy. Keep tuning and reporting sets separate. Investigate negative-pair false positives before setting a detection-quality policy.
 4. **Product and release:** I09–I12. Incremental registry/job refactor, richer diagnostics, package verification. Only consider new engines after prior gates are satisfied.
+
+I13 is promoted into the current implementation batch in response to the desktop-distribution requirement. Build a shared host-platform builder and a manually triggered native runner matrix. Signing/notarization and target-system validation remain explicit release gates, not implied by configuration files.
 
 Each task updates this ledger, `IMPLEMENTATION_STATUS.md`, and `IMPLEMENTATION_LOG.md`, records checks and limitations, and gets a focused commit. A task can be implemented while some platform validation is pending; it must not be labeled fully verified without evidence.
 
