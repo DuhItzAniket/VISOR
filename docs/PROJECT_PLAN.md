@@ -1,5 +1,9 @@
 # VISOR Project Plan
 
+Current improvement sequence (2026-10-19): [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md).
+Research and code-audit findings: [RESEARCH_REVIEW.md](RESEARCH_REVIEW.md).
+The original milestones below describe the product foundation; use the improvement ledger for current work.
+
 ## Vision
 
 Build a maintainable Windows desktop tool that compares classical feature-based methods for locating a planar reference object in a target image. The app should make its inputs, configuration, geometry assumptions, and measured outputs visible.

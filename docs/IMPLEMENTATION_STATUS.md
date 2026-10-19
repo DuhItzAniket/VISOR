@@ -1,5 +1,13 @@
 # Implementation Status
 
+## Active improvement review — 2026-10-19
+
+The latest audit starts from `40e68de`. See [research findings](RESEARCH_REVIEW.md) and [task ledger](IMPROVEMENT_PLAN.md).
+The earlier verified snapshot below is historical and does not establish current engine readiness.
+
+Initial audit reproduced a fresh-wheel build failure (`Cannot import 'setuptools.backends.legacy'`) and 10 Ruff findings.
+Code inspection found an unverified translation fallback with invented zero residual/all-inlier metrics and inconsistent validation between robust estimators. I01–I03 are the first implementation batch.
+
 ## Current verified state
 
 The project is in a stable, verified Windows desktop-analysis state after the Phase 1 fix pass.

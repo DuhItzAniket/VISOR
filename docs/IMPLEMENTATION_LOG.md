@@ -1,5 +1,12 @@
 # Implementation Log
 
+## 2026-10-19 — Research and improvement planning
+
+- Audited current v0.2.0 source, geometry/matching/learned paths, UI orchestration, batch evaluation, packaging and existing documentation.
+- Consulted upstream OpenCV USAC, LightGlue, XFeat source/API, Glue Factory evaluation, HPatches, Qt thread lifecycle and Setuptools build documentation.
+- Added dated research review, prioritized improvement ledger and restored repository development rules.
+- Reproduced a wheel backend import failure and baseline Ruff findings; prior handoff/status snapshots are now explicitly historical.
+
 ## M0 — Repository foundation
 
 - Added project plan, architecture, status, development rules, and ignore patterns.

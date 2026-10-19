@@ -1,5 +1,8 @@
 # VISOR continuation guide
 
+Historical handoff. Its environment and test counts are not current verification.
+Use [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) and [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md) for current work.
+
 ## Purpose
 
 VISOR is a Windows desktop app for visual object registration and planar localization. The application compares reference and target images using classical local feature pipelines and, when optional dependencies are installed, learned matchers such as SuperPoint+LightGlue, XFeat, and ALIKED+LightGlue.

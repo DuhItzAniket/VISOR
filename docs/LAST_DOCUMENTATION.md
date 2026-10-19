@@ -1,5 +1,8 @@
 # VISOR — Final Deep Handoff Documentation
 
+Historical snapshot, superseded for current status by [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md).
+The active research review and improvement task ledger are [RESEARCH_REVIEW.md](RESEARCH_REVIEW.md) and [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md).
+
 ## 1. Project identity
 
 VISOR is a Windows desktop image registration and localization tool built in Python with PySide6, OpenCV, NumPy, and optional learned feature matching support.
