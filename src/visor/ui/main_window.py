@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 import sys
 from dataclasses import replace
+from html import escape
 from pathlib import Path
 from threading import Event
 from typing import cast
@@ -28,6 +29,7 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPlainTextEdit,
     QPushButton,
+    QScrollArea,
     QSlider,
     QSpinBox,
     QSplitter,
@@ -334,9 +336,11 @@ class MainWindow(QMainWindow):
         self._build_menu()
         self._build_workspace()
         self._build_details_dock()
+        self._build_diagnostics_dock()
         self.setStatusBar(QStatusBar(self))
         window_menu = self.window_menu
         window_menu.addAction(self.details_dock.toggleViewAction())
+        window_menu.addAction(self.diagnostics_dock.toggleViewAction())
         reset_action = QAction("Reset layout", self)
         reset_action.triggered.connect(self._reset_layout)
         window_menu.addAction(reset_action)
@@ -473,13 +477,18 @@ class MainWindow(QMainWindow):
         root = QWidget()
         root.setObjectName("workspace")
         outer = QVBoxLayout(root)
-        outer.setContentsMargins(22, 18, 22, 20)
-        outer.setSpacing(18)
+        outer.setContentsMargins(12, 12, 12, 12)
+        outer.setSpacing(12)
 
         header = QHBoxLayout()
-        header.addStretch(1)
+        engine_label = QLabel("&Engine")
+        engine_label.setObjectName("mutedText")
         self.engine_selector = QComboBox()
         self.engine_selector.addItems(["SIFT", "ORB"])
+        self.engine_selector.setAccessibleName("Analysis engine")
+        self.engine_selector.setMinimumContentsLength(20)
+        self.engine_selector.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        engine_label.setBuddy(self.engine_selector)
         self.run_button = QPushButton("Run analysis")
         self.run_button.setObjectName("primaryButton")
         self.run_button.setEnabled(False)
@@ -506,32 +515,26 @@ class MainWindow(QMainWindow):
             ("BRISK", classical_extra.is_brisk_available(), "needs an OpenCV build with BRISK"),
         ]
         for name, available, hint in optional_entries:
-            if available:
-                self.engine_selector.addItem(name)
-            else:
-                self.engine_selector.addItem(f"{name} ({hint})")
-                item = self.engine_selector.model().item(self.engine_selector.count() - 1)  # type: ignore[union-attr]
-                item.setEnabled(False)
+            self._add_engine_entry(name, available, hint)
         self.engine_selector.setToolTip("Feature extraction and descriptor matching engine")
         self.engine_selector.currentIndexChanged.connect(self._engine_changed)
         self.install_learned_button = QPushButton("Install learned engines")
         self.install_learned_button.setObjectName("secondaryButton")
         self.install_learned_button.clicked.connect(self._install_learned_engines)
         self.install_learned_button.setVisible(False)
-        header.addWidget(self.engine_selector, 0, Qt.AlignmentFlag.AlignTop)
-        header.addWidget(self.install_learned_button, 0, Qt.AlignmentFlag.AlignTop)
-        header.addWidget(self.run_button, 0, Qt.AlignmentFlag.AlignTop)
-        header.addWidget(self.compare_button, 0, Qt.AlignmentFlag.AlignTop)
-        header.addWidget(self.benchmark_button, 0, Qt.AlignmentFlag.AlignTop)
-        header.addWidget(self.cancel_button, 0, Qt.AlignmentFlag.AlignTop)
+        header.addWidget(engine_label)
+        header.addWidget(self.engine_selector)
+        header.addWidget(self.run_button)
+        header.addWidget(self.cancel_button)
+        header.addStretch(1)
         self.fit_view_button = QPushButton("Fit View")
         self.fit_view_button.setObjectName("secondaryButton")
         self.fit_view_button.clicked.connect(self._fit_images)
-        header.addWidget(self.fit_view_button, 0, Qt.AlignmentFlag.AlignTop)
+        header.addWidget(self.fit_view_button)
         self.export_button = QPushButton("Export")
         self.export_button.setObjectName("secondaryButton")
         self.export_button.clicked.connect(self._export_visualization)
-        header.addWidget(self.export_button, 0, Qt.AlignmentFlag.AlignTop)
+        header.addWidget(self.export_button)
         outer.addLayout(header)
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
@@ -539,7 +542,7 @@ class MainWindow(QMainWindow):
         input_panel = QWidget()
         input_panel.setObjectName("inputPanel")
         input_layout = QVBoxLayout(input_panel)
-        input_layout.setContentsMargins(18, 18, 18, 18)
+        input_layout.setContentsMargins(12, 12, 12, 12)
         input_layout.setSpacing(10)
         self.reference_input = ImageDropWidget("Reference image")
         self.target_input = ImageDropWidget("Target image")
@@ -547,20 +550,33 @@ class MainWindow(QMainWindow):
         self.target_input.image_changed.connect(self._on_image_changed)
 
         image_row = QWidget()
-        image_row_layout = QHBoxLayout(image_row)
+        image_row_layout = QVBoxLayout(image_row)
         image_row_layout.setContentsMargins(0, 0, 0, 0)
         image_row_layout.setSpacing(10)
         self.reference_input.setMinimumWidth(220)
         self.target_input.setMinimumWidth(220)
-        self.reference_input.setMinimumHeight(170)
-        self.target_input.setMinimumHeight(170)
+        self.reference_input.setMinimumHeight(200)
+        self.target_input.setMinimumHeight(200)
+        self.reference_input.preview.setMinimumHeight(90)
+        self.target_input.preview.setMinimumHeight(90)
         image_row_layout.addWidget(self.reference_input, 1)
         image_row_layout.addWidget(self.target_input, 1)
         image_row_layout.setStretch(0, 1)
         image_row_layout.setStretch(1, 1)
-        image_row.setMinimumHeight(190)
-        image_row.setMaximumHeight(210)
-        input_layout.addWidget(image_row)
+        input_layout.addWidget(image_row, 1)
+
+        secondary_actions = QHBoxLayout()
+        secondary_actions.addWidget(self.compare_button)
+        secondary_actions.addWidget(self.benchmark_button)
+        input_layout.addLayout(secondary_actions)
+
+        self.recent_pairs_toggle = QPushButton("Recent pairs")
+        self.recent_pairs_toggle.setObjectName("secondaryButton")
+        self.recent_pairs_toggle.setCheckable(True)
+        self.recent_pairs_toggle.setChecked(False)
+        self.recent_pairs_toggle.setToolTip("Show or hide recently used image pairs")
+        self.recent_pairs_toggle.toggled.connect(self._toggle_recent_pairs)
+        input_layout.addWidget(self.recent_pairs_toggle)
 
         pair_panel = QWidget()
         self.recent_pairs_panel = pair_panel
@@ -571,25 +587,19 @@ class MainWindow(QMainWindow):
         pair_layout.setContentsMargins(0, 6, 0, 0)
         pair_layout.setSpacing(4)
         pair_header = QHBoxLayout()
-        pair_title = QLabel("Recent pairs")
-        pair_title.setObjectName("mutedText")
-        self.recent_pairs_toggle = QPushButton("▾")
-        self.recent_pairs_toggle.setCheckable(True)
-        self.recent_pairs_toggle.setChecked(False)
-        self.recent_pairs_toggle.setFixedSize(20, 20)
-        self.recent_pairs_toggle.setToolTip("Show or hide recent pairs")
-        self.recent_pairs_toggle.toggled.connect(self._toggle_recent_pairs)
-        pair_header.addWidget(self.recent_pairs_toggle)
-        pair_header.addWidget(pair_title)
-        pair_header.addStretch(1)
-        self.add_pair_button = QPushButton("+ pair")
+        self.add_pair_button = QPushButton("Save current pair")
+        self.add_pair_button.setObjectName("secondaryButton")
         self.add_pair_button.clicked.connect(self._add_current_pair_to_history)
         self.clear_pair_button = QPushButton("Clear")
+        self.clear_pair_button.setObjectName("secondaryButton")
         self.clear_pair_button.clicked.connect(self._clear_pair_history)
         pair_header.addWidget(self.add_pair_button)
         pair_header.addWidget(self.clear_pair_button)
         pair_layout.addLayout(pair_header)
         self.pair_list = QListWidget()
+        self.pair_list.setAccessibleName("Recent reference and target pairs")
+        self.pair_list.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.pair_list.setTextElideMode(Qt.TextElideMode.ElideRight)
         self.pair_list.setMinimumHeight(70)
         self.pair_list.setMaximumHeight(130)
         self.pair_list.setToolTip("Select a saved image pair to reload it for inspection")
@@ -606,6 +616,7 @@ class MainWindow(QMainWindow):
         overlay_label = QLabel("Overlay")
         overlay_label.setObjectName("mutedText")
         self.feature_color_button = QPushButton("Rainbow")
+        self.feature_color_button.setObjectName("secondaryButton")
         self.feature_color_button.setCheckable(True)
         self.feature_color_button.setChecked(False)
         self.feature_color_button.setToolTip("Toggle rainbow feature colors")
@@ -614,43 +625,18 @@ class MainWindow(QMainWindow):
         self.feature_thickness_slider.setRange(1, 10)
         self.feature_thickness_slider.setValue(1)
         self.feature_thickness_slider.setToolTip("Feature line thickness")
+        self.feature_thickness_slider.setAccessibleName("Feature line thickness in pixels")
         self.feature_thickness_slider.valueChanged.connect(self._refresh_visualization)
         self.feature_thickness_value = QLabel("1 px")
         self.feature_thickness_value.setObjectName("mutedText")
         self.feature_thickness_slider.valueChanged.connect(self._update_feature_thickness_label)
         overlay_layout.addWidget(overlay_label)
         overlay_layout.addWidget(self.feature_color_button)
-        overlay_layout.addWidget(QLabel("Thickness"))
+        thickness_label = QLabel("&Thickness")
+        thickness_label.setBuddy(self.feature_thickness_slider)
+        overlay_layout.addWidget(thickness_label)
         overlay_layout.addWidget(self.feature_thickness_slider, 1)
         overlay_layout.addWidget(self.feature_thickness_value)
-        input_layout.addWidget(overlay_controls)
-
-        self.engine_console = QPlainTextEdit()
-        self.engine_console.setObjectName("engineConsole")
-        self.engine_console.setReadOnly(True)
-        self.engine_console.setMaximumBlockCount(200)
-        self.engine_console.setPlaceholderText("Engine console ready. Background activity will appear here.")
-        self.engine_console.setMinimumHeight(140)
-        engine_console_box = QWidget()
-        engine_console_layout = QVBoxLayout(engine_console_box)
-        engine_console_layout.setContentsMargins(0, 8, 0, 0)
-        engine_console_title = QLabel("Engine console")
-        engine_console_title.setObjectName("sectionTitle")
-        engine_console_layout.addWidget(engine_console_title)
-        engine_console_layout.addWidget(self.engine_console)
-        input_layout.addWidget(engine_console_box)
-        self.log_engine_event("INFO", "Engine console ready.")
-        extras = []
-        if classical_extra.is_akaze_available():
-            extras.append("AKAZE")
-        if classical_extra.is_brisk_available():
-            extras.append("BRISK")
-        if is_disk_available():
-            extras.append("DISK+LightGlue/SIFT+LightGlue")
-        if extras:
-            self.log_engine_event("INFO", f"Optional engines available: {', '.join(extras)}.")
-        else:
-            self.log_engine_event("INFO", "Classical SIFT/ORB active; AKAZE/BRISK not in this OpenCV build.")
 
         self.overview_panel = QWidget()
         self.overview_panel.setObjectName("welcomePanel")
@@ -673,16 +659,59 @@ class MainWindow(QMainWindow):
         self.result_tabs.addTab(self.matches_view, "Feature Matches")
         self.result_tabs.addTab(self.localization_view, "Localization")
         self.result_tabs.addTab(self.warped_view, "Warped / Rectified")
-        splitter.addWidget(input_panel)
-        splitter.addWidget(self.result_tabs)
-        splitter.setSizes([390, 770])
+        input_scroll = QScrollArea()
+        input_scroll.setObjectName("inputScroll")
+        input_scroll.setWidgetResizable(True)
+        input_scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+        input_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        input_scroll.setMinimumWidth(260)
+        input_scroll.setWidget(input_panel)
+        result_panel = QWidget()
+        result_layout = QVBoxLayout(result_panel)
+        result_layout.setContentsMargins(0, 0, 0, 0)
+        result_layout.setSpacing(8)
+        result_layout.addWidget(self.result_tabs, 1)
+        result_layout.addWidget(overlay_controls)
+        splitter.addWidget(input_scroll)
+        splitter.addWidget(result_panel)
+        splitter.setStretchFactor(0, 0)
+        splitter.setStretchFactor(1, 1)
+        splitter.setSizes([280, 680])
         outer.addWidget(splitter, 1)
         self.setCentralWidget(root)
 
     def _toggle_recent_pairs(self, checked: bool) -> None:
         if hasattr(self, "recent_pairs_panel"):
             self.recent_pairs_panel.setVisible(checked)
-        self.recent_pairs_toggle.setText("▾" if checked else "▸")
+
+    def _add_engine_entry(self, name: str, available: bool, hint: str) -> None:
+        """Keep engine names compact; put dependency guidance in the tooltip."""
+        self.engine_selector.addItem(name if available else f"{name} (unavailable)")
+        index = self.engine_selector.count() - 1
+        item = self.engine_selector.model().item(index)  # type: ignore[union-attr]
+        item.setEnabled(available)
+        if not available:
+            reason = "Not included in this desktop distribution." if getattr(sys, "frozen", False) else hint
+            self.engine_selector.setItemData(index, reason, Qt.ItemDataRole.ToolTipRole)
+
+    def _build_diagnostics_dock(self) -> None:
+        self.engine_console = QPlainTextEdit()
+        self.engine_console.setObjectName("engineConsole")
+        self.engine_console.setAccessibleName("Diagnostic activity log")
+        self.engine_console.setReadOnly(True)
+        self.engine_console.setMaximumBlockCount(200)
+        self.engine_console.setPlaceholderText("Processing messages and engine diagnostics appear here.")
+        body = QWidget()
+        layout = QVBoxLayout(body)
+        layout.setContentsMargins(8, 8, 8, 8)
+        layout.addWidget(self.install_learned_button, 0, Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(self.engine_console)
+        self.diagnostics_dock = QDockWidget("Diagnostics", self)
+        self.diagnostics_dock.setObjectName("diagnosticsDock")
+        self.diagnostics_dock.setWidget(body)
+        self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.diagnostics_dock)
+        self.diagnostics_dock.hide()
+        self.log_engine_event("INFO", "SIFT/ORB ready. Optional engine status is available under Help > Engine Availability.")
 
     def log_engine_event(self, level: str, message: str) -> None:
         text = self.engine_console.toPlainText().strip()
@@ -694,6 +723,8 @@ class MainWindow(QMainWindow):
         cursor = self.engine_console.textCursor()
         cursor.movePosition(QTextCursor.MoveOperation.End)
         self.engine_console.setTextCursor(cursor)
+        if level.upper() == "ERROR" and hasattr(self, "diagnostics_dock"):
+            self.diagnostics_dock.show()
 
     def _image_view(self, message: str) -> ImageCanvas:
         view = ImageCanvas(message)
@@ -709,7 +740,11 @@ class MainWindow(QMainWindow):
         self.details_panel = AnalysisDetailsPanel()
         self.details_tabs = QTabWidget()
         self.details_tabs.addTab(self.details_panel, "Results")
-        self.details_tabs.addTab(self._configuration_panel(), "Parameters")
+        configuration_scroll = QScrollArea()
+        configuration_scroll.setWidgetResizable(True)
+        configuration_scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+        configuration_scroll.setWidget(self._configuration_panel())
+        self.details_tabs.addTab(configuration_scroll, "Parameters")
         dock.setWidget(self.details_tabs)
         self.details_dock = dock
         self.addDockWidget(Qt.DockWidgetArea.RightDockWidgetArea, dock)
@@ -738,6 +773,7 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(10, 10, 10, 10)
         common = QGroupBox("Matching and geometry")
         common_form = QFormLayout(common)
+        common_form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
         self.ratio_control = self._float_control(0.50, 0.99, 0.75)
         self.ransac_control = self._float_control(0.5, 20.0, 4.0)
         self.match_line_thickness = QSlider(Qt.Orientation.Horizontal)
@@ -762,6 +798,7 @@ class MainWindow(QMainWindow):
         self.engine_settings = QStackedWidget()
         sift_panel = QWidget()
         sift_form = QFormLayout(sift_panel)
+        sift_form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
         self.sift_features = self._int_control(0, 100000, 0)
         self.sift_layers = self._int_control(1, 10, 3)
         self.sift_contrast = self._float_control(0.001, 1.0, 0.04, 3)
@@ -774,6 +811,7 @@ class MainWindow(QMainWindow):
         sift_form.addRow("Sigma", self.sift_sigma)
         orb_panel = QWidget()
         orb_form = QFormLayout(orb_panel)
+        orb_form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
         self.orb_features = self._int_control(100, 50000, 1500)
         self.orb_scale = self._float_control(1.01, 2.0, 1.2)
         self.orb_levels = self._int_control(1, 32, 8)
@@ -800,7 +838,9 @@ class MainWindow(QMainWindow):
     def _engine_changed(self, index: int) -> None:
         if hasattr(self, "engine_settings"):
             name = self.engine_selector.itemText(index)
+            self.engine_settings.setVisible(name in ("SIFT", "ORB"))
             self.engine_settings.setCurrentIndex(0 if name == "SIFT" else 1 if name == "ORB" else self.engine_settings.currentIndex())
+        self._update_overview_summary()
 
     def _sync_overlay_controls(self) -> None:
         if hasattr(self, "feature_thickness_slider"):
@@ -958,7 +998,9 @@ class MainWindow(QMainWindow):
         self.pair_list.clear()
         for reference, target in self._pair_history:
             label = f"{reference.name}  ↔  {target.name}"
-            self.pair_list.addItem(label)
+            item = QListWidgetItem(label)
+            item.setToolTip(f"Reference: {reference}\nTarget: {target}")
+            self.pair_list.addItem(item)
 
     def _clear_pair_history(self) -> None:
         self._pair_history.clear()
@@ -1004,9 +1046,9 @@ class MainWindow(QMainWindow):
         engine = self.engine_selector.currentText() if hasattr(self, "engine_selector") else "SIFT"
         summary_lines = [
             "<b>Session summary</b>",
-            f"Reference: {reference.name if reference else 'Not selected'}",
-            f"Target: {target.name if target else 'Not selected'}",
-            f"Selected engine: {engine}",
+            f"Reference: {escape(reference.name) if reference else 'Not selected'}",
+            f"Target: {escape(target.name) if target else 'Not selected'}",
+            f"Selected engine: {escape(engine)}",
             "Quick actions: load a reference and target image, run the analysis, then export or fit the view when needed.",
         ]
         if self._latest_result is not None:
@@ -1407,7 +1449,8 @@ class MainWindow(QMainWindow):
         if install_xfeat:
             what.append("XFeat (accelerated-features)")
         self.log_engine_event("INFO", f"Installing: {', '.join(what)}. This may take several minutes…")
-        self.statusBar().showMessage("Installing learned-engine dependencies — see engine console for progress…")
+        self.diagnostics_dock.show()
+        self.statusBar().showMessage("Installing learned-engine dependencies — see Diagnostics for progress…")
 
         self._install_worker = InstallWorker(python_exe, install_lightglue, install_xfeat)
         self._install_worker.progress.connect(lambda msg: self.log_engine_event("PIP", msg))
@@ -1456,16 +1499,17 @@ class MainWindow(QMainWindow):
             ("AKAZE", _ce.is_akaze_available(), "needs an OpenCV build with AKAZE"),
             ("BRISK", _ce.is_brisk_available(), "needs an OpenCV build with BRISK"),
         ]
+        selected = self.engine_selector.currentText()
+        self.engine_selector.blockSignals(True)
         # Remove all optional items (keep SIFT=0, ORB=1)
         while self.engine_selector.count() > 2:
             self.engine_selector.removeItem(2)
         for name, available, hint in optional_entries:
-            if available:
-                self.engine_selector.addItem(name)
-            else:
-                self.engine_selector.addItem(f"{name} ({hint})")
-                item = self.engine_selector.model().item(self.engine_selector.count() - 1)  # type: ignore[union-attr]
-                item.setEnabled(False)
+            self._add_engine_entry(name, available, hint)
+        selected_index = self.engine_selector.findText(selected)
+        self.engine_selector.setCurrentIndex(max(selected_index, 0))
+        self.engine_selector.blockSignals(False)
+        self._engine_changed(self.engine_selector.currentIndex())
 
     def _fit_images(self) -> None:
         for view in (self.matches_view, self.localization_view, self.warped_view):
@@ -1698,7 +1742,16 @@ class MainWindow(QMainWindow):
     def _apply_theme(self) -> None:
         self.setStyleSheet(
             """
+            QWidget { color: #dce3ec; }
             QMainWindow, QWidget#workspace { background: #11151b; color: #e6eaf0; }
+            QScrollArea, QScrollArea > QWidget > QWidget { background: #171c23; }
+            QListWidget { background: #1b222c; color: #dce3ec; border: 1px solid #3c4c61; }
+            QListWidget::item { padding: 5px; }
+            QListWidget::item:selected { background: #304d6e; color: #edf2f8; }
+            QScrollBar:vertical { background: #171c23; width: 12px; margin: 0; }
+            QScrollBar::handle:vertical { background: #46566b; min-height: 24px; border-radius: 3px; }
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
+            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: #171c23; }
             QMenuBar { background: #171c23; color: #cbd2dc; padding: 5px; }
             QMenuBar::item:selected, QMenu::item:selected { background: #293240; }
             QMenu { background: #1b222c; color: #e6eaf0; border: 1px solid #303947; }
@@ -1706,22 +1759,26 @@ class MainWindow(QMainWindow):
             QWidget#inputPanel, QWidget#welcomePanel { background: #171c23; border: 1px solid #29313b; border-radius: 8px; }
             QFrame#imageDropWidget { background: #1b222c; border: 1px solid #303947; border-radius: 7px; }
             QFrame#imageDropWidget:hover { border-color: #6589b8; }
-            QLabel#pageTitle { font-size: 25px; font-weight: 600; color: #f2f5f8; }
             QLabel#sectionTitle { font-size: 15px; font-weight: 600; color: #e6eaf0; }
-            QLabel#eyebrow { font-size: 10px; letter-spacing: 1.5px; color: #8394aa; }
-            QLabel#mutedText { color: #929eae; }
+            QLabel#mutedText { color: #a9b4c2; }
             QLabel#errorText { color: #f08b86; }
             QLabel#imagePreview { color: #758396; background: #141920; border: 1px dashed #394555; border-radius: 5px; }
-            QLabel#badge { color: #aebfd4; background: #222c39; border: 1px solid #344355; border-radius: 4px; padding: 7px 9px; font-size: 10px; }
-            QLabel#canvasMark { color: #52769e; font-size: 44px; font-weight: 700; letter-spacing: 5px; }
-            QLabel#welcomeTitle { color: #e7ebf1; font-size: 20px; font-weight: 600; padding: 8px; }
-            QLabel#assumption { color: #8290a2; font-size: 11px; padding-top: 18px; }
-            QPushButton#secondaryButton { color: #dce3ec; background: #293545; border: 1px solid #3c4c61; border-radius: 5px; padding: 8px; }
-            QPushButton#secondaryButton:hover { background: #34465c; }
+            QPushButton { color: #dce3ec; background: #293545; border: 1px solid #3c4c61; border-radius: 4px; padding: 7px 9px; }
+            QPushButton:hover { background: #34465c; }
+            QPushButton:checked { background: #304d6e; border-color: #6589b8; }
+            QPushButton:disabled { color: #788493; background: #27303b; border-color: #333d49; }
             QPushButton#primaryButton { color: #f1f6fc; background: #356ba5; border: 1px solid #477fb9; border-radius: 5px; padding: 8px 14px; font-weight: 600; }
             QPushButton#primaryButton:hover { background: #407bb8; }
             QPushButton#primaryButton:disabled { color: #788493; background: #27303b; border-color: #333d49; }
             QComboBox { color: #dce3ec; background: #202a36; border: 1px solid #3c4c61; border-radius: 5px; padding: 7px 9px; }
+            QComboBox QAbstractItemView { background: #202a36; color: #dce3ec; selection-background-color: #304d6e; }
+            QComboBox QAbstractItemView::item:disabled { color: #788493; }
+            QSpinBox, QDoubleSpinBox { color: #dce3ec; background: #202a36; border: 1px solid #3c4c61; border-radius: 3px; padding: 4px; }
+            QSlider::groove:horizontal { height: 4px; background: #394555; border-radius: 2px; }
+            QSlider::handle:horizontal { width: 12px; margin: -5px 0; background: #aebfd4; border: 1px solid #536980; border-radius: 3px; }
+            QPushButton:focus, QPushButton#primaryButton:focus, QComboBox:focus,
+            QSpinBox:focus, QDoubleSpinBox:focus { border: 1px solid #9dc6f5; }
+            QSlider::handle:horizontal:focus { background: #9dc6f5; border-color: #e0edff; }
             QTabWidget::pane { border: 1px solid #29313b; background: #171c23; }
             QTabBar::tab { color: #aeb7c4; background: #1b222c; padding: 8px 14px; border: 1px solid #29313b; }
             QTabBar::tab:selected { color: #edf2f8; background: #293545; }

@@ -30,6 +30,7 @@ class ImageDropWidget(QFrame):
     def __init__(self, title: str, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setObjectName("imageDropWidget")
+        self.setAccessibleName(title)
         self.setAcceptDrops(True)
         self.setMinimumHeight(230)
         self.setMinimumWidth(260)
@@ -51,11 +52,13 @@ class ImageDropWidget(QFrame):
         self.metadata_label.setWordWrap(True)
         self.browse_button = QPushButton("Choose image…")
         self.browse_button.setObjectName("secondaryButton")
+        self.browse_button.setAccessibleName(f"Choose {title.lower()}")
         self.browse_button.clicked.connect(self._browse)
 
-        self.clear_button = QPushButton("✕")
+        self.clear_button = QPushButton("×")
         self.clear_button.setObjectName("secondaryButton")
         self.clear_button.setToolTip("Remove this image")
+        self.clear_button.setAccessibleName(f"Remove {title.lower()}")
         self.clear_button.setFixedWidth(34)
         self.clear_button.clicked.connect(self.clear_image)
         self.clear_button.setVisible(False)

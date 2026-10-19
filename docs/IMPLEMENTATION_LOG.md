@@ -1,5 +1,13 @@
 # Implementation Log
 
+## 2026-10-20 — I14 professional product standard and workspace refinement
+
+- Recorded the user's professional-product requirement as a durable design, scientific reporting and release review standard; linked it from development rules and the improvement ledger.
+- Reviewed the existing interface through source and offscreen Windows-font renders. Moved inputs to a vertical scrollable sidebar and the console to a hideable Diagnostics dock, preserving space for result inspection. Kept Run/Cancel in the main action row and comparison/benchmark beside inputs.
+- Fixed the unreachable recent-pair toggle; shortened unavailable engine labels and moved guidance to tooltips; added accessible control names, explicit focus/disabled styling and consistent dark control surfaces. Parameters scroll; optional engines no longer display a preceding classical form. Escaped filenames in overview rich text.
+- Reviewed empty layouts at 1280×820 and 1040×680, loaded inputs/expanded history and parameter layouts. Ruff and diff whitespace checks passed. No automated tests or native package rebuild was run in this follow-up; existing three-platform package evidence applies to ba7e05d.
+- Native DPI, keyboard/screen-reader and complete workflow reviews remain pending. Generated review images are local ignored build artifacts.
+
 ## 2026-10-19 — Research and improvement planning
 
 - Audited current v0.2.0 source, geometry/matching/learned paths, UI orchestration, batch evaluation, packaging and existing documentation.

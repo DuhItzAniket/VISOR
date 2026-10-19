@@ -8,6 +8,8 @@ Make registration outcomes trustworthy, comparisons reproducible, and desktop wo
 
 User requirement added 2026-10-19: distribute standalone desktop applications for Windows, macOS, and Linux. End users must not need Python, pip, a virtual environment, or a terminal. Keep Qt as the desktop foundation, bundle the runtime, and validate builds on their target OS/architecture. Current source language remains Python; a native-language rewrite is not required for this delivery approach and has not been performed.
 
+User requirement added 2026-10-20: professional product quality. Apply [PRODUCT_QUALITY_STANDARD.md](PRODUCT_QUALITY_STANDARD.md) throughout the work, including visual hierarchy, keyboard access, error recovery and evidence-backed results. This is an acceptance standard for every batch.
+
 | ID | Priority | Task and expected files | Acceptance / verification | State |
 |---|---|---|---|---|
 | I01 | P0 | Fix package backend (`pyproject.toml`) | Wheel builds without changing the current environment; version/assets are present | Implemented; wheel verified locally |
@@ -23,6 +25,7 @@ User requirement added 2026-10-19: distribute standalone desktop applications fo
 | I11 | P2 | Explainable quality diagnostics (geometry diagnostics/details/export) | Coverage/residual distribution/transform plausibility shown without uncalibrated confidence claims; click-through inlier inspection | Planned |
 | I12 | P2 | Release and CI discipline (workflows/build docs/scripts) | Offline core lane, separate optional learned lane, wheel/install smoke, packaged full workflow verification, dependency/model licenses inventoried | In progress: core lane and bundled workflow checks added; optional model lane and release compliance remain |
 | I13 | P1 | Standalone desktop distribution (platform builder, installer scripts, CI matrix, deployment guide) | Windows setup executable; macOS app/DMG; Linux executable/package; bundled runtime and launcher; artifact workflow smoke check; platform support limited to verified runners/architectures | Native core suites, lint, packages and bundled checks passed on all three runners (run 39301662952 at ba7e05d); signing and clean-desktop install gates remain |
+| I14 | P1 | Professional desktop workflow and accessibility (UI widgets, product quality standard) | Canvas-first layout, compact engine choices, discoverable history/diagnostics, consistent focus/disabled states; native keyboard, scaling, screen-reader and success/failure review on each target | In progress: workspace refinement and accessibility labels implemented; local offscreen layout review at 1280×820 and 1040×680; native accessibility/scaling and full workflow gates remain |
 
 ## Execution batches
 
@@ -41,6 +44,7 @@ Each task updates this ledger, `IMPLEMENTATION_STATUS.md`, and `IMPLEMENTATION_L
 - `PROJECT_PLAN.md`: original product mission and milestones, with this plan as current improvement sequence.
 - `RESEARCH_REVIEW.md`: dated evidence and primary-source rationale; append/review when upstream integration changes.
 - `IMPROVEMENT_PLAN.md`: task ledger and acceptance gates.
+- `PRODUCT_QUALITY_STANDARD.md`: product/design requirements, interface audit and native release review gates.
 - `IMPLEMENTATION_STATUS.md`: latest verified facts and outstanding limitations; canonical current status.
 - `IMPLEMENTATION_LOG.md`: append-only implementation/check history.
 - `DECISIONS.md` and `ARCHITECTURE.md`: accepted design changes when implementation lands.

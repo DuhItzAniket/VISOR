@@ -1,6 +1,7 @@
 # VISOR development rules
 
 - Read `docs/IMPLEMENTATION_STATUS.md` and `docs/IMPROVEMENT_PLAN.md` before changing the project.
+- Apply `docs/PRODUCT_QUALITY_STANDARD.md` to product changes: prioritize the image workflow, accessible controls, restrained styling and honest scientific results. Record visual and native-platform review separately.
 - Keep vision algorithms independent of Qt; use typed domain results across layers.
 - Never turn a failed fit into a successful localization using unverified correspondences or invented metrics.
 - A fitted transform and an accurate localization are different claims. Ground-truth error requires ground truth.

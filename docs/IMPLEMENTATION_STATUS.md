@@ -1,5 +1,13 @@
 # Implementation Status
 
+## Product quality follow-up — 2026-10-20
+
+- Established [PRODUCT_QUALITY_STANDARD.md](PRODUCT_QUALITY_STANDARD.md) and I14 as an ongoing acceptance requirement.
+- Refined the source desktop workspace: stacked, scrollable inputs; larger result area; compact engine selection; separate Diagnostics dock; visible recent-pair disclosure; consistent control/focus styles and role-specific accessible names.
+- Diagnostics opens for logged errors and source dependency installation. Parameter forms scroll and classical forms are hidden for other engines. Overview filenames are escaped as text.
+- Local offscreen renders reviewed at 1280×820 and 1040×680, plus loaded inputs/history and parameters at 1280×820. Ruff and diff whitespace checks passed. No automated tests or new native bundles were run for this UI follow-up; the verified package baseline below predates it.
+- Native monitor scaling, keyboard/screen-reader review, complete success/failure/busy workflows and clean-desktop installation remain open release gates. I04–I14 remain tracked; this is not a completed production release.
+
 ## Current verified baseline — 2026-10-19
 
 Source commit: `ba7e05d`. [Native verification run 39301662952](https://github.com/DuhItzAniket/VISOR/actions/runs/39301662952) completed successfully on all targets.
