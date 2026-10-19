@@ -22,6 +22,15 @@ def configure_logging() -> None:
 
 def main() -> int:
     configure_logging()
+    if "--smoke-check" in sys.argv:
+        import argparse
+
+        from visor.smoke_check import run_smoke_check
+
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--smoke-check", type=Path, required=True)
+        args = parser.parse_args()
+        return run_smoke_check(args.smoke_check)
     app = QApplication(sys.argv)
     app.setApplicationName("VISOR")
     app.setOrganizationName("VISOR")

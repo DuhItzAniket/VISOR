@@ -67,6 +67,10 @@ Setuptools documents `setuptools.build_meta` as the build backend. An installed 
 - No blanket MAGSAC default change based on upstream benchmarks. Compare it on VISOR's held-out pairs first.
 - No installer/release claim based on a process merely staying alive. Validate image loading, analysis, export, and shutdown in the built app.
 
+## Desktop delivery requirement added during review
+
+The user requires standalone Windows/macOS/Linux applications without a Python setup step. Qt remains a suitable desktop UI foundation. PyInstaller explicitly bundles the runtime for end users, and requires builds on each target OS; this is packaging the current implementation, not rewriting it in C++. Add native build jobs and installer formats, then verify each artifact. Platform configuration alone is not platform support. [PyInstaller](https://pyinstaller.org/en/stable/operating-mode.html), [Qt deployment](https://doc.qt.io/qtforpython-6/deployment/index.html). See I13 and `DESKTOP_DISTRIBUTION.md`.
+
 ## Evidence limits
 
 Local static inspection establishes the above code defects. It does not prove an engine is operational on every machine, nor does this review establish a best-performing engine. Tests and package build outcomes are maintained in `IMPLEMENTATION_STATUS.md`; the execution sequence and acceptance criteria are in `IMPROVEMENT_PLAN.md`.

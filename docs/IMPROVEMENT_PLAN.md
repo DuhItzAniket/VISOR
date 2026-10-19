@@ -22,7 +22,7 @@ User requirement added 2026-10-19: distribute standalone desktop applications fo
 | I10 | P2 | Job lifecycle and responsive desktop (new UI jobs/controller, main window) | Input/config changes invalidate old jobs; cancellation/shutdown responsive; install worker lifecycle covered; incremental refactor under UI regressions | Planned |
 | I11 | P2 | Explainable quality diagnostics (geometry diagnostics/details/export) | Coverage/residual distribution/transform plausibility shown without uncalibrated confidence claims; click-through inlier inspection | Planned |
 | I12 | P2 | Release and CI discipline (workflows/build docs/scripts) | Offline core lane, separate optional learned lane, wheel/install smoke, packaged full workflow verification, dependency/model licenses inventoried | Planned |
-| I13 | P1 | Standalone desktop distribution (platform builder, installer scripts, CI matrix, deployment guide) | Windows setup executable; macOS app/DMG; Linux executable/package; bundled runtime and launcher; artifact workflow smoke check; platform support limited to verified runners/architectures | Planned |
+| I13 | P1 | Standalone desktop distribution (platform builder, installer scripts, CI matrix, deployment guide) | Windows setup executable; macOS app/DMG; Linux executable/package; bundled runtime and launcher; artifact workflow smoke check; platform support limited to verified runners/architectures | Builder/workflow implemented; Windows bundle workflow check passed; native CI package checks pending |
 
 ## Execution batches
 

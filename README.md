@@ -2,6 +2,10 @@
 
 **Visual Object Registration & Analysis** — a professional Windows desktop application for comparing classical local image features and estimating planar object location from a reference image and a target image.
 
+The distribution target is a standalone desktop app for Windows, macOS, and Linux, with bundled dependencies so end users do not need Python. See [desktop distribution](docs/DESKTOP_DISTRIBUTION.md) for build artifacts, platform validation and current limitations. Source setup commands below are for developers.
+
+Current work: [research review](docs/RESEARCH_REVIEW.md), [improvement plan](docs/IMPROVEMENT_PLAN.md), and [verified implementation status](docs/IMPLEMENTATION_STATUS.md).
+
 ## Features
 
 - **SIFT and ORB engines** — OpenCV implementations, no model training or weight downloads
@@ -55,7 +59,7 @@ pip install git+https://github.com/cvg/LightGlue.git
 pip install git+https://github.com/verlab/accelerated_features.git#subdirectory=.
 ```
 
-> **Note:** Learned engines require `torch` and `torchvision`. The venv already includes CUDA-enabled torch if you installed the `[learned]` extra. They are disabled in the packaged EXE — run from source for learned engine support.
+> **Developer note:** Learned engines require compatible `torch` and `torchvision`; installing the extra does not guarantee CUDA support. Standard desktop bundles currently include the classical engines. Packaged learned-engine support is a separate tracked improvement.
 
 ## Development
 

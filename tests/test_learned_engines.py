@@ -96,7 +96,7 @@ def test_aliked_lightglue_matches_identical_images():
     from visor.learned_engines import ALIKEDConfiguration, ALIKEDLightGlueEngine
     engine = ALIKEDLightGlueEngine(ALIKEDConfiguration(max_keypoints=256, use_cuda=False))
     gray = _textured_gray(seed=2)
-    ref_fs, tgt_fs, matches = engine.extract_and_match(gray, gray)
+    ref_fs, _tgt_fs, matches = engine.extract_and_match(gray, gray)
     assert len(ref_fs.keypoints) > 0
     assert matches.shape[1] == 2
     assert len(matches) > 5

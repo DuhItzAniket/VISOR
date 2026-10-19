@@ -223,9 +223,9 @@ class InstallWorker(QThread):
     # Correct install commands for each optional learned-engine dependency.
     # LightGlue: official CVG repo (covers SuperPoint, ALIKED, DISK, SIFT+LG)
     # accelerated-features: the real XFeat package from verlab
-    LIGHTGLUE_CMD = ["git+https://github.com/cvg/LightGlue.git"]
-    XFEAT_CMD = ["git+https://github.com/verlab/accelerated_features.git#subdirectory=.",
-                 "scikit-learn"]
+    LIGHTGLUE_CMD = ("git+https://github.com/cvg/LightGlue.git",)
+    XFEAT_CMD = ("git+https://github.com/verlab/accelerated_features.git#subdirectory=.",
+                 "scikit-learn")
 
     def __init__(self, python_exe: str, install_lightglue: bool, install_xfeat: bool) -> None:
         super().__init__()
@@ -1366,6 +1366,9 @@ class MainWindow(QMainWindow):
     def _update_learned_install_visibility(self) -> None:
         if not hasattr(self, "install_learned_button"):
             return
+        if getattr(sys, "frozen", False):
+            self.install_learned_button.setVisible(False)
+            return
         missing = not is_lightglue_available() or not is_xfeat_available()
         self.install_learned_button.setVisible(missing)
 
@@ -1376,6 +1379,9 @@ class MainWindow(QMainWindow):
         Runs pip in a background thread so the UI stays responsive.
         Shows live output in the engine console.
         """
+        if getattr(sys, "frozen", False):
+            self.statusBar().showMessage("Additional learned engines are unavailable in this desktop distribution.")
+            return
         if self._worker is not None:
             self.statusBar().showMessage("An analysis is already running. Wait for it to finish before installing.")
             return
@@ -1427,8 +1433,8 @@ class MainWindow(QMainWindow):
             try:
                 importlib.reload(_le)
                 importlib.reload(_lx)
-            except Exception:  # noqa: BLE001
-                pass
+            except Exception as exc:  # noqa: BLE001
+                self.log_engine_event("WARNING", f"Engine discovery refresh failed: {exc}")
             self._update_learned_install_visibility()
             self._refresh_engine_selector()
         else:

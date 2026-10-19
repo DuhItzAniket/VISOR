@@ -12,7 +12,7 @@ def _rainbow_color(index: int, total: int) -> tuple[int, int, int]:
     if total <= 1:
         hue = 120
     else:
-        hue = int(round((index / max(total - 1, 1)) * 179.0))
+        hue = round((index / max(total - 1, 1)) * 179.0)
     hue = max(0, min(179, hue))
     hsv = np.uint8([[[hue, 255, 255]]])
     bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)[0, 0]
@@ -56,7 +56,7 @@ def render_match_canvas(
             color = _rainbow_color(index, max(1, len(selected)))
         else:
             color = (70, 205, 135) if is_inlier else (80, 95, 220) if is_known else (190, 180, 65)
-        line_width = max(1, int(round(settings.feature_line_thickness)))
+        line_width = max(1, round(settings.feature_line_thickness))
         if settings.show_match_lines:
             cv2.line(canvas, start, end, color, line_width, cv2.LINE_AA)
         cv2.circle(canvas, start, max(2, line_width), color, -1, cv2.LINE_AA)
@@ -79,7 +79,7 @@ def render_localization(
             cv2.circle(canvas, (round(point.x), round(point.y)), 2, (175, 135, 70), 1, cv2.LINE_AA)
     if settings.show_geometry and geometry.valid and geometry.projected_corners:
         polygon = np.round(np.asarray(geometry.projected_corners)).astype(np.int32).reshape(-1, 1, 2)
-        outline_width = max(2, int(round(settings.feature_line_thickness * 1.5)))
+        outline_width = max(2, round(settings.feature_line_thickness * 1.5))
         overlay = canvas.copy()
         cv2.fillPoly(overlay, [polygon], (38, 118, 220))
         cv2.addWeighted(overlay, 0.12, canvas, 0.88, 0, canvas)

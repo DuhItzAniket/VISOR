@@ -1,0 +1,63 @@
+name: Desktop bundles
+
+# Manual builds produce inspectable artifacts; they do not publish a release.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bundle:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, macos-14, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Linux desktop build libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libegl1 libglib2.0-0 libxkbcommon-x11-0 libxcb-cursor0
+      - name: Install build dependencies
+        run: |
+          python -m pip install -r requirements/desktop-build.txt
+          python -m pip install --no-deps .
+      - name: Install Windows installer compiler
+        if: runner.os == 'Windows'
+        run: choco install innosetup --no-progress -y
+      - name: Build bundle and host installer
+        run: python scripts/build_desktop.py --package
+      - name: Windows bundled workflow smoke check
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $appProcess = Start-Process -FilePath dist/VISOR/VISOR.exe -ArgumentList '--smoke-check', 'dist/smoke-report.json' -PassThru
+          if (-not $appProcess.WaitForExit(90000)) { Stop-Process -Id $appProcess.Id; throw "Bundled smoke check timed out" }
+          if ($appProcess.ExitCode -ne 0) { throw "Bundled smoke check failed" }
+      - name: macOS bundled workflow smoke check
+        if: runner.os == 'macOS'
+        run: dist/VISOR.app/Contents/MacOS/VISOR --smoke-check dist/smoke-report.json
+      - name: Linux bundled workflow smoke check
+        if: runner.os == 'Linux'
+        run: dist/VISOR/VISOR --smoke-check dist/smoke-report.json
+      - name: Read smoke check result
+        run: python -c "import json; r=json.load(open('dist/smoke-report.json')); print(r); assert r['success']"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: VISOR-${{ runner.os }}-${{ runner.arch }}
+          path: |
+            dist/installers/*
+            dist/build-info.json
+            dist/smoke-report.json
+          if-no-files-found: error

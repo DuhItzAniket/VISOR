@@ -413,12 +413,12 @@ class ALIKEDLightGlueEngine:
 
 def is_lightglue_available() -> bool:
     """Return True if LightGlue is importable."""
-    return _LIGHTGLUE_AVAILABLE
+    return _LIGHTGLUE_AVAILABLE and not getattr(sys, "frozen", False)
 
 
 def is_xfeat_available() -> bool:
     """Return True if the optional XFeat dependency is importable."""
-    return _XFEAT_AVAILABLE
+    return _XFEAT_AVAILABLE and not getattr(sys, "frozen", False)
 
 
 def is_learned_available() -> bool:

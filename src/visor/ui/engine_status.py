@@ -104,8 +104,8 @@ class EngineStatusDialog(QDialog):
         frozen = getattr(sys, "frozen", False)
         if frozen:
             note = QLabel(
-                "Running as packaged EXE — learned engines are disabled. "
-                "Run from source (python -m visor) to use SuperPoint, ALIKED, DISK, SIFT+LG, and XFeat."
+                "This desktop distribution includes SIFT and ORB. "
+                "Additional learned engines are unavailable in this build."
             )
             note.setWordWrap(True)
             note.setObjectName("mutedText")
@@ -120,6 +120,9 @@ class EngineStatusDialog(QDialog):
         container_layout.setContentsMargins(0, 0, 0, 0)
 
         entries = _collect_entries()
+        if frozen:
+            entries = [entry._replace(available=False, install_cmd="") if entry.category == "Learned"
+                       else entry._replace(install_cmd="") for entry in entries]
         current_category = ""
         for entry in entries:
             if entry.category != current_category:

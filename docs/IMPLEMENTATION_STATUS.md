@@ -15,6 +15,8 @@ Fresh pre-change baseline: **90 passed, 2 skipped in 55.09s**. Dependency readin
 
 I02/I03 implemented: shared geometric validation, removed unverified translation fallback, no silent alternative-estimator fallback, correct perspective center projection, and explicit batch reprojection residual. Focused check: **34 passed in 5.16s**, covering new failure cases, frozen classical positives, alternative estimators, batch and exports. Full-suite post-change validation follows the desktop-distribution work.
 
+I13 in progress: shared host-platform builder, corrected Inno Setup recipe, macOS app/DMG and Linux Debian/portable package branches, pinned classical desktop build requirements and manually triggered native-runner workflow. Windows source and bundled workflow smoke checks passed (Qt input, SIFT/ORB localization/rendering/export, project round trip, shutdown). Fixed native-library discovery contamination from an unrelated Poppler `icuuc.dll` on developer PATH. No public release/signing claim is made. Platform jobs still need to run.
+
 ## Current verified state
 
 The project is in a stable, verified Windows desktop-analysis state after the Phase 1 fix pass.

@@ -77,8 +77,9 @@ def test_windows_installer_manifest_is_present():
     assert installer.exists()
     content = installer.read_text(encoding="utf-8")
     assert "AppName=VISOR" in content
-    assert "OutputBaseFilename=VISOR-setup" in content
-    assert "Source: \"dist\\VISOR\\VISOR.exe\"" in content
+    assert "OutputBaseFilename=VISOR-{#AppVersion}-windows-setup" in content
+    assert 'Source: "{#RepoRoot}\\dist\\VISOR\\*"' in content
+    assert "PrivilegesRequired=lowest" in content
 
 
 def test_invalid_engine_name_is_rejected(textured_pair):

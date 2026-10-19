@@ -126,6 +126,8 @@ class SIFTLightGlueEngine(_LightGluePairedEngine):
 
 
 def is_disk_available() -> bool:
+    if getattr(sys, "frozen", False):
+        return False
     try:
         import lightglue  # noqa: F401
         from lightglue import DISK  # noqa: F401

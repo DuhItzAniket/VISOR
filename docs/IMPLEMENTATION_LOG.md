@@ -23,6 +23,15 @@
 - Batch localization accuracy is unavailable without ground truth; added separately named reprojection residual and updated UI field.
 - Focused verification: 34 passed in 5.16s (geometry validation, classical goldens, robust estimators, batch and exports).
 
+## 2026-10-19 — I13 standalone desktop build path
+
+- Added a shared native-host builder and versioned Windows ZIP/setup, macOS app/DMG, Linux portable/Debian packaging branches. Updated the Windows wrapper to use it.
+- Added manual GitHub native runner matrix with artifact uploads and bundled offline workflow checks; no automatic public release.
+- Added `--smoke-check` diagnostics including bootstrap import failure capture; checks UI input, both classical engines, rendering, JSON/CSV exports, project session and shutdown.
+- Found a real Windows bundle startup failure: PyInstaller collected an incompatible Poppler ICU DLL from developer PATH. Isolated the native build PATH; rebuilt bundle now passes the workflow check.
+- Packaged UI hides developer dependency installation controls. Standard desktop builds explicitly exclude optional Torch/model packages; packaged learned support remains a separate improvement gate.
+- Corrected pre-existing lint issues encountered in touched code; updated a brittle installer string test for the new versioned recipe. Targeted follow-up: 28 passed in 4.98s. Full-suite validation and platform jobs follow.
+
 ## M0 — Repository foundation
 
 - Added project plan, architecture, status, development rules, and ignore patterns.
