@@ -1,9 +1,10 @@
 import cv2
 import numpy as np
+import pytest
 
 from visor.calibration import calibrate_camera, solve_pnp_pose
 from visor.geometry import estimate_homography
-from visor.learned_engines import SuperPointConfiguration
+from visor.learned_engines import SuperPointConfiguration, is_lightglue_available
 from visor.matching import match_features
 from visor.models import AnalysisSettings, DescriptorInfo, FeatureSet, KeypointInfo, MatchInfo, MatchSet
 from visor.pipeline import analyze
@@ -133,6 +134,7 @@ def test_render_match_canvas_rainbow_mode_handles_large_match_count():
     assert canvas.shape[0] > 0 and canvas.shape[1] > 0
 
 
+@pytest.mark.skipif(not is_lightglue_available(), reason="Optional LightGlue runtime is not installed")
 def test_analyze_accepts_learned_engine_configuration(tmp_path):
     ref = tmp_path / "reference.png"
     target = tmp_path / "target.png"

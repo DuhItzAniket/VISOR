@@ -32,6 +32,13 @@
 - Packaged UI hides developer dependency installation controls. Standard desktop builds explicitly exclude optional Torch/model packages; packaged learned support remains a separate improvement gate.
 - Corrected pre-existing lint issues encountered in touched code; updated a brittle installer string test for the new versioned recipe. Targeted follow-up: 28 passed in 4.98s. Full-suite validation and platform jobs follow.
 
+## 2026-10-19 — Native platform validation and core CI
+
+- Native GitHub run 39300439636 at `303ba33` passed on Windows x64, macOS ARM64 and Ubuntu x64, including bundle workflow checks and installer/package artifacts.
+- Local full suite passed: 102 tests, 2 skips in 36.78s. Added two frozen-runtime regressions, both passed. Ruff passed; targeted new-module Mypy passed (3 files, imported modules skipped).
+- Added source revision to future build-info reports, an explicit optional-runtime guard for the previously unguarded real-model test, and core test/lint steps in the native build workflow. This allows validating the ordinary desktop build without installing learned dependencies.
+- Public release, signing/notarization, clean-desktop installation/uninstallation and packaged learned-runtime support remain explicitly unverified.
+
 ## M0 — Repository foundation
 
 - Added project plan, architecture, status, development rules, and ignore patterns.

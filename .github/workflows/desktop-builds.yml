@@ -32,6 +32,11 @@ jobs:
         run: |
           python -m pip install -r requirements/desktop-build.txt
           python -m pip install --no-deps .
+      - name: Core regression checks without model dependencies
+        run: |
+          python -m pip install pytest ruff
+          python -m pytest -q
+          python -m ruff check src tests scripts/build_desktop.py
       - name: Install Windows installer compiler
         if: runner.os == 'Windows'
         run: choco install innosetup --no-progress -y

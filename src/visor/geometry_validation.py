@@ -68,7 +68,7 @@ def validate_planar_fit(
     denominators = np.column_stack((corners, np.ones(4))) @ h[2]
     # An affine function reaches its extrema on corners. Different signs mean
     # the projective horizon crosses the reference, even if corners look finite.
-    tolerance = 1e-10 * max(float(np.max(np.abs(denominators))), np.finfo(float).tiny)
+    tolerance = 1e-10 * max(float(np.max(np.abs(denominators))), float(np.finfo(float).tiny))
     if not (np.all(denominators > tolerance) or np.all(denominators < -tolerance)):
         return reject("projective horizon crosses the reference image.")
 

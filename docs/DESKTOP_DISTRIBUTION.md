@@ -15,6 +15,8 @@ PyInstaller's documented model supports self-contained bundles but requires buil
 | macOS Intel | Separate x86_64 build if required | Same app workflow | Not covered by the initial runner matrix; do not advertise universal binary support |
 | Linux x86_64 | `.deb` plus portable tar archive | Install Debian package and launch from desktop menu | Native Ubuntu build/check; test each supported desktop/distribution |
 
+Native build evidence (2026-10-19): [run 39300439636](https://github.com/DuhItzAniket/VISOR/actions/runs/39300439636), source `303ba33`, completed successfully on Windows x64, macOS ARM64, and Ubuntu x64. All three jobs produced packages and passed the bundled workflow check. Artifacts are named `VISOR-Windows-X64`, `VISOR-macOS-ARM64`, and `VISOR-Linux-X64`. These are unsigned validation builds, not a public production release or proof of install/uninstall behavior on every desktop.
+
 The runner architecture and dependency versions are recorded in `dist/build-info.json`. Linux artifacts are not guaranteed across every distribution/glibc version. macOS and Windows signing are not configured by the scripts. No package is called production-ready until install/uninstall and desktop behavior have been checked on its intended target system.
 
 ## Building (maintainers only)

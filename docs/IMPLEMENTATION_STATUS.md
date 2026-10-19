@@ -17,6 +17,10 @@ I02/I03 implemented: shared geometric validation, removed unverified translation
 
 I13 in progress: shared host-platform builder, corrected Inno Setup recipe, macOS app/DMG and Linux Debian/portable package branches, pinned classical desktop build requirements and manually triggered native-runner workflow. Windows source and bundled workflow smoke checks passed (Qt input, SIFT/ORB localization/rendering/export, project round trip, shutdown). Fixed native-library discovery contamination from an unrelated Poppler `icuuc.dll` on developer PATH. No public release/signing claim is made. Platform jobs still need to run.
 
+Updated evidence: [native build run 39300439636](https://github.com/DuhItzAniket/VISOR/actions/runs/39300439636) succeeded on Windows x64, macOS ARM64 and Ubuntu x64 at `303ba33`. Each job created its installer/package artifact and passed the bundled workflow check. End-user bundles need no separate Python installation. They currently include SIFT/ORB; packaged learned engines, signing/notarization and clean-desktop installation checks remain outstanding.
+
+Local full regression after geometry/distribution changes: **102 passed, 2 skipped in 36.78s**; Ruff passed. Two additional frozen-runtime policy regressions passed separately. Focused type check for new validator, bundle builder and smoke checker: passed (3 files, imported-module checking excluded). Optional-model tests remain distinct from the standard desktop runtime.
+
 ## Current verified state
 
 The project is in a stable, verified Windows desktop-analysis state after the Phase 1 fix pass.

@@ -10,7 +10,7 @@ Current work: [research review](docs/RESEARCH_REVIEW.md), [improvement plan](doc
 
 - **SIFT and ORB engines** — OpenCV implementations, no model training or weight downloads
 - **Learned engine support** — optional SuperPoint+LightGlue, XFeat, ALIKED+LightGlue, DISK+LightGlue, SIFT+LightGlue when dependencies are installed
-- **One-click install** — click **Install learned engines** in the toolbar; the app installs the correct packages into the running Python environment with live console output
+- **Developer dependency installation** — source builds can install optional runtime packages with live output; XFeat API compatibility is under review (I05)
 - **Drag-and-drop image input** — drop PNG, JPEG, BMP, TIFF, or WebP into either slot, or use the file picker
 - **Feature Matches view** — side-by-side match lines with inlier (green) / outlier (red-blue) coloring
 - **Localization view** — projected reference polygon and center point drawn on the target image
@@ -55,8 +55,8 @@ Click **Install learned engines** in the toolbar. The app installs the correct p
 # LightGlue (covers SuperPoint, ALIKED, DISK, SIFT+LG)
 pip install git+https://github.com/cvg/LightGlue.git
 
-# XFeat
-pip install git+https://github.com/verlab/accelerated_features.git#subdirectory=.
+# XFeat: adapter/API validation is tracked in docs/IMPROVEMENT_PLAN.md (I05).
+# Package installation alone does not establish engine readiness.
 ```
 
 > **Developer note:** Learned engines require compatible `torch` and `torchvision`; installing the extra does not guarantee CUDA support. Standard desktop bundles currently include the classical engines. Packaged learned-engine support is a separate tracked improvement.

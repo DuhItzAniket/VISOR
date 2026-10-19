@@ -42,6 +42,8 @@ XFeat's official README uses `modules.xfeat.XFeat`, `detectAndCompute`, or an ex
 
 Record requested versus actual device, model initialization/weight loading separately from warm analysis time, selected model revision, matching confidence, preprocessing resolution, and keypoint budget. Introduce a small measured engine cache only after profiling; bound memory and key it by model/configuration/device. Keep the source-runtime and packaged-runtime support policies explicit; the existing packaged-engine guard is a VISOR policy, not evidence of a universal PyInstaller impossibility.
 
+PyTorch documents asynchronous CUDA execution and synchronization/events for accurate timing. Use synchronized wall-clock measurements for end-to-end stage latency or CUDA events for device execution, label the convention, and warm up separately. A host timer ending immediately after an asynchronous model call does not measure completed inference. [CUDA semantics](https://docs.pytorch.org/docs/main/notes/cuda.html), [CUDA events](https://docs.pytorch.org/docs/stable/generated/torch.cuda.streams.Event.html).
+
 ### 3. Evaluation that answers product questions
 
 HPatches is a relevant planar descriptor/registration benchmark. Glue Factory evaluates homography error and matching precision on HPatches, and uses separate datasets and metrics for relative pose. VISOR should not equate a homography fit on four matches with accurate localization on varied real scenes. [HPatches project](https://hpatches.github.io/), [Glue Factory evaluation](https://github.com/cvg/glue-factory#evaluation).

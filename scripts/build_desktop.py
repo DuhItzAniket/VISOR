@@ -61,8 +61,14 @@ def build() -> tuple[Path, str, str]:
     command.append(str(ROOT / "src" / "visor" / "__main__.py"))
     run(command, isolate_native_path=True)
     bundle = ROOT / "dist" / ("VISOR.app" if system == "Darwin" else "VISOR")
+    revision = None
+    try:
+        revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    except (OSError, subprocess.CalledProcessError):
+        revision = os.environ.get("GITHUB_SHA")
     info = {
         "version": version, "system": system, "architecture": architecture,
+        "source_revision": revision,
         "python": platform.python_version(), "learned_engines_bundled": False,
         "dependencies": {
             name: importlib.metadata.version(name)
