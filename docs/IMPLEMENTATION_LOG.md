@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Handle fresh Qt wheel notices explicitly
+
+- Native run 40225818839 failed during notice staging on all four targets because fresh PySide6 wheels omit the standalone license-reference file present in the local environment. Core source checks were not replaced with fabricated packaging success.
+- Permit that specific Qt/PySide/Shiboken case only through matching, hash-verified pinned PySide LGPL/GPL source texts. Each component records its zero wheel-file count and source fallback. Missing notices for other distributions still fail. Added a clean-wheel regression and an incomplete-fallback rejection case. Focused checks: 23 passed/3 host-symlink skips; Ruff and focused audit/builder Mypy passed.
+- Added separately downloadable small audit artifacts so the per-platform inventory can be inspected without downloading full installers. Last local committed-source build: 218 notice files, 423 frozen filesystem entries, no unresolved or overlapping distribution-file origins. Opaque/native/source-offer obligations remain open despite that origin count. Full local suite at 6dea02f: 224 passed/5 skipped in 45.83s (three symlink cases cannot run on this Windows host).
+
 ## 2026-10-26 — Collect dependency notices and audit actual frozen files
 
 - Inspected PyInstaller's real collection table and found unused PDF-image and Qt Virtual Keyboard plugins. Added a small QtGui hook using the upstream collector while filtering those plugins, with an artifact guard against their return. Excluded optional NumPy testing/F2PY/YAML dependencies uncovered in the collection cross-reference.

@@ -29,11 +29,14 @@ def audit_inputs(tmp_path):
             version="6.11.2", metadata={"Name": name, "License": "test declaration"},
             files=[PurePosixPath("LICENSE.txt")], locate_file=lambda path, root=root: root / str(path))
     snapshot = tmp_path / "snapshot"
-    (snapshot / "qt/LICENSES").mkdir(parents=True)
-    notice = snapshot / "qt/LICENSES/LGPL.txt"
-    notice.write_bytes(b"Upstream license bytes\n")
-    source = {"qt_version": "6.11.2", "repositories": [], "files": [
-        {"path": "qt/LICENSES/LGPL.txt", "sha256": digest(notice), "source_url": "https://example.invalid/pinned"}]}
+    (snapshot / "pyside-pyside-setup/LICENSES").mkdir(parents=True)
+    entries = []
+    for name in ("LGPL-3.0-only.txt", "GPL-3.0-only.txt"):
+        notice = snapshot / "pyside-pyside-setup/LICENSES" / name
+        notice.write_bytes(b"Upstream notice-integrity fixture\n")
+        entries.append({"path": notice.relative_to(snapshot).as_posix(), "sha256": digest(notice),
+                        "source_url": "https://example.invalid/pinned"})
+    source = {"qt_version": "6.11.2", "repositories": [], "files": entries}
     (snapshot / "sources.json").write_text(json.dumps(source))
     runtime = tmp_path / "python-LICENSE.txt"
     runtime.write_bytes(b"Python runtime license\n")
@@ -51,7 +54,7 @@ def test_stage_and_verify_notices_offline_without_optional_models(tmp_path, audi
     target = tmp_path / "staged"
     document = stage_notices(target, snapshot, distribution=distribution, runtime_notice=runtime)
     assert set(seen) == set(COMPONENTS)  # no Torch, model setup or network probe
-    assert verify_notice_index(target / "notices.json") == len(document["files"]) == 10
+    assert verify_notice_index(target / "notices.json") == len(document["files"]) == 11
     with pytest.raises(ValueError, match="runtime does not match"):
         verify_notice_index(target / "notices.json", qt_version="different")
     assert (target / "installed/numpy/LICENSE.txt").read_bytes() == b"Copyright and license\r\nVerbatim bytes\r\n"
@@ -73,7 +76,7 @@ def test_qt_snapshot_version_and_integrity_mismatches_fail(tmp_path, audit_input
     with pytest.raises(RuntimeError, match="does not match"):
         stage_notices(tmp_path / "version", snapshot, distribution=packages.__getitem__, runtime_notice=runtime)
     packages["PySide6_Essentials"].version = "6.11.2"
-    (snapshot / "qt/LICENSES/LGPL.txt").write_bytes(b"changed upstream text")
+    (snapshot / "pyside-pyside-setup/LICENSES/LGPL-3.0-only.txt").write_bytes(b"changed upstream text")
     with pytest.raises(ValueError, match="snapshot integrity"):
         stage_notices(tmp_path / "corrupt", snapshot, distribution=packages.__getitem__, runtime_notice=runtime)
 
@@ -83,6 +86,23 @@ def test_missing_distribution_notices_cannot_appear_complete(tmp_path, audit_inp
     packages["numpy"].files = []
     with pytest.raises(RuntimeError, match="No installed license"):
         stage_notices(tmp_path / "missing", snapshot, distribution=packages.__getitem__, runtime_notice=runtime)
+
+
+def test_clean_qt_wheels_without_notice_files_use_verified_source_fallback(tmp_path, audit_inputs):
+    packages, snapshot, runtime = audit_inputs
+    for name in ("PySide6", "PySide6_Essentials", "PySide6_Addons", "shiboken6"):
+        packages[name].files = []
+    target = tmp_path / "clean-wheel"
+    document = stage_notices(target, snapshot, distribution=packages.__getitem__, runtime_notice=runtime)
+    qt = [component for component in document["components"] if component["name"] == "PySide6"]
+    assert qt[0]["collected_notice_count"] == 0 and "Pinned PySide source corpus" in qt[0]["notice_source"]
+    assert verify_notice_index(target / "notices.json") == 7
+    # A source fallback cannot hide a damaged or incomplete pinned corpus.
+    source = json.loads((snapshot / "sources.json").read_text())
+    source["files"] = []
+    (snapshot / "sources.json").write_text(json.dumps(source))
+    with pytest.raises(RuntimeError, match="No installed license"):
+        stage_notices(tmp_path / "missing-corpus", snapshot, distribution=packages.__getitem__, runtime_notice=runtime)
 
 
 def test_file_inventory_matches_actual_bytes_and_keeps_unknown_origin(tmp_path, audit_inputs):

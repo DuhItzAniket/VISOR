@@ -67,6 +67,15 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
+          name: VISOR-${{ runner.os }}-${{ runner.arch }}-audit
+          path: |
+            dist/build-info.json
+            dist/artifact-inventory.json
+            dist/smoke-report.json
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
           name: VISOR-${{ runner.os }}-${{ runner.arch }}
           path: |
             dist/installers/*

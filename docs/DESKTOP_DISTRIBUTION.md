@@ -62,6 +62,8 @@ New audit builds include `third-party/notices.json` and its referenced exact not
 
 The Actions artifact also supplies `artifact-inventory.json`, containing actual frozen file hashes and best-effort collection origins, and `build-info.json` records its hash. The inventory stays outside the app to avoid post-build signature changes. It covers the frozen filesystem before installer wrapping/signing, with embedded/native contents explicitly opaque. Re-audit after any signing or packaging transformation that changes those files. Complete component/source-offer/native-library license review remains separate from successful collection.
 
+New workflow runs also upload small `VISOR-<OS>-<ARCH>-audit` artifacts with only build-info, inventory and smoke results, so maintainers can inspect evidence without downloading every installer.
+
 ## Optional engines
 
 The standard desktop bundles validate SIFT/ORB and explicitly exclude Torch/LightGlue/XFeat to avoid packaging developer-installed GPU dependencies accidentally. Registry-supported additional classical engines are enabled when the bundled OpenCV API provides them. Packaged UI hides pip installation controls and reports unavailable learned engines. Source learned adapters are repaired, but a complete packaged learned runtime and its model notices remain I12/I13 work; users should not be told to install Python to complete an advertised packaged feature.

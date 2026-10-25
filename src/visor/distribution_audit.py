@@ -13,6 +13,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
 
 COMPONENTS = ("numpy", "opencv-contrib-python", "PySide6", "PySide6_Essentials", "PySide6_Addons", "shiboken6", "pyinstaller")
+QT_COMPONENTS = {"PySide6", "PySide6_Essentials", "PySide6_Addons", "shiboken6"}
 
 
 def digest(path: Path) -> str:
@@ -55,6 +56,12 @@ def stage_notices(destination: Path, qt_snapshot: Path, *, distribution=metadata
     """Copy exact local distribution notices and a hash-verified pinned Qt corpus."""
     destination.mkdir(parents=True, exist_ok=True)
     files: list[dict[str, Any]] = []
+    corpus = json.loads((qt_snapshot / "sources.json").read_text(encoding="utf-8"))
+    actual_qt = distribution("PySide6_Essentials").version
+    if corpus["qt_version"] != actual_qt:
+        raise RuntimeError(f"Qt notice corpus {corpus['qt_version']} does not match installed PySide6 {actual_qt}.")
+    qt_fallback_files = {"pyside-pyside-setup/LICENSES/LGPL-3.0-only.txt", "pyside-pyside-setup/LICENSES/GPL-3.0-only.txt"}
+    has_qt_fallback = qt_fallback_files <= {entry["path"] for entry in corpus["files"]}
 
     def copy_notice(source: Path, relative: str, component: str) -> None:
         safe = relative_path(relative)
@@ -71,19 +78,18 @@ def stage_notices(destination: Path, qt_snapshot: Path, *, distribution=metadata
         package = distribution(name)
         slug = re.sub(r"[-_.]+", "-", name).lower()
         candidates = [file for file in package.files or [] if _is_notice(str(file))]
-        if not candidates:
+        source_fallback = not candidates and name in QT_COMPONENTS and package.version == actual_qt and has_qt_fallback
+        if not candidates and not source_fallback:
             raise RuntimeError(f"No installed license/notice files found for {name}.")
         for file in candidates:
             copy_notice(Path(package.locate_file(file)), f"installed/{slug}/{relative_path(str(file))}", name)
         components.append({"name": package.metadata.get("Name", name), "version": package.version,
                            "license_expression": package.metadata.get("License-Expression"),
                            "license_metadata": package.metadata.get("License"), "collected_notice_count": len(candidates),
+                           "notice_source": "Pinned PySide source corpus; wheel has no separate notice file." if source_fallback
+                                            else "Installed distribution files plus pinned Qt corpus where applicable.",
                            "scope": "Installed distribution notices; not proof all package files are bundled."})
     copy_notice(runtime_notice or python_notice(), "python/LICENSE.txt", "CPython")
-    corpus = json.loads((qt_snapshot / "sources.json").read_text(encoding="utf-8"))
-    actual_qt = distribution("PySide6_Essentials").version
-    if corpus["qt_version"] != actual_qt:
-        raise RuntimeError(f"Qt notice corpus {corpus['qt_version']} does not match installed PySide6 {actual_qt}.")
     for entry in corpus["files"]:
         relative = relative_path(entry["path"])
         source = qt_snapshot / str(relative)

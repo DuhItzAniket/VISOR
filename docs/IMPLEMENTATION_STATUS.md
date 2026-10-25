@@ -6,6 +6,8 @@ Updated 2026-10-26. This is the current snapshot; chronological changes, prior c
 
 Added offline collection of actual installed dependency/runtime notices and a checked-in, hash-pinned 203-file Qt/PySide notice corpus. The bundle validates the notice index against actual Qt version and file hashes. A separate frozen-file inventory records hashes, distribution/source origins, overlapping claims and unresolved entries, without publishing developer absolute paths or claiming full transitive compliance.
 
+Native run 40225818839 exposed fresh Qt wheels without standalone notice files. The repair explicitly records a version-matched pinned-source fallback for Qt/PySide/Shiboken only; other missing notices still fail. Focused repair checks passed (23 tests/3 host symlink skips); a new native run follows. No failed build is advertised as verified.
+
 Excluded unused PDF-image/Qt Virtual Keyboard plugins and optional NumPy testing/F2PY/YAML dependencies. A preliminary Windows bundle passed all existing workflows plus 218 notice hashes and PNG/JPEG/BMP/TIFF/WebP decoding; excluded Qt modules were absent. Final native refresh follows the committed source, including the final dependency exclusions/overlap handling. New source checks: **224 passed, 2 skipped in 40.80s**, 22 focused audit/notice/version checks, Ruff and focused audit/builder Mypy passed. Previously verified download links below remain tied to their exact source revision.
 
 ## Current verification
