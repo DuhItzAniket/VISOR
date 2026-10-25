@@ -72,6 +72,9 @@ def build() -> tuple[Path, str, str]:
         "--additional-hooks-dir", str(ROOT / "scripts" / "pyinstaller_hooks"),
         "--hidden-import", "visor.engines_classical_extra",
         "--hidden-import", "visor.learned_extra",
+        # NumPy 1.26's Cython random extension imports this stdlib module
+        # implicitly. It must not depend on optional numpy.testing imports.
+        "--hidden-import", "secrets",
     ]
     # Standard desktop distribution is classical-only. Do not accidentally bundle
     # the developer machine's Torch/CUDA runtime or mutable optional model code.

@@ -8,6 +8,8 @@ Added offline collection of actual installed dependency/runtime notices and a ch
 
 Native run 40225818839 exposed fresh Qt wheels without standalone notice files. The repair explicitly records a version-matched pinned-source fallback for Qt/PySide/Shiboken only; other missing notices still fail. Focused repair checks passed (23 tests/3 host symlink skips); a new native run follows. No failed build is advertised as verified.
 
+The following packaged check exposed an implicit NumPy Cython import of stdlib secrets after optional NumPy testing dependencies were excluded. Added the explicit required hidden import; bundled startup and workflow remain the gate before download links change. Latest local full source suite: 225 passed/5 skipped in 48.39s.
+
 Excluded unused PDF-image/Qt Virtual Keyboard plugins and optional NumPy testing/F2PY/YAML dependencies. A preliminary Windows bundle passed all existing workflows plus 218 notice hashes and PNG/JPEG/BMP/TIFF/WebP decoding; excluded Qt modules were absent. Final native refresh follows the committed source, including the final dependency exclusions/overlap handling. New source checks: **224 passed, 2 skipped in 40.80s**, 22 focused audit/notice/version checks, Ruff and focused audit/builder Mypy passed. Previously verified download links below remain tied to their exact source revision.
 
 ## Current verification

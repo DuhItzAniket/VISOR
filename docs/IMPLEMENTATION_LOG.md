@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Preserve NumPy's implicit standard-library dependency
+
+- Run 40226317768 passed notice staging/building but its bundled startup check exposed NumPy 1.26's Cython random extension importing stdlib secrets implicitly. Removing optional NumPy test dependencies also removed the incidental import edge that had collected it.
+- Added an explicit hidden import for that required stdlib module; optional testing/YAML/F2PY exclusions remain. The actual bundled bootstrap/workflow check is the regression gate. No vision algorithm or seeding policy changed. Small audit artifacts supplied the precise bootstrap trace without downloading installers.
+- Full local source at 8f34325: 225 passed/5 skipped in 48.39s; three skips reflect this host's symlink restriction. Ruff and focused audit/builder Mypy passed. Native verification follows the fix; failed startup builds are not promoted.
+
 ## 2026-10-26 — Handle fresh Qt wheel notices explicitly
 
 - Native run 40225818839 failed during notice staging on all four targets because fresh PySide6 wheels omit the standalone license-reference file present in the local environment. Core source checks were not replaced with fabricated packaging success.
