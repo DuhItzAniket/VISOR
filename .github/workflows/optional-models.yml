@@ -1,0 +1,43 @@
+name: Optional CPU models
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inference:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    env:
+      QT_QPA_PLATFORM: offscreen
+      CUDA_VISIBLE_DEVICES: ''
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Desktop libraries
+        run: sudo apt-get update && sudo apt-get install -y libgl1 libegl1 libglib2.0-0
+      - name: Install pinned optional adapter dependencies
+        run: |
+          python -m pip install -r requirements/desktop-build.txt
+          python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -r requirements/learned.txt pytest
+          python -m pip install --no-deps .
+      - name: Prepare pinned XFeat source and weights
+        run: python -m visor.model_setup --xfeat
+      - name: Real CPU inference checks
+        run: python -m pytest -q -m optional_model --junitxml=optional-model-results.xml
+      - name: Record dependency versions
+        if: always()
+        run: python -m pip freeze > optional-model-dependencies.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: optional-model-evidence
+          path: |
+            optional-model-results.xml
+            optional-model-dependencies.txt

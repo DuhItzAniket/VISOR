@@ -10,7 +10,7 @@ Current work: [research review](docs/RESEARCH_REVIEW.md), [improvement plan](doc
 
 - **SIFT and ORB engines** — OpenCV implementations, no model training or weight downloads
 - **Learned engine support** — optional SuperPoint+LightGlue, XFeat, ALIKED+LightGlue, DISK+LightGlue, SIFT+LightGlue when dependencies are installed
-- **Developer dependency installation** — source builds can install optional runtime packages with live output; XFeat API compatibility is under review (I05)
+- **Developer dependency installation** — source builds can install optional runtime packages with live output and a pinned XFeat source/weights cache
 - **Drag-and-drop image input** — drop PNG, JPEG, BMP, TIFF, or WebP into either slot, or use the file picker
 - **Feature Matches view** — side-by-side match lines with inlier (green) / outlier (red-blue) coloring
 - **Localization view** — projected reference polygon and center point drawn on the target image
@@ -24,7 +24,7 @@ Current work: [research review](docs/RESEARCH_REVIEW.md), [improvement plan](doc
 - **Video tracking** — track a reference object through a video file frame by frame
 - **Camera calibration** — chessboard-based intrinsic calibration
 - **Export** — JSON analysis, CSV metrics, comparison CSV, benchmark CSV, HTML report, PNG/JPEG visualization
-- **Project save/load** — stores image paths and all parameters in a `.visor` file
+- **Project save/load** — stores image paths, selected engine and core SIFT/ORB/display parameters in a `.visor` file
 - **Dark theme** — restrained professional dark UI
 - **Threaded analysis** — all OpenCV work runs off the UI thread with cancellation support
 
@@ -48,18 +48,17 @@ python -m visor
 The app ships with SIFT and ORB ready to use. Learned engines (SuperPoint+LightGlue, ALIKED+LightGlue, DISK+LightGlue, SIFT+LightGlue, XFeat) require additional packages.
 
 **Option A — one-click from the app:**
-Click **Install learned engines** in the toolbar. The app installs the correct packages into the running Python environment and shows live progress in the engine console. Restart the app after installation.
+Open **Window → Diagnostics**, then click **Install learned engines**. The source app installs dependencies into its active interpreter, prepares the pinned XFeat source/weights cache, and shows live progress. Restart the source app if imports cannot refresh immediately. This developer control is hidden in ordinary desktop bundles.
 
 **Option B — manual install:**
 ```powershell
-# LightGlue (covers SuperPoint, ALIKED, DISK, SIFT+LG)
-pip install git+https://github.com/cvg/LightGlue.git
-
-# XFeat: adapter/API validation is tracked in docs/IMPROVEMENT_PLAN.md (I05).
-# Package installation alone does not establish engine readiness.
+python -m pip install -r requirements/learned.txt
+python -m visor.model_setup --xfeat
 ```
 
 > **Developer note:** Learned engines require compatible `torch` and `torchvision`; installing the extra does not guarantee CUDA support. Standard desktop bundles currently include the classical engines. Packaged learned-engine support is a separate tracked improvement.
+
+See [optional runtime setup](docs/OPTIONAL_ENGINES.md) for pins, cache behavior and verification limits, and [result contract](docs/RESULT_CONTRACT.md) for measured timing and estimator semantics.
 
 ## Development
 
@@ -108,7 +107,7 @@ Homography estimates apply to planar scenes. Projected corners, center coordinat
 |---|---|---|
 | No keypoints detected | Image is blank or low contrast | Use a textured image with visible features |
 | Geometry invalid | Too few good matches | Lower the ratio threshold or switch to SIFT |
-| Learned engines greyed out | Dependencies not installed | Click **Install learned engines** in the toolbar |
+| Learned engines greyed out | Dependencies or pinned XFeat cache absent | Source app: open **Window → Diagnostics** for setup; standard bundles currently include classical engines |
 | Install button installs but engines still greyed out | Restart required | Restart the app after installation |
 | Icons missing in toolbar | Running from source without install | Run `python -m pip install -e .` |
 | Build fails on `generate_icon.py` | Pillow not installed | Run `python -m pip install -e ".[build]"` |

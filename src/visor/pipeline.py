@@ -238,6 +238,7 @@ def _analyze_learned(
         xfeat_cfg = xfeat_config or XFeatConfiguration()
         engine_obj = XFeatEngine(xfeat_cfg)
         engine_config = _asdict(xfeat_cfg)
+        engine_config["upstream_revision"] = engine_obj.runtime_revision
     else:
         engine_obj = SuperPointLightGlueEngine(sp_config)
         engine_config = _asdict(sp_config) if sp_config is not None else _asdict(SuperPointConfiguration())

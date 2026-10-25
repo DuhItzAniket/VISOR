@@ -1,5 +1,13 @@
 # Implementation Status
 
+## XFeat source runtime repair — 2026-10-25
+
+- I05 implemented against fixed upstream revision e92685f57f8318b18725c5c8c0bd28c7fe188d9a, using detectAndCompute and its 64-D descriptors. Setup explicitly caches source/weights and hashes; inference validates the cache and performs no network access. CPU preference is honored during initialization.
+- Replaced invalid xfeat.Extractor / pip-package instructions in the adapter, source installer and status dialog. LightGlue setup is also pinned; source startup probes dependencies without eagerly importing Torch.
+- Local CPU fixture: 512 self-matches; controlled warp 348 mutual matches, 328 inliers, maximum corner error 2.29 px. This is one fixture, not evidence of general accuracy. Full local suite: 128 passed, 2 skipped in 54.20s. Focused runtime tests and Ruff passed; new runtime/setup modules passed focused Mypy.
+- Optional model tests are marked separately and have a manual CPU workflow. Core desktop jobs exclude them. Workflow execution and native rebuilds follow; packaged learned engines, CUDA verification and complete notice inventory remain pending.
+- Setup and limitations: [OPTIONAL_ENGINES.md](OPTIONAL_ENGINES.md).
+
 ## Engine reporting and estimator provenance — 2026-10-25
 
 - I04/I06 implemented in source: typed learned pair results, independently measured completed extraction/matching stages, separate initialization/preprocessing/rendering, actual device and assignment scores; no fabricated learned descriptor distances or candidate counts.
@@ -52,10 +60,9 @@ End users launch a standalone application without a separate Python installation
 
 Follow [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md), supported by [RESEARCH_REVIEW.md](RESEARCH_REVIEW.md).
 
-1. I04–I06: measured learned-engine stage timings, real matcher/confidence/device metadata, upstream-compatible XFeat adapter and explicit effective estimator/threshold provenance.
-2. I07–I08: portable provenance-rich evaluation with held-out annotated/negative pairs. Existing saved sample summaries predate the geometry corrections and must be rerun before drawing conclusions.
-3. I09–I11: capability registry, job lifecycle/stale-result protection and calibrated quality diagnostics.
-4. I12/I13 release gates: dependency/model notices, optional learned runtime in desktop bundles, signing/notarization, user-driven desktop and install/uninstall checks. Standard bundles currently include SIFT/ORB; learned support is not advertised as packaged-ready.
+1. I07–I08: portable provenance-rich evaluation with held-out annotated/negative pairs. Existing saved sample summaries predate the geometry corrections and must be rerun before drawing conclusions.
+2. I09–I11: capability registry, job lifecycle/stale-result protection and calibrated quality diagnostics.
+3. I12/I13/I14 release gates: dependency/model notices, optional learned runtime in desktop bundles, signing/notarization, native accessibility/scaling, user-driven desktop and install/uninstall checks. Standard bundles currently include SIFT/ORB; learned support is not advertised as packaged-ready.
 
 ## Historical Phase 1 snapshot (superseded)
 

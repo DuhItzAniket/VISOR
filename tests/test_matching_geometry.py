@@ -135,6 +135,7 @@ def test_render_match_canvas_rainbow_mode_handles_large_match_count():
 
 
 @pytest.mark.skipif(not is_lightglue_available(), reason="Optional LightGlue runtime is not installed")
+@pytest.mark.optional_model
 def test_analyze_accepts_learned_engine_configuration(tmp_path):
     ref = tmp_path / "reference.png"
     target = tmp_path / "target.png"

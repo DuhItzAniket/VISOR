@@ -40,6 +40,7 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = ["optional_model: requires installed optional inference runtime and model weights"]
 
 [tool.ruff]
 line-length = 120

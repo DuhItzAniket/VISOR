@@ -75,4 +75,10 @@ The user requires standalone Windows/macOS/Linux applications without a Python s
 
 ## Evidence limits
 
+### Follow-up integration review — 2026-10-25
+
+The XFeat pin exposes detectAndCompute with keypoints, scores and 64-D descriptors. Its Hub entry fetches weights through a moving main URL, so VISOR now caches the weights committed at the same fixed source revision instead. The adapter initializes the pinned inference state on the requested device to avoid upstream's unconditional CUDA preference. [Pinned inference source](https://github.com/verlab/accelerated_features/blob/e92685f57f8318b18725c5c8c0bd28c7fe188d9a/modules/xfeat.py), [Hub entry](https://github.com/verlab/accelerated_features/blob/e92685f57f8318b18725c5c8c0bd28c7fe188d9a/hubconf.py).
+
+LightGlue returns assignment scores independently of descriptor distances; VISOR preserves those scores and measures the actual matching stage. Its reviewed default match filter is 0.1, now passed explicitly by the adapter. Completed CUDA stage timing requires synchronization. [Pinned LightGlue source](https://github.com/cvg/LightGlue/blob/eb42fee2d71449efb0aa5c10549752b5d75384d8/lightglue/lightglue.py), [PyTorch synchronization](https://docs.pytorch.org/docs/stable/generated/torch.cuda.synchronize.html). See RESULT_CONTRACT.md and OPTIONAL_ENGINES.md for scope and measured local evidence.
+
 Local static inspection establishes the above code defects. It does not prove an engine is operational on every machine, nor does this review establish a best-performing engine. Tests and package build outcomes are maintained in `IMPLEMENTATION_STATUS.md`; the execution sequence and acceptance criteria are in `IMPROVEMENT_PLAN.md`.

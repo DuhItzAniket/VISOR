@@ -1,5 +1,13 @@
 # Implementation Log
 
+## 2026-10-25 — I05 pinned XFeat API and optional runtime separation
+
+- Confirmed the upstream repository has no setup.py and exposes modules.xfeat.XFeat.detectAndCompute rather than xfeat.Extractor. Pinned XFeat source/weights to e92685f and LightGlue setup to eb42fee.
+- Added explicit developer setup, platform cache and SHA-256 manifest checks. Analysis runs offline against the installed cache. Adapter initializes the pinned inference state on the requested device, rejects generic modules namespace collisions and uses weights-only loading. Kept downloaded code/weights outside the repository.
+- Repaired source setup/status commands, separated optional-model markers and added a manually triggered CPU inference workflow. Core desktop jobs exclude model tests; packaged application installation guards remain.
+- CPU real-model evidence: 512 identity matches; on the controlled warp, 348 mutual matches / 328 inliers and maximum corner error 2.29 px. Added identity/known-transform optional regressions plus offline cache-integrity/reuse/namespace/mutual-matching tests.
+- Full local suite: 128 passed, 2 skipped in 54.20s. Focused new runtime checks and Ruff passed; targeted Mypy passed for runtime/setup modules. New CI execution and device/platform expansion follow separately.
+
 ## 2026-10-25 — I04/I06 measured pair results and estimator provenance
 
 - Added typed PairMatchResult and one shared LightGlue extraction/matching loop. Timed stages include completed device operations and CPU conversion; initialization and visualization are separate from matching. Preserved the legacy tuple adapter for existing callers.

@@ -63,6 +63,7 @@ from visor.geometry_robust import RobustMethod
 from visor.learned_engines import is_lightglue_available, is_xfeat_available
 from visor.learned_extra import is_disk_available
 from visor.matching_strategies import MatchingOptions
+from visor.model_runtime import LIGHTGLUE_REQUIREMENT
 from visor.models import (
     VALID_ENGINE_NAMES,
     AnalysisResult,
@@ -225,9 +226,8 @@ class InstallWorker(QThread):
     # Correct install commands for each optional learned-engine dependency.
     # LightGlue: official CVG repo (covers SuperPoint, ALIKED, DISK, SIFT+LG)
     # accelerated-features: the real XFeat package from verlab
-    LIGHTGLUE_CMD = ("git+https://github.com/cvg/LightGlue.git",)
-    XFEAT_CMD = ("git+https://github.com/verlab/accelerated_features.git#subdirectory=.",
-                 "scikit-learn")
+    LIGHTGLUE_CMD = ("torch>=2.0", "torchvision>=0.15", LIGHTGLUE_REQUIREMENT)
+    XFEAT_CMD = ("torch>=2.0", "tqdm>=4.66")
 
     def __init__(self, python_exe: str, install_lightglue: bool, install_xfeat: bool) -> None:
         super().__init__()
@@ -259,6 +259,17 @@ class InstallWorker(QThread):
             for line in proc.stdout:
                 self.progress.emit(line.rstrip())
             proc.wait()
+            if proc.returncode == 0 and self.install_xfeat:
+                self.progress.emit("Preparing the pinned XFeat source and weights…")
+                setup = subprocess.Popen([self.python_exe, "-m", "visor.model_setup", "--xfeat"],
+                                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                assert setup.stdout is not None
+                for line in setup.stdout:
+                    self.progress.emit(line.rstrip())
+                setup.wait()
+                if setup.returncode != 0:
+                    self.completed.emit(False, "Pinned XFeat setup failed. See Diagnostics for details.")
+                    return
             if proc.returncode == 0:
                 self.completed.emit(True, "Learned engine dependencies installed successfully.")
             else:

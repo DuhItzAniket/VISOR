@@ -8,13 +8,13 @@ from visor.learned_engines import (
     LearnedEngineUnavailable,
     SuperPointConfiguration,
     SuperPointLightGlueEngine,
-    is_learned_available,
+    is_lightglue_available,
 )
 
-pytestmark = pytest.mark.skipif(
-    not is_learned_available(),
+pytestmark = [pytest.mark.optional_model, pytest.mark.skipif(
+    not is_lightglue_available(),
     reason="lightglue not installed",
-)
+)]
 
 
 def _textured_gray(seed: int = 0) -> np.ndarray:

@@ -30,6 +30,9 @@ class EngineEntry(NamedTuple):
 
 
 def _collect_entries() -> list[EngineEntry]:
+    from visor.learned_engines import is_lightglue_available, is_xfeat_available
+    from visor.model_runtime import LIGHTGLUE_REQUIREMENT
+
     entries: list[EngineEntry] = []
 
     # Classical built-ins — always available
@@ -56,13 +59,8 @@ def _collect_entries() -> list[EngineEntry]:
     ))
 
     # Learned — LightGlue family
-    try:
-        import lightglue  # noqa: F401
-        lg_ok = True
-    except ImportError:
-        lg_ok = False
-
-    lg_cmd = "pip install git+https://github.com/cvg/LightGlue.git"
+    lg_ok = is_lightglue_available()
+    lg_cmd = f"python -m pip install {LIGHTGLUE_REQUIREMENT}"
     for name in ("SuperPoint+LightGlue", "ALIKED+LightGlue", "DISK+LightGlue", "SIFT+LightGlue"):
         entries.append(EngineEntry(
             name, lg_ok, "Learned",
@@ -71,16 +69,12 @@ def _collect_entries() -> list[EngineEntry]:
         ))
 
     # XFeat
-    try:
-        import xfeat  # noqa: F401
-        xf_ok = True
-    except ImportError:
-        xf_ok = False
+    xf_ok = is_xfeat_available()
 
     entries.append(EngineEntry(
         "XFeat", xf_ok, "Learned",
-        "torch + accelerated-features (verlab)",
-        "" if xf_ok else "pip install git+https://github.com/verlab/accelerated_features.git#subdirectory=.",
+        "torch + tqdm + pinned source/weights cache",
+        "" if xf_ok else "python -m visor.model_setup --xfeat",
     ))
 
     return entries

@@ -11,10 +11,10 @@ from visor.learned_extra import (
     is_disk_available,
 )
 
-pytestmark = pytest.mark.skipif(
+pytestmark = [pytest.mark.optional_model, pytest.mark.skipif(
     not is_disk_available(),
     reason="lightglue not installed",
-)
+)]
 
 
 def _textured_gray(seed: int = 0) -> np.ndarray:
