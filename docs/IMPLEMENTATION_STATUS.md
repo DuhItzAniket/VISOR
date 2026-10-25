@@ -1,5 +1,10 @@
 # Implementation Status
 
+## Native file-dialog defaults — 2026-10-25
+
+- Review-driven source fix starts image/project/export/video dialogs in Qt's platform Pictures/Documents/Movies locations, shares the last image directory, remembers successful project/export choices and reuses the current project filename. Cancelled/failed exports do not overwrite successful destination preferences. README now leads with the standalone desktop workflow and separates source-developer instructions.
+- Eighteen focused dialog/input/project/overlay checks passed. Full local suite: **201 passed, 2 skipped in 32.28s**; Ruff, focused image-widget Mypy and whitespace checks passed. Native rebuild/picker review follows; current download links still identify verified 7bf73d6 application code.
+
 ## I15 independent reporting result — 2026-10-25
 
 - Completed the preregistered [initial reliability experiment](evaluation/RELIABILITY_FINDINGS.md): 192 development and 72 reporting attempts, with choices published before reporting. Reserved-source f85c7e0 recorded a clean tree; evaluator/analysis algorithms match development dec9b33.

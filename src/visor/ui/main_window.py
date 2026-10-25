@@ -11,7 +11,7 @@ from threading import Event
 from typing import cast
 
 import numpy as np
-from PySide6.QtCore import QByteArray, QSettings, QSignalBlocker, Qt, QThread, QTimer, Signal
+from PySide6.QtCore import QByteArray, QSettings, QSignalBlocker, QStandardPaths, Qt, QThread, QTimer, Signal
 from PySide6.QtGui import QAction, QIcon, QTextCursor
 from PySide6.QtWidgets import (
     QComboBox,
@@ -337,6 +337,7 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1040, 680)
         self.resize(1280, 820)
         self._paths: dict[str, Path] = {}
+        self._project_path: Path | None = None
         self._worker: QThread | None = None
         self._jobs = JobController()
         self._closing_requested = False
@@ -1285,9 +1286,10 @@ class MainWindow(QMainWindow):
             return
         if self._worker is not None:
             return
-        filename, _ = QFileDialog.getOpenFileName(self, "Open batch manifest", "", "CSV manifest (*.csv)")
+        filename, _ = QFileDialog.getOpenFileName(self, "Open batch manifest", str(self._dialog_directory("manifests")), "CSV manifest (*.csv)")
         if not filename:
             return
+        self._remember_file_location("manifests", filename)
         settings, sift, orb, _, _ = self._read_configurations()
         self.run_button.setEnabled(False)
         self.compare_button.setEnabled(False)
@@ -1338,7 +1340,7 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("Load a reference image before tracking video.")
             return
         filename, _ = QFileDialog.getOpenFileName(
-            self, "Open video file", "", "Video files (*.avi *.mp4 *.mov *.mkv);;All files (*)",
+            self, "Open video file", str(self._dialog_directory("videos")), "Video files (*.avi *.mp4 *.mov *.mkv);;All files (*)",
         )
         if not filename:
             return
@@ -1346,6 +1348,7 @@ class MainWindow(QMainWindow):
         if engine_text not in ("SIFT", "ORB"):
             self.statusBar().showMessage("Video tracking supports the SIFT and ORB engines.")
             return
+        self._remember_file_location("videos", filename)
         settings, _, _, _, _ = self._read_configurations()
         self.run_button.setEnabled(False)
         self.compare_button.setEnabled(False)
@@ -1391,7 +1394,7 @@ class MainWindow(QMainWindow):
             return
         if self._worker is not None:
             return
-        folder = QFileDialog.getExistingDirectory(self, "Open folder with chessboard images")
+        folder = QFileDialog.getExistingDirectory(self, "Open folder with chessboard images", str(self._dialog_directory("images")))
         if not folder:
             return
         images = sorted(
@@ -1606,6 +1609,24 @@ class MainWindow(QMainWindow):
             self.restoreGeometry(geometry)
         if state is not None:
             self.restoreState(state)
+        directory = self._dialog_directory("images")
+        self.reference_input.set_browse_directory(directory)
+        self.target_input.set_browse_directory(directory)
+
+    def _dialog_directory(self, category: str) -> Path:
+        stored = self._window_settings.value(f"paths/{category}")
+        if isinstance(stored, str) and stored and Path(stored).is_absolute():
+            return Path(stored)
+        location = {"images": QStandardPaths.StandardLocation.PicturesLocation,
+                    "videos": QStandardPaths.StandardLocation.MoviesLocation}.get(
+                        category, QStandardPaths.StandardLocation.DocumentsLocation)
+        return Path(QStandardPaths.writableLocation(location) or Path.home())
+
+    def _suggested_export(self, name: str) -> str:
+        return str(self._dialog_directory("exports") / name)
+
+    def _remember_file_location(self, category: str, filename: str) -> None:
+        self._window_settings.setValue(f"paths/{category}", str(Path(filename).resolve().parent))
 
     def closeEvent(self, event) -> None:
         installing = self._install_worker is not None and self._install_worker.isRunning()
@@ -1667,6 +1688,9 @@ class MainWindow(QMainWindow):
         self._invalidate_analysis()
         if isinstance(path, Path):
             self._paths[role] = path
+            self._remember_file_location("images", str(path))
+            self.reference_input.set_browse_directory(path.parent)
+            self.target_input.set_browse_directory(path.parent)
             self._clear_result_views()
             self._latest_benchmark = None
             self.statusBar().showMessage(f"Loaded {role.lower()}: {path.name}")
@@ -1691,7 +1715,8 @@ class MainWindow(QMainWindow):
         if len(self._paths) != 2:
             self.statusBar().showMessage("Add both images before saving a project.")
             return
-        filename, _ = QFileDialog.getSaveFileName(self, "Save VISOR project", "analysis.visor", "VISOR project (*.visor)")
+        suggested = self._project_path or self._dialog_directory("projects") / "analysis.visor"
+        filename, _ = QFileDialog.getSaveFileName(self, "Save VISOR project", str(suggested), "VISOR project (*.visor)")
         if not filename:
             return
         settings, sift, orb, matching, method = self._read_configurations()
@@ -1704,10 +1729,12 @@ class MainWindow(QMainWindow):
         except (OSError, ValueError) as exc:
             QMessageBox.critical(self, "Could not save project", str(exc))
             return
+        self._project_path = Path(filename).resolve()
+        self._remember_file_location("projects", filename)
         self.statusBar().showMessage(f"Project saved: {Path(filename).name}")
 
     def _load_project(self) -> None:
-        filename, _ = QFileDialog.getOpenFileName(self, "Open VISOR project", "", "VISOR project (*.visor)")
+        filename, _ = QFileDialog.getOpenFileName(self, "Open VISOR project", str(self._dialog_directory("projects")), "VISOR project (*.visor)")
         if not filename:
             return
         try:
@@ -1749,6 +1776,8 @@ class MainWindow(QMainWindow):
         self.orb_fast.setValue(session.orb.fast_threshold)
         self.reference_input.load_path(Path(session.reference_path))
         self.target_input.load_path(Path(session.target_path))
+        self._project_path = Path(filename).resolve()
+        self._remember_file_location("projects", filename)
         if self.reference_input.image_path is None or self.target_input.image_path is None:
             self.statusBar().showMessage("Project settings loaded, but an image could not be decoded. Choose a replacement image.")
         else:
@@ -1761,7 +1790,7 @@ class MainWindow(QMainWindow):
         if self._latest_result is None:
             self.statusBar().showMessage("Run an analysis before exporting a report.")
             return
-        filename, _ = QFileDialog.getSaveFileName(self, "Export HTML report", "analysis_report.html", "HTML files (*.html)")
+        filename, _ = QFileDialog.getSaveFileName(self, "Export HTML report", self._suggested_export("analysis_report.html"), "HTML files (*.html)")
         if not filename:
             return
         try:
@@ -1769,6 +1798,7 @@ class MainWindow(QMainWindow):
         except (OSError, ValueError) as exc:
             QMessageBox.critical(self, "Export failed", str(exc))
             return
+        self._remember_file_location("exports", filename)
         self.statusBar().showMessage(f"HTML report exported: {Path(filename).name}")
 
     def _export_csv(self) -> None:
@@ -1779,7 +1809,7 @@ class MainWindow(QMainWindow):
         if comparison is None:
             self.statusBar().showMessage("Run Compare SIFT / ORB before exporting comparison metrics.")
             return
-        filename, _ = QFileDialog.getSaveFileName(self, "Export comparison", "comparison.csv", "CSV files (*.csv)")
+        filename, _ = QFileDialog.getSaveFileName(self, "Export comparison", self._suggested_export("comparison.csv"), "CSV files (*.csv)")
         if not filename:
             return
         try:
@@ -1787,6 +1817,7 @@ class MainWindow(QMainWindow):
         except (OSError, ValueError) as exc:
             QMessageBox.critical(self, "Export failed", str(exc))
             return
+        self._remember_file_location("exports", filename)
         self.statusBar().showMessage(f"Comparison exported: {Path(filename).name}")
 
     def _export_benchmark_csv(self) -> None:
@@ -1794,7 +1825,7 @@ class MainWindow(QMainWindow):
         if report is None:
             self.statusBar().showMessage("Run the benchmark lab before exporting benchmark metrics.")
             return
-        filename, _ = QFileDialog.getSaveFileName(self, "Export benchmark", "benchmark.csv", "CSV files (*.csv)")
+        filename, _ = QFileDialog.getSaveFileName(self, "Export benchmark", self._suggested_export("benchmark.csv"), "CSV files (*.csv)")
         if not filename:
             return
         try:
@@ -1802,6 +1833,7 @@ class MainWindow(QMainWindow):
         except (OSError, ValueError, IndexError) as exc:
             QMessageBox.critical(self, "Export failed", str(exc))
             return
+        self._remember_file_location("exports", filename)
         self.statusBar().showMessage(f"Benchmark exported: {Path(filename).name}")
 
     def _export_batch_csv(self, report: BatchReport | None = None) -> None:
@@ -1809,7 +1841,7 @@ class MainWindow(QMainWindow):
         if report is None:
             self.statusBar().showMessage("Run a batch from a manifest before exporting batch metrics.")
             return
-        filename, _ = QFileDialog.getSaveFileName(self, "Export batch", "batch.csv", "CSV files (*.csv)")
+        filename, _ = QFileDialog.getSaveFileName(self, "Export batch", self._suggested_export("batch.csv"), "CSV files (*.csv)")
         if not filename:
             return
         try:
@@ -1817,13 +1849,14 @@ class MainWindow(QMainWindow):
         except (OSError, ValueError, IndexError) as exc:
             QMessageBox.critical(self, "Export failed", str(exc))
             return
+        self._remember_file_location("exports", filename)
         self.statusBar().showMessage(f"Batch exported: {Path(filename).name}")
 
     def _export_analysis(self, exporter, file_filter: str, default_name: str) -> None:
         if self._latest_result is None:
             self.statusBar().showMessage("Run an analysis before exporting results.")
             return
-        filename, _ = QFileDialog.getSaveFileName(self, "Export analysis", default_name, file_filter)
+        filename, _ = QFileDialog.getSaveFileName(self, "Export analysis", self._suggested_export(default_name), file_filter)
         if not filename:
             return
         try:
@@ -1831,6 +1864,7 @@ class MainWindow(QMainWindow):
         except (OSError, ValueError) as exc:
             QMessageBox.critical(self, "Export failed", str(exc))
             return
+        self._remember_file_location("exports", filename)
         self.statusBar().showMessage(f"Exported: {Path(filename).name}")
 
     def _export_visualization(self) -> None:
@@ -1847,7 +1881,7 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("Choose Feature Matches, Localization, or Warped / Rectified first.")
             return
         filename, _ = QFileDialog.getSaveFileName(
-            self, "Export visualization", "visor-result.png", "PNG (*.png);;JPEG (*.jpg *.jpeg)",
+            self, "Export visualization", self._suggested_export("visor-result.png"), "PNG (*.png);;JPEG (*.jpg *.jpeg)",
         )
         if not filename:
             return
@@ -1856,6 +1890,7 @@ class MainWindow(QMainWindow):
         except (OSError, ValueError) as exc:
             QMessageBox.critical(self, "Export failed", str(exc))
             return
+        self._remember_file_location("exports", filename)
         self.statusBar().showMessage(f"Visualization exported: {Path(filename).name}")
 
     def _show_engine_status(self) -> None:

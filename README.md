@@ -1,6 +1,6 @@
 # VISOR
 
-**Visual Object Registration & Analysis** — a professional Windows desktop application for comparing classical local image features and estimating planar object location from a reference image and a target image.
+**Visual Object Registration & Analysis** — a desktop workspace for comparing local image features and inspecting planar registration between a reference and target image.
 
 The distribution target is a standalone desktop app for Windows, macOS, and Linux, with bundled dependencies so end users do not need Python. See [desktop distribution](docs/DESKTOP_DISTRIBUTION.md) for build artifacts, platform validation and current limitations. Source setup commands below are for developers.
 
@@ -9,7 +9,7 @@ Current work: [research review](docs/RESEARCH_REVIEW.md), [improvement plan](doc
 ## Features
 
 - **SIFT and ORB engines** — OpenCV implementations, no model training or weight downloads
-- **Learned engine support** — optional SuperPoint+LightGlue, XFeat, ALIKED+LightGlue, DISK+LightGlue, SIFT+LightGlue when dependencies are installed
+- **Source-only learned engines** — optional SuperPoint+LightGlue, XFeat, ALIKED+LightGlue, DISK+LightGlue and SIFT+LightGlue; excluded from standard desktop bundles
 - **Developer dependency installation** — source builds can install optional runtime packages with live output and a pinned XFeat source/weights cache
 - **Drag-and-drop image input** — drop PNG, JPEG, BMP, TIFF, or WebP into either slot, or use the file picker
 - **Feature Matches view** — side-by-side match lines with inlier (green) / outlier (red-blue) coloring
@@ -21,14 +21,22 @@ Current work: [research review](docs/RESEARCH_REVIEW.md), [improvement plan](doc
 - **Benchmark Lab** — nine controlled transformations with corner RMSE against known synthetic geometry
 - **Robustness Sweep** — rotation and scale sweep across engines
 - **Batch processing** — run a CSV manifest of image pairs across engines
-- **Video tracking** — track a reference object through a video file frame by frame
+- **Video tracking** — SIFT/ORB frame-by-frame planar fits with streaming decoding; fit validity is not independent accuracy
 - **Camera calibration** — chessboard-based intrinsic calibration
 - **Export** — JSON analysis, CSV metrics, comparison CSV, benchmark CSV, HTML report, PNG/JPEG visualization
 - **Project save/load** — portable image references, selected engine, matching/estimator choices and core SIFT/ORB/display parameters; older projects remain readable
 - **Dark theme** — restrained professional dark UI
 - **Threaded analysis** — analysis and long-running jobs use workers with cooperative cancellation and stale-result protection
 
-## Quick start
+## Use the desktop app
+
+1. Get the [validation build for your OS and architecture](docs/DESKTOP_DISTRIBUTION.md): Windows x64, macOS Apple Silicon/Intel, or Linux x64. These are unsigned validation artifacts with documented remaining release gates.
+2. Launch the installed app or portable bundle. Keep a portable bundle's files together; no Python environment or terminal is needed.
+3. Choose or drop a reference and target image, select SIFT or ORB, and press **F5**. Inspect Localization, Feature Matches and the measured details, then save a `.visor` project or export.
+
+An accepted planar fit does not establish correct localization. Ground-truth accuracy requires independent truth; see the [result contract](docs/RESULT_CONTRACT.md) and [measured reliability study](docs/evaluation/RELIABILITY_FINDINGS.md).
+
+## Developer source setup
 
 ```powershell
 # 1. Create environment (skip if .venv already exists)
@@ -43,7 +51,7 @@ python -m pip install -e .
 python -m visor
 ```
 
-## Installing learned engines
+## Optional engines for source developers
 
 The app ships with SIFT and ORB ready to use. Learned engines (SuperPoint+LightGlue, ALIKED+LightGlue, DISK+LightGlue, SIFT+LightGlue, XFeat) require additional packages.
 

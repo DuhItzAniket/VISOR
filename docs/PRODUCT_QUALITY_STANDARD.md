@@ -38,6 +38,7 @@ Review method: source inspection and local Qt offscreen renders using the Window
 | Input picker and clear actions lacked role-specific accessible names | Add reference/target names; add a labeled engine selector and thickness control |
 | Optional engine selection could retain the preceding classical parameter form | Hide SIFT/ORB forms for other engines; complete capability-specific forms under I09 |
 | Filename text was interpolated into rich-text overview markup | Escape filenames before displaying them |
+| Native review opened file dialogs in the process/application folder | Use Qt's platform Pictures/Documents/Movies locations and remember successful per-category choices; reuse the loaded project filename. Keep native review evidence separate from mocked dialog checks |
 
 ## Release review gates
 

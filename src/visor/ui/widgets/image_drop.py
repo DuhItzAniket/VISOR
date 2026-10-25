@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QUrl, Signal
+from PySide6.QtCore import QStandardPaths, Qt, QUrl, Signal
 from PySide6.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QPixmap
 from PySide6.QtWidgets import (
     QFileDialog,
@@ -36,6 +36,7 @@ class ImageDropWidget(QFrame):
         self.setMinimumWidth(260)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self._image_path: Path | None = None
+        self._browse_directory: Path | None = None
         self._title = title
 
         self.title_label = QLabel(title)
@@ -96,9 +97,16 @@ class ImageDropWidget(QFrame):
         self.image_changed.emit(self._title, None)
 
     def _browse(self) -> None:
-        filename, _ = QFileDialog.getOpenFileName(self, f"Choose {self._title}", "", IMAGE_FILTER)
+        directory = self._image_path.parent if self._image_path else self._browse_directory
+        if directory is None:
+            directory = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.PicturesLocation) or Path.home())
+        filename, _ = QFileDialog.getOpenFileName(self, f"Choose {self._title}", str(directory), IMAGE_FILTER)
         if filename:
             self.load_path(Path(filename))
+
+    def set_browse_directory(self, directory: Path) -> None:
+        """Share the last image folder without changing the selected image."""
+        self._browse_directory = directory
 
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
         self._accept_image_drag(event)

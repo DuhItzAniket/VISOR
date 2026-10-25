@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-25 — Use platform user folders in native file dialogs
+
+- Corrected the application-folder starting location observed during Windows review. Qt platform locations now supply Pictures/Documents/Movies defaults; per-category successful choices persist in existing local app settings. Both image slots share the last image folder, including after restart. Project Save suggests the current project filename; exports remember successful destinations, leaving preferences unchanged after cancellation or an export error.
+- Updated README to lead with the actual standalone user workflow and explicitly scope learned engines/source setup to developers. Kept standard native dialogs and documented Qt location behavior in the product review.
+- Added four focused dialog-location regressions; eighteen focused dialog/input/session/overlay checks passed. Full local suite 201 passed/2 skipped in 32.28s; Ruff, focused image-widget Mypy and whitespace checks passed. Native rebuild/real picker review follows.
+
 ## 2026-10-25 — Report reserved scenes without retuning and decline gate promotion
 
 - After publishing the selection at f85c7e0, evaluated reserved i_books/v_artisans using identical settings from that clean revision: 72 measured rows/24 warmups. First-image previews confirm books and mosaic are distinct; both negative directions retained. No runtime failures.
