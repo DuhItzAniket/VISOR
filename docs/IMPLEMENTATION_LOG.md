@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Use frozen source version in desktop build provenance
+
+- Local build-info incorrectly used the developer environment's old installed VISOR 0.1.0 metadata while freezing 0.2.0 application source. Builder now parses the source's literal __version__ without importing/executing the app, fails clearly on invalid/missing versions, and records version_source. Packaging uses that same returned version.
+- Six version regressions plus evidence/study checks passed (24 focused); focused builder Mypy passed. Full-source/native refresh follows. No registration algorithm, diagnostics or frozen policy changed.
+- Full local suite: 208 passed, 2 skipped in 31.91s; Ruff and focused builder Mypy passed. Rebuild source version is 0.2.0 despite installed developer metadata remaining 0.1.0. The new native run must pass before replacing artifact links.
+
 ## 2026-10-26 — Repair platform-dependent evidence hash checks
 
 - Native matrix 40221478271 exposed a Linux/macOS regression in the published reporting provenance assertion: original Windows CRLF file-byte hash differs from Git's LF checkout. Preserved the failed-run evidence and did not label that matrix successful.

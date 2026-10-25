@@ -7,6 +7,7 @@ There is no cross-compilation or dependency installation inside this script.
 from __future__ import annotations
 
 import argparse
+import ast
 import importlib.metadata
 import json
 import os
@@ -17,6 +18,23 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def source_version(root: Path = ROOT) -> str:
+    """Read the bundled source's literal version without importing the app.
+
+    A developer's installed distribution metadata may describe an older wheel.
+    Package names/build provenance must identify the source actually frozen.
+    """
+    source = root / "src" / "visor" / "__init__.py"
+    tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
+    values = [node.value for node in tree.body if isinstance(node, ast.Assign)
+              and any(isinstance(target, ast.Name) and target.id == "__version__" for target in node.targets)]
+    if len(values) == 1 and isinstance(values[0], ast.Constant):
+        value = values[0].value
+        if isinstance(value, str) and value.strip():
+            return value
+    raise RuntimeError(f"Expected one literal nonempty __version__ string in {source}")
 
 
 def run(command: list[str], *, isolate_native_path: bool = False) -> None:
@@ -33,7 +51,7 @@ def run(command: list[str], *, isolate_native_path: bool = False) -> None:
 
 
 def build() -> tuple[Path, str, str]:
-    version = importlib.metadata.version("visor-registration")
+    version = source_version()
     system = platform.system()
     architecture = platform.machine().lower()
     assets = ROOT / "src" / "visor" / "assets"
@@ -70,6 +88,7 @@ def build() -> tuple[Path, str, str]:
         revision = os.environ.get("GITHUB_SHA")
     info = {
         "version": version, "system": system, "architecture": architecture,
+        "version_source": "src/visor/__init__.py",
         "source_revision": revision,
         "python": platform.python_version(), "learned_engines_bundled": False,
         "dependencies": {

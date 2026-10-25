@@ -1,5 +1,11 @@
 # Implementation Status
 
+## Build-version provenance — 2026-10-26
+
+- Local review found stale installed distribution metadata labeled build-info 0.1.0 while the actual bundled application was 0.2.0. The host builder now reads the literal version from the source it freezes, without importing the application, and records that source. Installer/archive names and build-info use the same value.
+- Six focused builder-version checks cover stale metadata, no source execution, invalid/missing version and agreement with the runtime. Combined builder/evidence/study set: 24 passed; focused builder Mypy passed. Full-source/native refresh follows.
+- Final local source suite: **208 passed, 2 skipped in 31.91s**; Ruff and focused builder Mypy passed. Native refresh will verify both this correction and the preceding portable evidence-hash repair.
+
 ## Cross-platform evidence provenance repair — 2026-10-26
 
 - Final b926702 matrix exposed one evidence-check failure on Linux/macOS: the reporting analysis hashed original Windows CRLF selection bytes, while Git checks out LF elsewhere. This was an actual CI failure; the new native matrix must pass before its artifacts replace the previous verified links.

@@ -30,6 +30,8 @@ GitHub may require sign-in to download Actions artifacts; artifacts also have a 
 
 The runner architecture and dependency versions are recorded in `dist/build-info.json`. Linux artifacts are not guaranteed across every distribution/glibc version. macOS and Windows signing are not configured by the scripts. No package is called production-ready until install/uninstall and desktop behavior have been checked on its intended target system.
 
+Build/package versions come from the literal `src/visor/__init__.py` version in the source being frozen. An older VISOR wheel installed in a developer environment must not relabel that source's artifact. `build-info.json` records the version source; invalid/missing source versions fail before invoking the packager.
+
 ## Building (maintainers only)
 
 Use a clean environment on the target OS with Python 3.11:
