@@ -1,5 +1,12 @@
 # Implementation Log
 
+## 2026-10-25 — I07 reproducible runner and I08 dataset preparation
+
+- Added JSON manifest validation, relative-path synthetic/HPatches preparation and a developer evaluation CLI. Records input/truth hashes, actual matrices, source/dirty state, versions/settings/device, fresh-engine timing scope and every warmup/measured attempt.
+- Summaries preserve failed fits and runtime failures, distinguish annotation errors, report corner mean/RMSE/max separately from fit residual and count false acceptance only on labeled negative pairs. Prevented mixing development/held-out splits and overwriting input files.
+- Added eleven focused tests for metrics, missing inputs, denominator handling, invalid truth, split separation, portable reports, HPatches missing files and CLI output protection. All passed; targeted evaluator/data Mypy passed. Synthetic trial: 18 measured attempts with no runtime errors; raw publication follows after the evaluator commit.
+- Native desktop matrix at fe5ec16 runs independently of these new developer evaluation modules.
+
 ## 2026-10-25 — I11 measured fit diagnostics and correspondence inspection
 
 - Added typed valid-fit diagnostics for source/target support hulls, inlier residual median/p95/maximum, projected area and its target-area ratio. Exports/UI define them as fit evidence, not detection confidence or truth accuracy.

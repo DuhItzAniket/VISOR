@@ -1,5 +1,11 @@
 # Implementation Status
 
+## Reproducible evaluation runner — 2026-10-25
+
+- I07 implemented as `python -m visor.evaluate`: portable manifests, hashed input/truth files, actual matrices/settings/runtime versions, source revision/dirty state and raw warmup/repetition/failure rows. Accuracy against truth, fit residual and negative false acceptance have separate definitions.
+- I08 now has synthetic development positives/unrelated/blank negatives and a full-image HPatches loader that records missing pairs, enforces split separation and reports condition-specific summaries. No actual HPatches sequence directory was present at implementation time; do not treat scaffolding as evaluated data.
+- Eleven focused evaluation tests passed; targeted evaluator/data Mypy passed. The first development run produced 18 measured attempts with no runtime errors; public raw evidence should identify a committed evaluator revision before conclusions. See EVALUATION.md.
+
 ## Fit diagnostics and current source checks — 2026-10-25
 
 - I11 adds measured spatial-support hull fractions, inlier residual median/p95/maximum and projected area ratios to valid fits, UI details and exports. Keypoint inspection identifies accepted correspondences and solver membership with actual descriptor distances or assignment scores.
