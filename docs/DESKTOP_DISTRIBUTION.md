@@ -17,14 +17,14 @@ PyInstaller's documented model supports self-contained bundles but requires buil
 
 Native build evidence (2026-10-19): [run 39300439636](https://github.com/DuhItzAniket/VISOR/actions/runs/39300439636), source `303ba33`, completed successfully on Windows x64, macOS ARM64, and Ubuntu x64. All three jobs produced packages and passed the bundled workflow check. Artifacts are named `VISOR-Windows-X64`, `VISOR-macOS-ARM64`, and `VISOR-Linux-X64`. These are unsigned validation builds, not a public production release or proof of install/uninstall behavior on every desktop.
 
-Current validation (2026-10-25): [run 40219803747](https://github.com/DuhItzAniket/VISOR/actions/runs/40219803747) at `7bf73d6` passed Windows x64, macOS ARM64/Intel and Linux x64 core suites, lint, packaging and bundled workflow checks, including copy-only Qt URL drop events. Windows: 165 passed/2 skipped/17 model tests deselected; macOS/Linux: 163 passed/4 skipped/17 deselected. Extra skips off Windows are platform-specific exact snapshots. Subsequent offline study tooling does not change the desktop application's algorithms or controls. See [current status](IMPLEMENTATION_STATUS.md) for source checks and remaining release gates.
+Current validation (recorded 2026-10-26): [run 40222886823](https://github.com/DuhItzAniket/VISOR/actions/runs/40222886823) at `1f76d41` passed Windows x64, macOS ARM64/Intel and Linux x64 core suites, lint, packaging and bundled workflow checks. Each target verified VISOR's Apache-2.0 LICENSE/NOTICE files, copy-only Qt URL drop events, classical image workflows, exports, project replay and shutdown. Windows: 193 passed/2 skipped/17 model tests deselected; macOS/Linux: 191 passed/4 skipped/17 deselected. Extra skips off Windows are platform-specific exact snapshots. Version 0.2.0 comes from the frozen source. See [current status](IMPLEMENTATION_STATUS.md) for remaining release gates; project notice inclusion is not complete third-party notice compliance.
 
 Artifacts from the latest run:
 
-- [Windows x64 setup and portable ZIP](https://github.com/DuhItzAniket/VISOR/actions/runs/40219803747/artifacts/12609367054)
-- [macOS Apple Silicon DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40219803747/artifacts/12609595196)
-- [macOS Intel DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40219803747/artifacts/12608936560)
-- [Linux x64 Debian and portable packages](https://github.com/DuhItzAniket/VISOR/actions/runs/40219803747/artifacts/12609362493)
+- [Windows x64 setup and portable ZIP](https://github.com/DuhItzAniket/VISOR/actions/runs/40222886823/artifacts/12609783181)
+- [macOS Apple Silicon DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40222886823/artifacts/12609937734)
+- [macOS Intel DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40222886823/artifacts/12610321822)
+- [Linux x64 Debian and portable packages](https://github.com/DuhItzAniket/VISOR/actions/runs/40222886823/artifacts/12609866944)
 
 GitHub may require sign-in to download Actions artifacts; artifacts also have a retention period. These links are validation downloads, not permanent public release URLs.
 
@@ -54,7 +54,7 @@ Each bundle exposes a maintainer-only check:
 VISOR --smoke-check smoke-report.json
 ```
 
-On Windows use `VISOR.exe`; on macOS use `VISOR.app/Contents/MacOS/VISOR`. CI sets `QT_QPA_PLATFORM=offscreen`. The check dispatches Qt URL drop events with copy semantics, loads generated image inputs into the Qt window, localizes an identity pair with SIFT and ORB, renders results, exports JSON/CSV, saves/loads a project, and closes the window. The event check is separate from physical native shell dragging. A startup import failure is also recorded. The check does not replace mouse-driven testing, screen-reader checks, OS installation/uninstallation, or code-signature validation.
+On Windows use `VISOR.exe`; on macOS use `VISOR.app/Contents/MacOS/VISOR`. CI sets `QT_QPA_PLATFORM=offscreen`. The check verifies project LICENSE/NOTICE inclusion, dispatches Qt URL drop events with copy semantics, loads generated image inputs into the Qt window, localizes an identity pair with SIFT and ORB, renders results, exports JSON/CSV, saves/loads a project, and closes the window. The event check is separate from physical native shell dragging. A startup import failure is also recorded. The check does not replace mouse-driven testing, screen-reader checks, OS installation/uninstallation, code-signature validation or complete third-party notice review.
 
 ## Optional engines
 

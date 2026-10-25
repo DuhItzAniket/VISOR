@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Final Apache-licensed four-target validation
+
+- Run 40222886823 completed successfully at 1f76d41 on Windows x64, macOS ARM64, macOS Intel and Linux x64. Windows core: 193 passed/2 skipped/17 model tests deselected; other targets: 191 passed/4 skipped/17 deselected. Every target passed lint, packaging and the full bundled workflow, including project LICENSE/NOTICE and copy-only Qt drops. Updated all artifact links with exact revision/run identities.
+- Local Windows rebuild also passed the expanded check and reports version 0.2.0/source 1f76d41/Apache-2.0 in build-info. Project notices are present in the real frozen resources. Full local source suite remains 210 passed/2 skipped in 35.96s; source wheel licensing was independently checked. No generated bundles or environment/model files are committed.
+- Documented accepted licensing, source-version and JSON-provenance decisions, plus the decision against promoting unconfirmed reliability gates. Standard bundles remain classical-only and unsigned validation artifacts. Manual platform/accessibility/scaling/install and complete third-party notice gates stay open.
+
 ## 2026-10-26 — Apply owner-selected Apache-2.0 and consolidate current status
 
 - The owner explicitly selected Apache-2.0. Added the official full license and project NOTICE, SPDX package metadata/license files and setuptools>=77 for PEP 639 support. Original VISOR code is covered; dependency/model/dataset terms remain separate.

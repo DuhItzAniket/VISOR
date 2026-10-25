@@ -1,5 +1,21 @@
 # Architecture Decisions
 
+## 2026-10-26: Apache-2.0 for original VISOR source
+
+The owner selected Apache-2.0. Root LICENSE/NOTICE, SPDX package metadata and source-wheel/desktop notice inclusion implement that choice. Dependencies, model weights and datasets retain their terms. Project licensing does not close the separate per-artifact third-party notice review.
+
+## 2026-10-26: Preserve study outcomes rather than promote unconfirmed gates
+
+The preregistered I15 inlier/support gates improved development counts but rejected no additional reserved reporting fits; a 343-inlier SIFT fit still had 9.88 px mean corner error. Do not promote the gates into desktop defaults or retune them on reporting scenes. Publish all choices, attempts and unsupported-truth rows; retain the original estimator/goldens. See evaluation/RELIABILITY_FINDINGS.md.
+
+## 2026-10-26: Separate JSON content identity from original input bytes
+
+Keep the original file-byte hash for provenance and add a canonical parsed-JSON hash for portable content verification. Git's CRLF/LF conversion must not look like a changed gate. New study JSON uses LF; compressed raw evidence retains exact bytes. The cross-platform regression that found this distinction remains recorded in the implementation log.
+
+## 2026-10-26: Build versions identify frozen source
+
+Read the literal source version without importing/executing the application. Installed developer-wheel metadata can be stale and must not relabel the executable, installer/archive or build-info. Missing/nonliteral source versions fail before packaging.
+
 ## 2026-10-19: Scope exact snapshots to the recorded platform
 
 Native CI reproduced different OpenCV feature/RANSAC counts on Windows x64, Linux x64, and macOS ARM despite using the same OpenCV package version. Preserve original Windows/OpenCV 4.11 goldens on that platform; require independent known-transform corner accuracy on every platform. Default-option forwarding is checked against explicit defaults on the current platform. Do not rewrite golden counts to conceal algorithm drift or treat cross-platform count equality as accuracy.

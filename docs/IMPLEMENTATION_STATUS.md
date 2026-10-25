@@ -10,11 +10,11 @@ Updated 2026-10-26. This is the current snapshot; chronological changes, prior c
 | Lint | Ruff passed for src, tests and shared desktop builder; whitespace check passed |
 | Type checking | Focused modules passed, including result contracts, matching/geometry, runtime/setup, registry/pipeline, jobs, evaluation/study, video, image input and builder. No whole-UI Mypy pass is claimed |
 | Source wheel | 0.2.0 wheel built in isolation; Apache-2.0 SPDX metadata and full project LICENSE/NOTICE verified inside the wheel |
-| Latest completed native matrix | [40222252759](https://github.com/DuhItzAniket/VISOR/actions/runs/40222252759), source **601bee5**: Windows x64, macOS ARM64, macOS Intel and Linux x64 passed core tests, lint, packaging and bundled workflows |
-| Native core test counts at 601bee5 | Windows **191 passed, 2 skipped, 17 model tests deselected**; macOS/Linux each **189 passed, 4 skipped, 17 deselected** |
+| Latest completed native matrix | [40222886823](https://github.com/DuhItzAniket/VISOR/actions/runs/40222886823), source **1f76d41**: Windows x64, macOS ARM64, macOS Intel and Linux x64 passed core tests, lint, packaging and bundled workflows, including project LICENSE/NOTICE |
+| Native core test counts at 1f76d41 | Windows **193 passed, 2 skipped, 17 model tests deselected**; macOS/Linux each **191 passed, 4 skipped, 17 deselected** |
 | Separate optional CPU lane | [40217775833](https://github.com/DuhItzAniket/VISOR/actions/runs/40217775833), c67936c: 17 real-model tests passed. Later full local suite also includes installed-model checks; CUDA is unverified |
 
-The owner subsequently selected Apache-2.0. Source/package licensing is implemented and locally checked; a new native build must verify project notice inclusion before its artifacts replace the preceding downloads. See [desktop distribution](DESKTOP_DISTRIBUTION.md) for exact artifact revisions and limits.
+The owner selected Apache-2.0. Source wheel and all four native bundles verified project notice inclusion. Local Windows build-info reports 0.2.0 from the frozen source and Apache-2.0; its expanded bundled check passed. See [desktop distribution](DESKTOP_DISTRIBUTION.md) for downloads, exact revisions and remaining release limits. Later documentation commits do not change the packaged application code.
 
 The previous b926702 run 40221478271 failed one evidence-provenance assertion on Linux/both Macs while Windows passed. The assertion hashed original Windows CRLF JSON bytes against Git's LF checkout. The repaired canonical JSON-content hash, preserved original byte hash, LF evidence/output rules and LF/CRLF regression passed all four targets in 40222252759. No gate, result, metric or compressed raw report changed.
 
