@@ -10,20 +10,21 @@ PyInstaller's documented model supports self-contained bundles but requires buil
 
 | Target | Build artifact | User workflow | Current gate |
 |---|---|---|---|
-| Windows x64 | Setup EXE and portable ZIP | Install through wizard, launch from Start menu; uninstaller included | Native build and bundled workflow smoke check required |
-| macOS Apple Silicon | `.app` inside DMG | Drag VISOR into Applications, launch in Finder | Native ARM build/check; public distribution also needs Developer ID signing and notarization |
-| macOS Intel | Separate x86_64 app/DMG | Same app workflow | Added dedicated macos-15-intel job; validation pending. Do not advertise a universal binary |
-| Linux x86_64 | `.deb` plus portable tar archive | Install Debian package and launch from desktop menu | Native Ubuntu build/check; test each supported desktop/distribution |
+| Windows x64 | Setup EXE and portable ZIP | Install through wizard, launch from Start menu; uninstaller included | Native build/check passed; clean installation and signing remain |
+| macOS Apple Silicon | `.app` inside DMG | Drag VISOR into Applications, launch in Finder | Native ARM build/check passed; manual review, signing and notarization remain |
+| macOS Intel | Separate x86_64 app/DMG | Same app workflow | Native Intel build/check passed; manual review, signing and notarization remain. Separate architecture, not a universal binary |
+| Linux x86_64 | `.deb` plus portable tar archive | Install Debian package and launch from desktop menu | Native Ubuntu build/check passed; supported-desktop/distribution review remains |
 
 Native build evidence (2026-10-19): [run 39300439636](https://github.com/DuhItzAniket/VISOR/actions/runs/39300439636), source `303ba33`, completed successfully on Windows x64, macOS ARM64, and Ubuntu x64. All three jobs produced packages and passed the bundled workflow check. Artifacts are named `VISOR-Windows-X64`, `VISOR-macOS-ARM64`, and `VISOR-Linux-X64`. These are unsigned validation builds, not a public production release or proof of install/uninstall behavior on every desktop.
 
-Current validation (2026-10-25): [run 40213846401](https://github.com/DuhItzAniket/VISOR/actions/runs/40213846401) at `fe5ec16` passed native core suites, lint, packaging and bundled workflow checks on each target. Windows: 131 passed/2 skipped/17 model tests deselected; macOS and Linux: 129 passed/4 skipped/17 deselected. The additional skips off Windows are the platform-specific exact snapshots. See [current status](IMPLEMENTATION_STATUS.md) for limits and the later developer-only evaluator changes.
+Current validation (2026-10-25): [run 40217772265](https://github.com/DuhItzAniket/VISOR/actions/runs/40217772265) at `c67936c` passed Windows, macOS ARM64 and Linux core suites, lint, packaging and bundled workflow checks. Windows: 155 passed/2 skipped/17 model tests deselected; macOS/Linux: 153 passed/4 skipped/17 deselected. The separate [Intel Mac run 40217899781](https://github.com/DuhItzAniket/VISOR/actions/runs/40217899781) at `33ab883` passed the same checks with 153 passed/4 skipped/17 deselected. The latter commit changes only workflow/docs; application code matches c67936c. Extra skips off Windows are platform-specific exact snapshots. See [current status](IMPLEMENTATION_STATUS.md) for subsequent source fixes and remaining release gates.
 
 Artifacts from the latest run:
 
-- [Windows x64 setup and portable ZIP](https://github.com/DuhItzAniket/VISOR/actions/runs/40213846401/artifacts/12607265110)
-- [macOS Apple Silicon DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40213846401/artifacts/12607011450)
-- [Linux x64 Debian and portable packages](https://github.com/DuhItzAniket/VISOR/actions/runs/40213846401/artifacts/12607230438)
+- [Windows x64 setup and portable ZIP](https://github.com/DuhItzAniket/VISOR/actions/runs/40217772265/artifacts/12607419330)
+- [macOS Apple Silicon DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40217772265/artifacts/12608312929)
+- [macOS Intel DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40217899781/artifacts/12607949335)
+- [Linux x64 Debian and portable packages](https://github.com/DuhItzAniket/VISOR/actions/runs/40217772265/artifacts/12608198943)
 
 GitHub may require sign-in to download Actions artifacts; artifacts also have a retention period. These links are validation downloads, not permanent public release URLs.
 

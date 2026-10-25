@@ -11,7 +11,7 @@ from threading import Event
 from typing import cast
 
 import numpy as np
-from PySide6.QtCore import QByteArray, QSettings, Qt, QThread, QTimer, Signal
+from PySide6.QtCore import QByteArray, QSettings, QSignalBlocker, Qt, QThread, QTimer, Signal
 from PySide6.QtGui import QAction, QIcon, QTextCursor
 from PySide6.QtWidgets import (
     QComboBox,
@@ -465,7 +465,9 @@ class MainWindow(QMainWindow):
             action = QAction(title, self)
             action.setCheckable(True)
             action.setChecked(checked)
-            action.toggled.connect(self._refresh_visualization)
+            action.toggled.connect(
+                self._set_rainbow_colors if setting_name == "rainbow_feature_colors" else self._refresh_visualization
+            )
             view_menu.addAction(action)
             self.view_toggles[setting_name] = action
         view_menu.addSeparator()
@@ -630,16 +632,15 @@ class MainWindow(QMainWindow):
         self.feature_color_button.setCheckable(True)
         self.feature_color_button.setChecked(False)
         self.feature_color_button.setToolTip("Toggle rainbow feature colors")
-        self.feature_color_button.clicked.connect(self._refresh_visualization)
+        self.feature_color_button.toggled.connect(self._set_rainbow_colors)
         self.feature_thickness_slider = QSlider(Qt.Orientation.Horizontal)
-        self.feature_thickness_slider.setRange(1, 10)
+        self.feature_thickness_slider.setRange(1, 12)
         self.feature_thickness_slider.setValue(1)
         self.feature_thickness_slider.setToolTip("Feature line thickness")
         self.feature_thickness_slider.setAccessibleName("Feature line thickness in pixels")
-        self.feature_thickness_slider.valueChanged.connect(self._refresh_visualization)
+        self.feature_thickness_slider.valueChanged.connect(self._set_feature_line_thickness)
         self.feature_thickness_value = QLabel("1 px")
         self.feature_thickness_value.setObjectName("mutedText")
-        self.feature_thickness_slider.valueChanged.connect(self._update_feature_thickness_label)
         overlay_layout.addWidget(overlay_label)
         overlay_layout.addWidget(self.feature_color_button)
         thickness_label = QLabel("&Thickness")
@@ -789,8 +790,7 @@ class MainWindow(QMainWindow):
         self.match_line_thickness.setRange(1, 12)
         self.match_line_thickness.setValue(1)
         self.match_line_thickness.setToolTip("Adjust the visible thickness of feature match lines.")
-        self.match_line_thickness.valueChanged.connect(self._refresh_visualization)
-        self.match_line_thickness.valueChanged.connect(self._sync_overlay_controls)
+        self.match_line_thickness.valueChanged.connect(self._set_feature_line_thickness)
         common_form.addRow("Ratio threshold", self.ratio_control)
         self.ransac_control.setToolTip(
             "RANSAC uses the recorded legacy adaptive threshold sequence around this base. "
@@ -860,11 +860,23 @@ class MainWindow(QMainWindow):
         self._update_overview_summary()
 
     def _sync_overlay_controls(self) -> None:
-        if hasattr(self, "feature_thickness_slider"):
-            self.feature_thickness_slider.setValue(self.match_line_thickness.value())
-        if hasattr(self, "feature_color_button"):
-            self.feature_color_button.setChecked(self.view_toggles.get("rainbow_feature_colors", QAction(self)).isChecked())
+        self._set_feature_line_thickness(self.match_line_thickness.value())
+        self._set_rainbow_colors(self.view_toggles["rainbow_feature_colors"].isChecked())
+
+    def _set_feature_line_thickness(self, value: int) -> None:
+        # Both editors represent one setting. Block feedback so a single user
+        # change renders once, after both controls contain the effective value.
+        for slider in (self.feature_thickness_slider, self.match_line_thickness):
+            with QSignalBlocker(slider):
+                slider.setValue(value)
         self._update_feature_thickness_label()
+        self._refresh_visualization()
+
+    def _set_rainbow_colors(self, enabled: bool) -> None:
+        for control in (self.feature_color_button, self.view_toggles["rainbow_feature_colors"]):
+            with QSignalBlocker(control):
+                control.setChecked(enabled)
+        self._refresh_visualization()
 
     def _update_feature_thickness_label(self) -> None:
         if hasattr(self, "feature_thickness_value") and hasattr(self, "feature_thickness_slider"):
@@ -898,9 +910,7 @@ class MainWindow(QMainWindow):
     def _read_configurations(
         self,
     ) -> tuple[AnalysisSettings, SIFTConfiguration, ORBConfiguration, MatchingOptions, RobustMethod]:
-        rainbow_checked = self.view_toggles.get("rainbow_feature_colors", QAction(self)).isChecked()
-        if hasattr(self, "feature_color_button"):
-            rainbow_checked = self.feature_color_button.isChecked() or rainbow_checked
+        rainbow_checked = self.view_toggles["rainbow_feature_colors"].isChecked()
         settings = AnalysisSettings(
             self.ratio_control.value(), self.ransac_control.value(),
             self.view_toggles["show_match_lines"].isChecked(),
@@ -1434,9 +1444,7 @@ class MainWindow(QMainWindow):
         result = self._latest_result
         if result is None or not hasattr(self, "view_toggles"):
             return
-        rainbow_checked = self.view_toggles.get("rainbow_feature_colors").isChecked()
-        if hasattr(self, "feature_color_button"):
-            rainbow_checked = self.feature_color_button.isChecked() or rainbow_checked
+        rainbow_checked = self.view_toggles["rainbow_feature_colors"].isChecked()
         settings = replace(
             result.settings,
             show_match_lines=self.view_toggles["show_match_lines"].isChecked(),

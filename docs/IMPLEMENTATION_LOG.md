@@ -1,5 +1,13 @@
 # Implementation Log
 
+## 2026-10-25 — Resume Windows review and unify overlay editors
+
+- Confirmed final c67936c native runs on Windows/macOS ARM/Linux and the separate 33ab883 Intel Mac extension all passed core regressions, lint, packaging and bundled workflow checks. Windows: 155 passed/2 skipped/17 deselected; other targets: 153 passed/4 skipped/17 deselected. Optional CPU models: 17 passed/157 deselected at c67936c. Updated distribution links with exact artifacts.
+- Resumed native Windows input after user authorization. Verified the first successful result opens Localization, a changed estimator clears the old result, and a saved project restores relative inputs, symmetric-ratio matching, MAGSAC, rainbow and 3 px overlays in a fresh executable process. Replayed analysis returned 348 good matches/339 inliers.
+- Found that canvas width edits left the Parameters slider stale, parameter width edits could render with the old canvas value, and menu/button rainbow states could disagree. Unified paired controls with blocked feedback and one redraw per change; both width editors use the existing parameter range of 1–12 px. The rainbow setting can now be turned off from either control, including after project load.
+- Added focused regressions covering both editing directions, maximum width, actual result/render settings, saved width and alternating menu/button toggles. Fourteen focused checks passed; full local suite 175 passed/2 skipped in 35.77s; Ruff and whitespace checks passed. Refreshed local packaging/native follow-up is recorded separately.
+- Local Windows rebuild and bundled SIFT/ORB/render/export/project/shutdown checks succeeded. Native input confirmed both width controls agree when editing canvas to 12 px and Parameters to 2 px. Featureless-target analysis displayed no valid mapping, zero matches/inliers and Feature Matches, with no invented polygon. Normal close succeeded.
+
 ## 2026-10-25 — Extend native matrix to Intel Macs
 
 - Checked GitHub's current standard runner documentation and added macos-15-intel with an Intel-only manual dispatch option to avoid repeating completed target builds unnecessarily.

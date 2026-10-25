@@ -1,5 +1,13 @@
 # Implementation Status
 
+## Four native targets and resumed Windows review — 2026-10-25
+
+- Desktop [run 40217772265](https://github.com/DuhItzAniket/VISOR/actions/runs/40217772265) passed Windows x64, macOS ARM64 and Linux x64 at c67936c. Separate [Intel Mac run 40217899781](https://github.com/DuhItzAniket/VISOR/actions/runs/40217899781) passed at 33ab883; that commit only extends the workflow and documentation, with identical application code. All targets passed lint, packaging and bundled workflow checks.
+- Windows core suite: **155 passed, 2 skipped, 17 optional tests deselected**. Each macOS/Linux target: **153 passed, 4 skipped, 17 deselected**. Separate CPU [model run 40217775833](https://github.com/DuhItzAniket/VISOR/actions/runs/40217775833) passed **17 tests, 157 deselected** at c67936c. GPU execution and packaged learned models remain unverified.
+- Resumed actual Windows review confirmed automatic Localization display, explicit fit status, estimator-change invalidation and native project replay in a fresh process. Symmetric ratio/MAGSAC, both input paths, rainbow colors and 3 px overlays restored correctly; the replayed run returned 348 matches/339 inliers. See [Windows review](WINDOWS_REVIEW.md).
+- Review found mismatched overlay editors. Follow-up source synchronizes both width sliders before rendering, shares their 1–12 px range, and synchronizes the rainbow menu/button in both directions. Fourteen focused UI/session/job checks passed; full local suite **175 passed, 2 skipped in 35.77s** and Ruff passed. Local Windows rebuild succeeded; native review confirmed both editing directions (12 px then 2 px) and the blank-target no-fit workflow. The artifact links above identify the preceding verified application revision.
+- Remaining release gates include clean-desktop installation/uninstallation, full screen-reader/scaling and macOS/Linux interaction, complete artifact notices, owner-selected project license, signing/notarization, packaged learned support, and the I15 reliability investigation. Four successful builds do not close those gates.
+
 ## Intel Mac validation extension — 2026-10-25
 
 - Added a separate macOS Intel runner target alongside Apple Silicon. The manual desktop workflow can run all four targets or Intel alone. Intel is pending until its native job actually passes; no universal binary is claimed.

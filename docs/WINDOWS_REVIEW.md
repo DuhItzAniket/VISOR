@@ -31,6 +31,16 @@ The native dialog helper exposed a stale focused-element description while scree
 
 These follow-up changes have focused source regressions and require the final refreshed bundle evidence recorded in IMPLEMENTATION_STATUS.md. This document does not claim the original reviewed executable already contained the follow-ups.
 
+## Resumed review of refreshed application
+
+The c67936c application code was reviewed again after the user resumed Computer Use. Native Ctrl+1/Ctrl+2 pickers and F5 produced the same SIFT fixture counts and opened Localization automatically. Changing to MAGSAC cleared the previous result and asked for another run.
+
+Ctrl+S saved a format-2 project with symmetric-ratio matching, MAGSAC, rainbow colors, 3 px lines and relative image paths. After normal Ctrl+Q close and a fresh executable launch, Ctrl+O restored both images and all those controls; F5 returned 348 matches/339 inliers and opened Localization. This confirms replay behavior in the actual bundle, separately from the automated project tests.
+
+The review also found that editing the canvas width left the Parameters width stale. Source follow-up synchronizes both directions before one render, uses a shared 1–12 px range and keeps rainbow menu/button state consistent. Focused source regressions cover actual rendered/result settings and switching rainbow off from either editor.
+
+After rebuilding the standalone executable with that fix, native review confirmed that setting the canvas slider to 12 updated both editors to 12, and setting the Parameters slider to 2 updated both to 2. A featureless target then produced 843/0 keypoints, zero matches/inliers, explicit **no valid mapping** status and the Feature Matches view. No localization polygon was invented. Ctrl+Q closed normally. This follow-up executable contains the overlay fix on top of 33ab883; the preceding CI artifacts still identify their recorded revisions.
+
 ## Remaining native gates
 
 Install/uninstall on clean desktops, monitor changes and 150%/200% scaling, Narrator/other screen readers, full mouse/keyboard-only paths, real drag-and-drop from Explorer, and native macOS/Linux interaction remain separate gates. No operating-system accessibility or security settings were changed during this review.
