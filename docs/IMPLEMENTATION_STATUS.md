@@ -1,5 +1,12 @@
 # Implementation Status
 
+## Drag-and-drop contract follow-up — 2026-10-25
+
+- Overlay-fix desktop [run 40219098560](https://github.com/DuhItzAniket/VISOR/actions/runs/40219098560) passed all four targets at d2370af: Windows 158 passed/2 skipped/17 deselected, macOS ARM64/Intel and Linux each 156 passed/4 skipped/17 deselected. Lint, packaging and bundled workflows passed. These are the current downloadable validation artifacts; the subsequent copy-only drop fix has the source evidence below.
+- Real Explorer dragging remains pending: the Windows helper rejects cross-window drag endpoints. The attempted operation did not complete and is not counted as native validation. See [review limits](WINDOWS_REVIEW.md).
+- Source input handlers now explicitly accept Copy, including when Shift proposes Move, and reject move-only sources. URL drop tests cover both image roles, Unicode/spaced uppercase filenames, unchanged source bytes, rejected remote/non-image data and unreadable-file recovery. The bundled workflow check now includes Qt URL drop events, explicitly separate from shell integration.
+- Fourteen focused drop/overlay/session checks passed, including 12 px project replay. Full local suite: **182 passed, 2 skipped in 33.26s**. Ruff, focused image-widget Mypy and the source bundled-workflow check passed. A broad follow-import type traversal through the smoke entry point was stopped without a result; no whole-UI type-check pass is claimed. Fresh packaging follows this source commit.
+
 ## Four native targets and resumed Windows review — 2026-10-25
 
 - Desktop [run 40217772265](https://github.com/DuhItzAniket/VISOR/actions/runs/40217772265) passed Windows x64, macOS ARM64 and Linux x64 at c67936c. Separate [Intel Mac run 40217899781](https://github.com/DuhItzAniket/VISOR/actions/runs/40217899781) passed at 33ab883; that commit only extends the workflow and documentation, with identical application code. All targets passed lint, packaging and bundled workflow checks.

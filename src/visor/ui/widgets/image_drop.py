@@ -5,8 +5,8 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QDragEnterEvent, QDropEvent, QPixmap
+from PySide6.QtCore import Qt, QUrl, Signal
+from PySide6.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QPixmap
 from PySide6.QtWidgets import (
     QFileDialog,
     QFrame,
@@ -34,7 +34,7 @@ class ImageDropWidget(QFrame):
         self.setAcceptDrops(True)
         self.setMinimumHeight(230)
         self.setMinimumWidth(260)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self._image_path: Path | None = None
         self._title = title
 
@@ -101,21 +101,30 @@ class ImageDropWidget(QFrame):
             self.load_path(Path(filename))
 
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
-        if self._dropped_image(event.mimeData().urls()):
-            event.acceptProposedAction()
-        else:
+        self._accept_image_drag(event)
+
+    def dragMoveEvent(self, event: QDragMoveEvent) -> None:
+        self._accept_image_drag(event)
+
+    def _accept_image_drag(self, event: QDropEvent) -> bool:
+        if not event.possibleActions() & Qt.DropAction.CopyAction or not self._dropped_image(event.mimeData().urls()):
             event.ignore()
+            return False
+        # Opening an image must never tell Explorer or another drag source to
+        # remove its original file, even when Shift proposes a move action.
+        event.setDropAction(Qt.DropAction.CopyAction)
+        event.accept()
+        return True
 
     def dropEvent(self, event: QDropEvent) -> None:
-        paths = self._dropped_image(event.mimeData().urls())
-        if paths:
-            self.load_path(paths[0])
-            event.acceptProposedAction()
-        else:
+        if not self._accept_image_drag(event):
+            return
+        self.load_path(self._dropped_image(event.mimeData().urls())[0])
+        if self.image_path is None:
             event.ignore()
 
     @staticmethod
-    def _dropped_image(urls: list) -> list[Path]:
+    def _dropped_image(urls: list[QUrl]) -> list[Path]:
         accepted = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff", ".webp"}
         return [Path(url.toLocalFile()) for url in urls if url.isLocalFile() and Path(url.toLocalFile()).suffix.lower() in accepted]
 

@@ -1,5 +1,12 @@
 # Implementation Log
 
+## 2026-10-25 — Copy-only image drop contracts
+
+- Attempted native Explorer-to-VISOR drag; helper rejected its endpoint outside the Explorer window. Recorded this as incomplete native verification, without treating it as an application failure. A resize attempt did not change dimensions and adds no scaling evidence.
+- Compared the Qt drop-action contract and Microsoft's drop-effect definitions. Input handlers now force allowed Copy actions during enter/move/drop, reject move-only sources and ignore unreadable drops. Opening images must not request source removal. No actual file loss was observed or claimed.
+- Seven new Qt-dispatched cases cover both roles, Shift-proposed Move, Unicode/spaced uppercase paths, source bytes, invalid/remote payloads and corrupt images. The bundled workflow check now dispatches URL drop events with explicit copy semantics. Strengthened overlay replay coverage to preserve the 12 px boundary through UI save/load.
+- Fourteen focused checks and full local suite passed (182 passed, 2 skipped in 33.26s); Ruff and focused image-widget Mypy passed. Source workflow check passed all steps. A broader follow-import smoke-module type traversal was stopped without completion; it is not counted as verification. Native packaging refresh follows the commit.
+
 ## 2026-10-25 — Resume Windows review and unify overlay editors
 
 - Confirmed final c67936c native runs on Windows/macOS ARM/Linux and the separate 33ab883 Intel Mac extension all passed core regressions, lint, packaging and bundled workflow checks. Windows: 155 passed/2 skipped/17 deselected; other targets: 153 passed/4 skipped/17 deselected. Optional CPU models: 17 passed/157 deselected at c67936c. Updated distribution links with exact artifacts.

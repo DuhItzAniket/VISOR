@@ -16,7 +16,8 @@ from visor import __version__
 
 def run_smoke_check(report_path: Path) -> int:
     """Check Qt input/display, classical analysis, serialization and shutdown."""
-    from PySide6.QtCore import QSettings
+    from PySide6.QtCore import QMimeData, QPoint, QPointF, QSettings, Qt, QUrl
+    from PySide6.QtGui import QDragEnterEvent, QDropEvent
     from PySide6.QtWidgets import QApplication
 
     from visor.engines import ORBConfiguration, SIFTConfiguration
@@ -43,7 +44,19 @@ def run_smoke_check(report_path: Path) -> int:
             # Preserve user layout/settings by using an isolated settings file.
             window._window_settings = QSettings(str(folder / "smoke.ini"), QSettings.Format.IniFormat)
             window.show()
-            window.reference_input.load_path(reference)
+            mime = QMimeData()
+            mime.setUrls([QUrl.fromLocalFile(str(reference))])
+            actions = Qt.DropAction.CopyAction | Qt.DropAction.MoveAction
+            enter = QDragEnterEvent(QPoint(40, 40), actions, mime,
+                                    Qt.MouseButton.LeftButton, Qt.KeyboardModifier.ShiftModifier)
+            QApplication.sendEvent(window.reference_input, enter)
+            drop = QDropEvent(QPointF(40, 40), actions, mime,
+                              Qt.MouseButton.LeftButton, Qt.KeyboardModifier.ShiftModifier)
+            QApplication.sendEvent(window.reference_input, drop)
+            if (not enter.isAccepted() or not drop.isAccepted() or drop.dropAction() != Qt.DropAction.CopyAction
+                    or window.reference_input.image_path != reference.resolve() or not reference.exists()):
+                raise RuntimeError("Qt image drop did not load the input with copy semantics.")
+            report["checks"].append("Qt URL drop events with copy semantics (not native shell drag)")
             window.target_input.load_path(target)
             app.processEvents()
             if not window.run_button.isEnabled():

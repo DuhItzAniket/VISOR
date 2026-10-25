@@ -2,6 +2,12 @@
 
 Review date: 2026-10-19. Audited starting commit: `40e68de` (v0.2.0).
 
+## Drag-and-drop action review — 2026-10-25
+
+The input widgets previously accepted the drag source's proposed action. VISOR opens and references the original path; it does not move a file. Qt permits overriding the proposed action with an allowed action using `setDropAction` followed by `accept`. Windows documents that a move effect tells the source to remove its data. Therefore image inputs explicitly choose Copy during enter/move/drop, reject sources that only offer Move, and reject unreadable drops instead of reporting an accepted operation. This is a preventative contract correction, not an observed loss of a source file. [Qt drop actions](https://doc.qt.io/qt-6/qdropevent.html#setDropAction), [Windows drop-effect definitions](https://learn.microsoft.com/en-us/windows/win32/com/dropeffect-constants).
+
+Qt event-dispatch tests cover both roles, Shift-proposed Move overridden by Copy, Unicode/spaced uppercase image paths, preserved source bytes, rejected remote/non-image payloads and unreadable-image recovery. The packaged workflow check also dispatches URL drop events. These are separate from real native Explorer interaction: the Windows automation helper rejects drag endpoints outside its source window, so it cannot currently complete that cross-window review.
+
 ## Recommendation
 
 Develop VISOR as a trustworthy registration and evaluation workbench. The immediate return comes from honest geometry, measured runtime, reproducible experiments, and clear failure explanations. Additional engine names and training do not address the current reliability gaps.

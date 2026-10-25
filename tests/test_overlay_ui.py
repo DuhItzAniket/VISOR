@@ -36,7 +36,7 @@ def overlay_workspace(textured_pair, monkeypatch):
 @pytest.mark.parametrize("editor", ["feature_thickness_slider", "match_line_thickness"])
 def test_width_edit_updates_both_controls_render_and_project(overlay_workspace, editor, tmp_path, monkeypatch):
     window, rendered = overlay_workspace
-    for width in (3, 12, 1):
+    for width in (3, 1, 12):
         rendered.clear()
         getattr(window, editor).setValue(width)
         assert window.feature_thickness_slider.value() == window.match_line_thickness.value() == width
@@ -48,7 +48,11 @@ def test_width_edit_updates_both_controls_render_and_project(overlay_workspace, 
     project = tmp_path / "overlay.visor"
     monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *args: (str(project), ""))
     window._save_project()
-    assert load_project(project).settings.feature_line_thickness == 1
+    assert load_project(project).settings.feature_line_thickness == 12
+    window._reset_configuration()
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args: (str(project), ""))
+    window._load_project()
+    assert window.feature_thickness_slider.value() == window.match_line_thickness.value() == 12
 
 
 def test_rainbow_can_be_enabled_and_disabled_from_either_control(overlay_workspace):

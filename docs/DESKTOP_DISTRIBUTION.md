@@ -17,14 +17,14 @@ PyInstaller's documented model supports self-contained bundles but requires buil
 
 Native build evidence (2026-10-19): [run 39300439636](https://github.com/DuhItzAniket/VISOR/actions/runs/39300439636), source `303ba33`, completed successfully on Windows x64, macOS ARM64, and Ubuntu x64. All three jobs produced packages and passed the bundled workflow check. Artifacts are named `VISOR-Windows-X64`, `VISOR-macOS-ARM64`, and `VISOR-Linux-X64`. These are unsigned validation builds, not a public production release or proof of install/uninstall behavior on every desktop.
 
-Current validation (2026-10-25): [run 40217772265](https://github.com/DuhItzAniket/VISOR/actions/runs/40217772265) at `c67936c` passed Windows, macOS ARM64 and Linux core suites, lint, packaging and bundled workflow checks. Windows: 155 passed/2 skipped/17 model tests deselected; macOS/Linux: 153 passed/4 skipped/17 deselected. The separate [Intel Mac run 40217899781](https://github.com/DuhItzAniket/VISOR/actions/runs/40217899781) at `33ab883` passed the same checks with 153 passed/4 skipped/17 deselected. The latter commit changes only workflow/docs; application code matches c67936c. Extra skips off Windows are platform-specific exact snapshots. See [current status](IMPLEMENTATION_STATUS.md) for subsequent source fixes and remaining release gates.
+Current validation (2026-10-25): [run 40219098560](https://github.com/DuhItzAniket/VISOR/actions/runs/40219098560) at `d2370af` passed Windows x64, macOS ARM64/Intel and Linux x64 core suites, lint, packaging and bundled workflow checks. Windows: 158 passed/2 skipped/17 model tests deselected; macOS/Linux: 156 passed/4 skipped/17 deselected. Extra skips off Windows are platform-specific exact snapshots. See [current status](IMPLEMENTATION_STATUS.md) for subsequent source fixes and remaining release gates.
 
 Artifacts from the latest run:
 
-- [Windows x64 setup and portable ZIP](https://github.com/DuhItzAniket/VISOR/actions/runs/40217772265/artifacts/12607419330)
-- [macOS Apple Silicon DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40217772265/artifacts/12608312929)
-- [macOS Intel DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40217899781/artifacts/12607949335)
-- [Linux x64 Debian and portable packages](https://github.com/DuhItzAniket/VISOR/actions/runs/40217772265/artifacts/12608198943)
+- [Windows x64 setup and portable ZIP](https://github.com/DuhItzAniket/VISOR/actions/runs/40219098560/artifacts/12608956549)
+- [macOS Apple Silicon DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40219098560/artifacts/12609171274)
+- [macOS Intel DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40219098560/artifacts/12608682004)
+- [Linux x64 Debian and portable packages](https://github.com/DuhItzAniket/VISOR/actions/runs/40219098560/artifacts/12609135782)
 
 GitHub may require sign-in to download Actions artifacts; artifacts also have a retention period. These links are validation downloads, not permanent public release URLs.
 
@@ -52,7 +52,7 @@ Each bundle exposes a maintainer-only check:
 VISOR --smoke-check smoke-report.json
 ```
 
-On Windows use `VISOR.exe`; on macOS use `VISOR.app/Contents/MacOS/VISOR`. CI sets `QT_QPA_PLATFORM=offscreen`. The check loads generated image inputs into the Qt window, localizes an identity pair with SIFT and ORB, renders results, exports JSON/CSV, saves/loads a project, and closes the window. A startup import failure is also recorded. This is stronger than checking that a process stays alive, but it does not replace mouse-driven testing, screen-reader checks, OS installation/uninstallation, or code-signature validation.
+On Windows use `VISOR.exe`; on macOS use `VISOR.app/Contents/MacOS/VISOR`. CI sets `QT_QPA_PLATFORM=offscreen`. The check loads generated image inputs into the Qt window, localizes an identity pair with SIFT and ORB, renders results, exports JSON/CSV, saves/loads a project, and closes the window. Source after d2370af additionally dispatches Qt URL drop events to check copy semantics; this is separate from physical native shell dragging. A startup import failure is also recorded. The check does not replace mouse-driven testing, screen-reader checks, OS installation/uninstallation, or code-signature validation.
 
 ## Optional engines
 
