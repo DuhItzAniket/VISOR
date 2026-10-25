@@ -1622,8 +1622,22 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("No target keypoint is within 30 px of the selected coordinate.")
             return
         self.details_tabs.setCurrentIndex(0)
+        result = self._latest_result
+        match_fields: list[tuple[str, str]] = []
+        for match_index, match in enumerate(result.match_set.matches):
+            if match.train_index != index:
+                continue
+            mask = result.geometry.inlier_mask
+            membership = "not classified" if match_index >= len(mask) else ("solver inlier" if mask[match_index] else "solver outlier")
+            match_fields.append((f"Correspondence #{match_index}", f"Reference keypoint #{match.query_index}; {membership}"))
+            if match.distance is not None:
+                match_fields.append(("Descriptor distance", f"{match.distance:.5g}"))
+            if match.confidence is not None:
+                match_fields.append(("Assignment score", f"{match.confidence:.5g} (not calibrated accuracy)"))
+        if not match_fields:
+            match_fields.append(("Correspondences", "This target keypoint has no accepted correspondence."))
         self.details_panel.append_keypoint(self._latest_result.engine, index, point,
-                                           self._latest_result.target_features.keypoint_metadata)
+                                           self._latest_result.target_features.keypoint_metadata, tuple(match_fields))
         self.statusBar().showMessage(f"Selected {self._latest_result.engine} target keypoint #{index} at ({point.x:.1f}, {point.y:.1f}) px")
 
     def _on_image_changed(self, role: str, path: object) -> None:

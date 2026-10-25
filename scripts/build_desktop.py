@@ -41,6 +41,8 @@ def build() -> tuple[Path, str, str]:
         sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean", "--windowed",
         "--name", "VISOR", "--paths", str(ROOT / "src"),
         "--add-data", f"{assets}:visor/assets",
+        "--hidden-import", "visor.engines_classical_extra",
+        "--hidden-import", "visor.learned_extra",
     ]
     # Standard desktop distribution is classical-only. Do not accidentally bundle
     # the developer machine's Torch/CUDA runtime or mutable optional model code.

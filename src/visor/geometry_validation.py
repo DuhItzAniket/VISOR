@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 from numpy.typing import NDArray
 
-from visor.models import GeometryResult
+from visor.models import GeometryDiagnostics, GeometryResult
 
 
 def failed_geometry(message: str, count: int) -> GeometryResult:
@@ -56,10 +56,12 @@ def validate_planar_fit(
     if inlier_count < required:
         return reject(f"at least {required} inliers are required.")
     selected = np.asarray(inliers, dtype=bool)
+    support_areas: list[float] = []
     for points in (source, target):
         support = np.asarray(points, dtype=np.float32).reshape(-1, 2)[selected]
         if not np.isfinite(support).all() or abs(cv2.contourArea(cv2.convexHull(support))) < 1e-6:
             return reject("degenerate inlier support.")
+        support_areas.append(abs(cv2.contourArea(cv2.convexHull(support))))
 
     width, height = reference_size
     if width < 2 or height < 2:
@@ -92,6 +94,16 @@ def validate_planar_fit(
     if not np.isfinite(errors[selected]).all():
         return reject("non-finite inlier reprojection residual.")
     residual = float(np.mean(errors[selected]))
+    inlier_errors = errors[selected]
+    target_area = None if target_size is None else (target_size[0] - 1) * (target_size[1] - 1)
+    projected_area = abs(cv2.contourArea(contour))
+    diagnostics = GeometryDiagnostics(
+        support_areas[0] / ((width - 1) * (height - 1)),
+        None if target_area is None else support_areas[1] / target_area,
+        float(np.median(inlier_errors)), float(np.percentile(inlier_errors, 95)),
+        float(np.max(inlier_errors)), projected_area,
+        None if target_area is None else projected_area / target_area,
+    )
     reference_center = np.array([[[(width - 1) / 2, (height - 1) / 2]]], dtype=np.float64)
     center = cv2.perspectiveTransform(reference_center, h).reshape(2)
     return GeometryResult(
@@ -99,4 +111,5 @@ def validate_planar_fit(
         inlier_count, count - inlier_count, ratio, residual,
         tuple((float(point[0]), float(point[1])) for point in projected),
         (float(center[0]), float(center[1])),
+        diagnostics=diagnostics,
     )

@@ -1,5 +1,12 @@
 # Implementation Log
 
+## 2026-10-25 — I11 measured fit diagnostics and correspondence inspection
+
+- Added typed valid-fit diagnostics for source/target support hulls, inlier residual median/p95/maximum, projected area and its target-area ratio. Exports/UI define them as fit evidence, not detection confidence or truth accuracy.
+- Target keypoint inspection now lists accepted correspondence membership, reference index and available distance/score. Unmatched points are identified explicitly.
+- Tests check area conventions, linear residual quantiles, exclusion of outliers, missing target size, exports and UI membership inspection. Diagnostic/geometry/golden set: 20 passed. Validator focused Mypy and Ruff passed.
+- Pre-diagnostic source ac28f47 full suite: 144 passed, 2 skipped in 66.04s. Added hidden-import discovery for registry-loaded wrappers before the next native bundle matrix.
+
 ## 2026-10-25 — I09 shared factory and capability discovery
 
 - Unified all nine built-in factories with typed configured/pair engine protocols and dataclass configuration metadata. Pipeline construction now uses the registry; UI selector and availability dialog share its probes/reasons.

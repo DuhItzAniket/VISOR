@@ -115,7 +115,8 @@ class AnalysisDetailsPanel(QWidget):
         self._render()
 
     def append_keypoint(self, engine: str, index: int, point: KeypointInfo,
-                        metadata: tuple[str, ...] = ("size", "angle", "response", "octave", "class_id")) -> None:
+                        metadata: tuple[str, ...] = ("size", "angle", "response", "octave", "class_id"),
+                        match_fields: tuple[tuple[str, str], ...] = ()) -> None:
         title = f"SELECTED {engine.upper()} KEYPOINT #{index}"
         fields = [
             ("X", f"{point.x:.2f} px"),
@@ -126,6 +127,7 @@ class AnalysisDetailsPanel(QWidget):
             ("Pyramid octave", str(point.octave) if "octave" in metadata else "unavailable"),
             ("Class ID", str(point.class_id) if "class_id" in metadata else "unavailable"),
         ]
+        fields.extend(match_fields)
         self._keypoints_data.append((title, fields))
         self._render()
 
@@ -396,6 +398,18 @@ class AnalysisDetailsPanel(QWidget):
                 ("Requested base", f"{provenance.requested_threshold_px:g} px"),
                 ("Effective threshold", f"{provenance.effective_threshold_px:g} px" if provenance.effective_threshold_px is not None else "not used"),
                 ("Attempted thresholds", ", ".join(f"{value:g}" for value in provenance.attempted_thresholds_px) or "none"),
+            ]))
+        if g.diagnostics is not None:
+            diagnostic = g.diagnostics
+            groups.append(("FIT DIAGNOSTICS", [
+                ("Reference support hull / image", f"{diagnostic.reference_support_hull_fraction:.1%}"),
+                ("Target support hull / image", f"{diagnostic.target_support_hull_fraction:.1%}" if diagnostic.target_support_hull_fraction is not None else "unavailable"),
+                ("Inlier residual median", f"{diagnostic.median_inlier_residual_px:.3f} px"),
+                ("Inlier residual p95", f"{diagnostic.p95_inlier_residual_px:.3f} px"),
+                ("Inlier residual maximum", f"{diagnostic.maximum_inlier_residual_px:.3f} px"),
+                ("Projected area", f"{diagnostic.projected_area_px2:.1f} px²"),
+                ("Projected area / target", f"{diagnostic.projected_area_target_fraction:.1%}" if diagnostic.projected_area_target_fraction is not None else "unavailable"),
+                ("Interpretation", "Fit support and residuals; not accuracy or a probability of detection."),
             ]))
         return f"Geometry ({result.engine})", groups
 

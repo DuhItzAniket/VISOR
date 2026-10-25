@@ -80,6 +80,7 @@ def analysis_document(result: AnalysisResult) -> dict[str, Any]:
             "center_px": geometry.center,
             "homography": None if geometry.homography is None else geometry.homography.tolist(),
             "provenance": None if geometry.provenance is None else asdict(geometry.provenance),
+            "diagnostics": None if geometry.diagnostics is None else asdict(geometry.diagnostics),
             "similarity_estimates": None if result.similarity is None else {
                 "rotation_deg": result.similarity.rotation_deg,
                 "scale": result.similarity.scale,
@@ -131,6 +132,8 @@ def export_csv(result: AnalysisResult, path: Path) -> None:
         "threshold_policy": None if geometry.provenance is None else geometry.provenance.threshold_policy,
         "effective_threshold_px": None if geometry.provenance is None else geometry.provenance.effective_threshold_px,
     }
+    if geometry.diagnostics is not None:
+        fields.update(asdict(geometry.diagnostics))
     with path.open("w", encoding="utf-8-sig", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields.keys())
         writer.writeheader()
@@ -161,6 +164,9 @@ def export_html_report(result: AnalysisResult, path: Path) -> None:
     if geometry["provenance"] is not None:
         rows.extend((f"Estimator: {key}", html.escape(str(value)) if value is not None else "unavailable")
                     for key, value in geometry["provenance"].items())
+    if geometry["diagnostics"] is not None:
+        rows.extend((f"Fit diagnostic: {key}", html.escape(str(value)) if value is not None else "unavailable")
+                    for key, value in geometry["diagnostics"].items())
     summary_rows = "\n".join(
         f"<tr><th>{label}</th><td>{value}</td></tr>" for label, value in rows
     )

@@ -32,6 +32,12 @@ Extraction for each learned image includes tensor preparation, device transfer, 
 
 A valid fit and its inlier residual are evidence of internal geometric consistency. They do not establish accuracy without independent ground truth.
 
+### Fit diagnostics
+
+Valid fits report convex-hull area of the solver's inlier support divided by each image's pixel-coordinate area, inlier residual median/p95/maximum, projected polygon area and its ratio to target area. Pixel-coordinate area uses `(width-1)*(height-1)`, consistent with projected image corners. Percentiles use NumPy's default linear interpolation. Outliers are excluded from the inlier residual distribution. Metrics requiring an unknown target size remain null; rejected fits do not fabricate diagnostics.
+
+Projected area can exceed 100% of target area for a partially visible reference. These geometric ratios are not confidence percentages and are not clamped into a quality score. Sparse spatial support can leave the rest of the reference weakly constrained even when fit residual is small. Inspecting a target keypoint lists its accepted correspondence(s), solver inlier/outlier membership and real descriptor distance or assignment score when available.
+
 ## Export migration
 
 Analysis JSON schema is now 2. Existing fields remain, with nullable learned candidate counts/thresholds, added correspondence distance/score records, runtime/timing metadata, and geometry provenance. CSV adds measured stage/device/matcher/estimator fields. Consumers must handle null/empty values as unavailable, not zero. The `.visor` project format remains version 1; it describes inputs/configuration, not an archived analysis result.

@@ -1,5 +1,12 @@
 # Implementation Status
 
+## Fit diagnostics and current source checks — 2026-10-25
+
+- I11 adds measured spatial-support hull fractions, inlier residual median/p95/maximum and projected area ratios to valid fits, UI details and exports. Keypoint inspection identifies accepted correspondences and solver membership with actual descriptor distances or assignment scores.
+- These diagnostics are explicitly not calibrated confidence or ground-truth accuracy. Missing size/invalid fit does not create fabricated values. See RESULT_CONTRACT.md for definitions.
+- Source baseline ac28f47 passed the full local suite: 144 passed, 2 skipped in 66.04s, plus Ruff and focused registry/pipeline Mypy. Diagnostic follow-up: 20 focused tests passed and validator Mypy/Ruff passed.
+- Added explicit packaging discovery for factory-loaded classical/learned wrapper modules. Fresh three-platform builds will verify the current desktop code; existing artifact links remain tied to their recorded revisions.
+
 ## Shared engine capabilities — 2026-10-25
 
 - I09 now routes pipeline construction through one registry for all nine built-in engines. Capability records drive the selector/status dialog, list configuration fields and distinguish dependency presence from weight/device validation at use.

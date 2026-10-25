@@ -102,6 +102,17 @@ class GeometryProvenance:
 
 
 @dataclass(frozen=True)
+class GeometryDiagnostics:
+    reference_support_hull_fraction: float
+    target_support_hull_fraction: float | None
+    median_inlier_residual_px: float
+    p95_inlier_residual_px: float
+    maximum_inlier_residual_px: float
+    projected_area_px2: float
+    projected_area_target_fraction: float | None
+
+
+@dataclass(frozen=True)
 class GeometryResult:
     valid: bool
     message: str
@@ -114,6 +125,7 @@ class GeometryResult:
     projected_corners: tuple[tuple[float, float], ...]
     center: tuple[float, float] | None
     provenance: GeometryProvenance | None = None
+    diagnostics: GeometryDiagnostics | None = None
 
 
 @dataclass(frozen=True)
