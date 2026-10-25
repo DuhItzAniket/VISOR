@@ -2,6 +2,16 @@
 
 Reviewed 2026-10-25; project-license decision updated 2026-10-26. The owner selected Apache-2.0 for VISOR's original source; root LICENSE/NOTICE and package metadata record that choice. This inventory records observed third-party declarations and upstream notices. It does not establish that a distribution has satisfied every dependency notice/source obligation; release checks remain open under I12/I13.
 
+## Automated artifact evidence — 2026-10-26
+
+The builder now stages exact package-provided license/notice files and the actual interpreter's license, plus a pinned [Qt/PySide source notice corpus](../third_party/README.md). All 203 upstream files have commit URLs and hashes; referenced attribution license files were resolved. The bundled `third-party/notices.json` records installed versions, exact copied hashes and scope. Frozen validation checks every indexed file and compares the actual Qt runtime version with the corpus. No notice download occurs during normal build or core validation.
+
+`dist/artifact-inventory.json` hashes the actual frozen filesystem and maps PyInstaller collection origins to installed distribution records when available. Overlapping claims and unknown origins remain explicit; developer absolute paths are not published. Archives and native-library internals are opaque, so this is not a complete transitive SBOM. `build-info.json` records the inventory hash and counts. The inventory is outside the executable/app bundle to avoid mutating macOS signatures after packaging.
+
+PyInstaller's automatic Qt GUI collection previously included unused PDF-image and Qt Virtual Keyboard plugins. The custom GUI hook retains upstream collection behavior while excluding those two plugins; artifact audit rejects their libraries if they reappear. The source does not use these features. Native PNG/JPEG/BMP/TIFF/WebP checks protect the advertised image workflow. NumPy's optional testing/F2PY/YAML dependencies are excluded from the desktop build as well.
+
+Qt documents module-specific alternatives and third-party terms: [Qt licensing](https://doc.qt.io/qt-6/licensing.html), [Qt PDF licensing](https://doc.qt.io/QT-6/qtpdf-licensing.html), [Qt for Python notices](https://doc.qt.io/qtforpython-6/licenses.html). The copied corpus contains licensing alternatives; copying it does not select a commercial license or establish that every LGPL/source-offer/native dependency obligation is satisfied. Artifact-specific review remains open.
+
 ## Standard desktop components
 
 | Component observed locally | Declaration / notice evidence | Remaining distribution work |

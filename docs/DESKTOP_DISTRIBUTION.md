@@ -56,6 +56,12 @@ VISOR --smoke-check smoke-report.json
 
 On Windows use `VISOR.exe`; on macOS use `VISOR.app/Contents/MacOS/VISOR`. CI sets `QT_QPA_PLATFORM=offscreen`. The check verifies project LICENSE/NOTICE inclusion, dispatches Qt URL drop events with copy semantics, loads generated image inputs into the Qt window, localizes an identity pair with SIFT and ORB, renders results, exports JSON/CSV, saves/loads a project, and closes the window. The event check is separate from physical native shell dragging. A startup import failure is also recorded. The check does not replace mouse-driven testing, screen-reader checks, OS installation/uninstallation, code-signature validation or complete third-party notice review.
 
+## Dependency notices and file inventory
+
+New audit builds include `third-party/notices.json` and its referenced exact notice files in frozen resources (`_internal/third-party` on Windows/Linux; macOS resources are arranged by PyInstaller). Frozen checks validate their hashes and Qt version. [Source corpus and maintainer refresh](../third_party/README.md) describe provenance; normal builds do not download notices.
+
+The Actions artifact also supplies `artifact-inventory.json`, containing actual frozen file hashes and best-effort collection origins, and `build-info.json` records its hash. The inventory stays outside the app to avoid post-build signature changes. It covers the frozen filesystem before installer wrapping/signing, with embedded/native contents explicitly opaque. Re-audit after any signing or packaging transformation that changes those files. Complete component/source-offer/native-library license review remains separate from successful collection.
+
 ## Optional engines
 
 The standard desktop bundles validate SIFT/ORB and explicitly exclude Torch/LightGlue/XFeat to avoid packaging developer-installed GPU dependencies accidentally. Registry-supported additional classical engines are enabled when the bundled OpenCV API provides them. Packaged UI hides pip installation controls and reports unavailable learned engines. Source learned adapters are repaired, but a complete packaged learned runtime and its model notices remain I12/I13 work; users should not be told to install Python to complete an advertised packaged feature.

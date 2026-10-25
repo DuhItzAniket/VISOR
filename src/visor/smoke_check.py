@@ -17,7 +17,7 @@ from visor import __version__
 
 def run_smoke_check(report_path: Path) -> int:
     """Check Qt input/display, classical analysis, serialization and shutdown."""
-    from PySide6.QtCore import QMimeData, QPoint, QPointF, QSettings, Qt, QUrl
+    from PySide6.QtCore import QMimeData, QPoint, QPointF, QSettings, Qt, QUrl, qVersion
     from PySide6.QtGui import QDragEnterEvent, QDropEvent
     from PySide6.QtWidgets import QApplication
 
@@ -40,6 +40,10 @@ def run_smoke_check(report_path: Path) -> int:
                 if expected not in (resources / name).read_text(encoding="utf-8"):
                     raise RuntimeError(f"Project notice missing or unexpected: {name}")
             report["checks"].append("VISOR Apache-2.0 LICENSE/NOTICE files (project only)")
+            from visor.distribution_audit import verify_notice_index
+
+            count = verify_notice_index(resources / "third-party" / "notices.json", qt_version=qVersion())
+            report["checks"].append(f"Third-party notice index and {count} file hashes (not compliance certification)")
         with tempfile.TemporaryDirectory(prefix="visor-smoke-") as temporary:
             folder = Path(temporary)
             rng = np.random.default_rng(2026)
@@ -72,6 +76,17 @@ def run_smoke_check(report_path: Path) -> int:
             if not window.run_button.isEnabled():
                 raise RuntimeError("Image loading did not enable analysis.")
             report["checks"].append("Qt window and image inputs")
+            for extension in (".jpg", ".bmp", ".tif", ".webp"):
+                sample = folder / f"format{extension}"
+                success, encoded = cv2.imencode(extension, image)
+                if not success:
+                    raise RuntimeError(f"Cannot encode image-format fixture: {extension}")
+                encoded.tofile(sample)
+                window.target_input.load_path(sample)
+                if window.target_input.image_path != sample.resolve():
+                    raise RuntimeError(f"Bundled Qt image format failed: {extension}")
+            window.target_input.load_path(target)
+            report["checks"].append("Qt PNG/JPEG/BMP/TIFF/WebP input decoding")
             for engine in ("SIFT", "ORB"):
                 result = analyze(reference, target, engine)
                 if not result.geometry.valid or result.geometry.inlier_count < 4:

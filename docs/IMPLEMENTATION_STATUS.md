@@ -2,11 +2,17 @@
 
 Updated 2026-10-26. This is the current snapshot; chronological changes, prior checks and failed runs are preserved in [IMPLEMENTATION_LOG.md](IMPLEMENTATION_LOG.md) and Git history. Tasks and acceptance gates are in [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md).
 
+## Dependency-notice and artifact audit follow-up
+
+Added offline collection of actual installed dependency/runtime notices and a checked-in, hash-pinned 203-file Qt/PySide notice corpus. The bundle validates the notice index against actual Qt version and file hashes. A separate frozen-file inventory records hashes, distribution/source origins, overlapping claims and unresolved entries, without publishing developer absolute paths or claiming full transitive compliance.
+
+Excluded unused PDF-image/Qt Virtual Keyboard plugins and optional NumPy testing/F2PY/YAML dependencies. A preliminary Windows bundle passed all existing workflows plus 218 notice hashes and PNG/JPEG/BMP/TIFF/WebP decoding; excluded Qt modules were absent. Final native refresh follows the committed source, including the final dependency exclusions/overlap handling. New source checks: **224 passed, 2 skipped in 40.80s**, 22 focused audit/notice/version checks, Ruff and focused audit/builder Mypy passed. Previously verified download links below remain tied to their exact source revision.
+
 ## Current verification
 
 | Scope | Verified result |
 |---|---|
-| Full local source suite, including installed optional models | **210 passed, 2 skipped in 35.96s** |
+| Full local source suite, including installed optional models | **224 passed, 2 skipped in 40.80s** before the final symlink guard refinement; focused/native refresh follows |
 | Lint | Ruff passed for src, tests and shared desktop builder; whitespace check passed |
 | Type checking | Focused modules passed, including result contracts, matching/geometry, runtime/setup, registry/pipeline, jobs, evaluation/study, video, image input and builder. No whole-UI Mypy pass is claimed |
 | Source wheel | 0.2.0 wheel built in isolation; Apache-2.0 SPDX metadata and full project LICENSE/NOTICE verified inside the wheel |

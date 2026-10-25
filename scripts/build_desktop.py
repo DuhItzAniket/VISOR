@@ -15,6 +15,7 @@ import platform
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,6 +52,13 @@ def run(command: list[str], *, isolate_native_path: bool = False) -> None:
 
 
 def build() -> tuple[Path, str, str]:
+    # Import the checkout's audit implementation without relying on an older
+    # installed VISOR wheel in a developer environment.
+    sys.path.insert(0, str(ROOT / "src"))
+    from PySide6.QtCore import qVersion
+
+    from visor.distribution_audit import artifact_inventory, digest, stage_notices
+
     version = source_version(ROOT)
     system = platform.system()
     architecture = platform.machine().lower()
@@ -61,12 +69,13 @@ def build() -> tuple[Path, str, str]:
         "--add-data", f"{assets}:visor/assets",
         "--add-data", f"{ROOT / 'LICENSE'}:.",
         "--add-data", f"{ROOT / 'NOTICE'}:.",
+        "--additional-hooks-dir", str(ROOT / "scripts" / "pyinstaller_hooks"),
         "--hidden-import", "visor.engines_classical_extra",
         "--hidden-import", "visor.learned_extra",
     ]
     # Standard desktop distribution is classical-only. Do not accidentally bundle
     # the developer machine's Torch/CUDA runtime or mutable optional model code.
-    for module in ("torch", "torchvision", "lightglue", "xfeat"):
+    for module in ("torch", "torchvision", "lightglue", "xfeat", "numpy.testing", "numpy.f2py", "yaml"):
         command += ["--exclude-module", module]
     if system == "Windows":
         command += ["--icon", str(assets / "visor.ico")]
@@ -80,9 +89,16 @@ def build() -> tuple[Path, str, str]:
         command += ["--icon", str(icon), "--osx-bundle-identifier", "org.visor.desktop"]
     elif system != "Linux":
         raise RuntimeError(f"Unsupported build host: {system}")
-    command.append(str(ROOT / "src" / "visor" / "__main__.py"))
-    run(command, isolate_native_path=True)
+    (ROOT / "build").mkdir(exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="notice-stage-", dir=ROOT / "build") as stage:
+        notices = stage_notices(Path(stage), ROOT / "third_party" / "qt-notices-6.11.2")
+        if notices["qt_version"] != qVersion():
+            raise RuntimeError("Actual Qt runtime differs from the pinned notice corpus.")
+        command += ["--add-data", f"{stage}:third-party", str(ROOT / "src" / "visor" / "__main__.py")]
+        run(command, isolate_native_path=True)
     bundle = ROOT / "dist" / ("VISOR.app" if system == "Darwin" else "VISOR")
+    inventory_path = ROOT / "dist" / "artifact-inventory.json"
+    inventory = artifact_inventory(bundle, ROOT / "build" / "VISOR" / "COLLECT-00.toc", inventory_path, project_root=ROOT)
     revision = None
     try:
         revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
@@ -93,6 +109,11 @@ def build() -> tuple[Path, str, str]:
         "version_source": "src/visor/__init__.py",
         "project_license": "Apache-2.0",
         "project_notice_files": ["LICENSE", "NOTICE"],
+        "third_party_notice_count": len(notices["files"]),
+        "qt_runtime_version": qVersion(),
+        "artifact_inventory": {"file": inventory_path.name, "sha256": digest(inventory_path),
+                               "file_count": inventory["file_count"],
+                               "unresolved_origin_count": inventory["unresolved_origin_count"]},
         "source_revision": revision,
         "python": platform.python_version(), "learned_engines_bundled": False,
         "dependencies": {

@@ -43,6 +43,7 @@ jobs:
           python -m pip install pytest ruff
           python -m pytest -q -m "not optional_model"
           python -m ruff check src tests scripts/build_desktop.py
+          python -m ruff check scripts/refresh_qt_notices.py scripts/pyinstaller_hooks
       - name: Install Windows installer compiler
         if: runner.os == 'Windows'
         run: choco install innosetup --no-progress -y
@@ -70,5 +71,6 @@ jobs:
           path: |
             dist/installers/*
             dist/build-info.json
+            dist/artifact-inventory.json
             dist/smoke-report.json
           if-no-files-found: error

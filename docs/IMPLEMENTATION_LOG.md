@@ -1,5 +1,14 @@
 # Implementation Log
 
+## 2026-10-26 — Collect dependency notices and audit actual frozen files
+
+- Inspected PyInstaller's real collection table and found unused PDF-image and Qt Virtual Keyboard plugins. Added a small QtGui hook using the upstream collector while filtering those plugins, with an artifact guard against their return. Excluded optional NumPy testing/F2PY/YAML dependencies uncovered in the collection cross-reference.
+- Prepared 203 unmodified Qt/PySide 6.11.2 source notice/attribution/reference files using immutable commit URLs and SHA256; no unresolved LicenseFile references. Kept original bytes with Git binary attributes. The maintainer refresh is explicit; normal builds validate and copy the snapshot offline.
+- Added installed-package/interpreter notice staging, exact byte hashes and Qt version verification in frozen checks. Added an external frozen-filesystem inventory, package/source origin mapping, overlapping/unknown-origin preservation, hash linkage in build-info and CI artifact upload. No developer absolute paths or model downloads are published. Inventory scope explicitly leaves opaque/transitive/source-offer review open.
+- Preliminary Windows packaging passed the expanded workflow: 218 notice hashes, PNG/JPEG/BMP/TIFF/WebP decoding, classical localization, exports, project replay and shutdown; unwanted Qt modules absent. Final committed-source native refresh follows the last exclusions/overlap refinement.
+- Focused audit/notice/version suite: 22 passed. Full source: 224 passed/2 skipped in 40.80s. Ruff and focused audit/builder Mypy passed. Exact corpus provenance and remaining review are documented in THIRD_PARTY_INVENTORY.md; collection is not a compliance certificate.
+- Final inventory refinement rejects escaping and absolute symlinks instead of publishing non-portable/developer paths. Focused follow-up: 22 passed/3 skipped; this Windows host does not permit unprivileged symlink creation, so those three filesystem cases await Linux/macOS CI. No OS setting was changed to bypass that limit.
+
 ## 2026-10-26 — Final Apache-licensed four-target validation
 
 - Run 40222886823 completed successfully at 1f76d41 on Windows x64, macOS ARM64, macOS Intel and Linux x64. Windows core: 193 passed/2 skipped/17 model tests deselected; other targets: 191 passed/4 skipped/17 deselected. Every target passed lint, packaging and the full bundled workflow, including project LICENSE/NOTICE and copy-only Qt drops. Updated all artifact links with exact revision/run identities.

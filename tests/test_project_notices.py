@@ -8,6 +8,9 @@ from pathlib import Path
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
+from PySide6.QtCore import qVersion
+
+from visor.distribution_audit import digest
 from visor.smoke_check import run_smoke_check
 
 
@@ -24,6 +27,11 @@ def test_frozen_project_notices_and_classical_workflow_pass(tmp_path, monkeypatc
     root = Path(__file__).resolve().parents[1]
     for name in ("LICENSE", "NOTICE"):
         shutil.copyfile(root / name, tmp_path / name)
+    notices = tmp_path / "third-party"
+    notices.mkdir()
+    (notices / "fixture.txt").write_bytes(b"A notice-integrity fixture")
+    (notices / "notices.json").write_text(json.dumps({"schema_version": 1, "kind": "collected_notices", "qt_version": qVersion(), "files": [
+        {"path": "fixture.txt", "sha256": digest(notices / "fixture.txt"), "bytes": (notices / "fixture.txt").stat().st_size}]}))
     monkeypatch.setattr(sys, "frozen", True, raising=False)
     monkeypatch.setattr(sys, "_MEIPASS", str(tmp_path), raising=False)
     report = tmp_path / "report.json"
