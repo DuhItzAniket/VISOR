@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Verify final dependency audit across four native targets
+
+- Run 40227340916 at a6fc4fd passed packaging, lint, core tests and the expanded frozen workflow on Windows x64, macOS ARM64/Intel and Linux x64. Windows core: 213 passed/2 skipped/17 deselected; other targets: 211 passed/4 skipped/17 deselected. Local full source: 227 passed/5 skipped in 42.99s, including installed optional models; three skips reflect host symlink permissions. Focused audit/notice/version: 25 passed/3 skipped. Ruff and focused audit/builder Mypy passed.
+- Downloaded all four small audit artifacts. Inventory hashes match build-info; source identity is a6fc4fd and every smoke report succeeds. Notice/files/unresolved counts: Windows 218/423/0; Linux 214/664/140; ARM Mac 214/766/197; Intel Mac 214/769/199. Each frozen check verified all notice hashes and Qt version, five image codecs, copy-only Qt event drops, SIFT/ORB, exports, project replay and shutdown. Local Windows bundle passed the same workflow. Updated verified download links.
+- Unresolved native/system/link entries stay explicit. Successful source mapping is not a transitive license certificate. Actual Linux inventory includes a second Qt runtime supplied by OpenCV; added I16 to test the same-version headless contrib package using an isolated environment, upstream guidance and retained algorithm/native gates. No global OpenCV uninstall or visual change is part of this completed batch.
+
 ## 2026-10-26 — Verify the audit bundles and refine relocated-file evidence
 
 - Run 40226712653 completed successfully at db573a2 on all four native targets, including third-party notice hashes/Qt version, all five input formats, classical workflows, exports/project replay and shutdown. The explicit NumPy stdlib import repaired the previous startup failure.

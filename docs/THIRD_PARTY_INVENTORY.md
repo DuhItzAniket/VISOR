@@ -1,8 +1,8 @@
 # Dependency and model notice inventory
 
-Reviewed 2026-10-25; project-license decision updated 2026-10-26. The owner selected Apache-2.0 for VISOR's original source; root LICENSE/NOTICE and package metadata record that choice. This inventory records observed third-party declarations and upstream notices. It does not establish that a distribution has satisfied every dependency notice/source obligation; release checks remain open under I12/I13.
+Reviewed 2026-10-26. The owner selected Apache-2.0 for VISOR's original source; root LICENSE/NOTICE and package metadata record that choice. This inventory records observed third-party declarations and upstream notices. It does not establish that a distribution has satisfied every dependency notice/source obligation; release checks remain open under I12/I13.
 
-## Automated artifact evidence — 2026-10-26
+## Automated artifact evidence â€” 2026-10-26
 
 The builder now stages exact package-provided license/notice files and the actual interpreter's license, plus a pinned [Qt/PySide source notice corpus](../third_party/README.md). All 203 upstream files have commit URLs and hashes; referenced attribution license files were resolved. The bundled `third-party/notices.json` records installed versions, exact copied hashes and scope. Frozen validation checks every indexed file and compares the actual Qt runtime version with the corpus. No notice download occurs during normal build or core validation.
 
@@ -16,15 +16,30 @@ PyInstaller's automatic Qt GUI collection previously included unused PDF-image a
 
 Qt documents module-specific alternatives and third-party terms: [Qt licensing](https://doc.qt.io/qt-6/licensing.html), [Qt PDF licensing](https://doc.qt.io/QT-6/qtpdf-licensing.html), [Qt for Python notices](https://doc.qt.io/qtforpython-6/licenses.html). The copied corpus contains licensing alternatives; copying it does not select a commercial license or establish that every LGPL/source-offer/native dependency obligation is satisfied. Artifact-specific review remains open.
 
+## Inspected native audit results
+
+Run [40227340916](https://github.com/DuhItzAniket/VISOR/actions/runs/40227340916), source a6fc4fd, passed all four targets. Downloaded each small audit artifact and independently checked inventory SHA256 against build-info, source identity and successful frozen reports.
+
+| Target | Notice files verified | Frozen filesystem entries | Unresolved origin entries |
+|---|---:|---:|---:|
+| Windows x64 | 218 | 423 | 0 |
+| Linux x64 | 214 | 664 | 140 |
+| macOS ARM64 | 214 | 766 | 197 |
+| macOS Intel | 214 | 769 | 199 |
+
+Counts include layout links; unresolved origins are not a count of missing licenses. Linux has 87 records traced to system source areas and 53 without a resolved origin, including library layout links. Mac unresolved entries also include framework links. Do not infer native ownership or licensing from a basename. Even Windows' zero unresolved filesystem origins does not inspect embedded/native internals or certify compliance.
+
+Linux additionally carries OpenCV's Qt5 libraries alongside PySide's Qt6. I16 will evaluate the same-version headless contrib wheel in an isolated environment. Upstream recommends headless when another toolkit supplies the GUI and warns against installing multiple cv2 providers together. [OpenCV wheel guidance](https://github.com/opencv/opencv-python#installation-and-usage).
+
 ## Standard desktop components
 
 | Component observed locally | Declaration / notice evidence | Remaining distribution work |
 |---|---|---|
-| Python 3.11 runtime | Python distribution license files | Include the exact runtime's notices in each native bundle |
+| Python 3.11 runtime | Python distribution license files | Exact interpreter notice collected and hash-checked on all four targets; native/transitive review remains |
 | NumPy 1.26.4 | Installed distribution LICENSE.txt and additional component licenses | Retain notices for the libraries actually bundled, including third-party numerical components |
-| OpenCV contrib 4.11.0.86 | Package metadata declares Apache 2.0; LICENSE.txt and LICENSE-3RD-PARTY.txt present | Include both primary and bundled third-party notices |
+| OpenCV contrib 4.11.0.86 | Package metadata declares Apache 2.0; LICENSE.txt and LICENSE-3RD-PARTY.txt present | Both package notice files collected and hash-checked; inspect actual native codec/numerical components separately |
 | PySide6, Essentials, Addons, Shiboken6 6.11.2 | Package metadata declares LGPL/GPL alternatives; commercial license reference file is also present | Review the selected licensing route, actual Qt modules/native dependencies and their complete notices for each artifact |
-| PyInstaller 6.22.3 / bootloader | Package declares GPL with its distribution exception; COPYING.txt present | Preserve applicable notices; do not infer VISOR's own project license from its build tool |
+| PyInstaller 6.22.3 / bootloader | Package declares GPL with its distribution exception; COPYING.txt present | COPYING.txt collected and hash-checked; do not infer VISOR's own project license from its build tool |
 
 Qt documents separate third-party contributions and points to Qt's component-level license information: [Qt for Python license notices](https://doc.qt.io/qtforpython-6/licenses.html). A package's headline declaration alone is not a complete inventory of a frozen application's native libraries.
 
@@ -49,5 +64,5 @@ HPatches image/transform files are downloaded separately for local evaluation an
 ## Project decision and remaining release work
 
 - VISOR's own source is Apache-2.0 by the owner's 2026-10-26 choice. Source wheels and new desktop builds include LICENSE/NOTICE. This closes the project-license choice; third-party/model distribution review remains separate.
-- Generate and inspect a per-artifact inventory and include complete notices before a public release. The table above does not certify the current unsigned validation artifacts as notice-complete.
+- Per-artifact inventories and primary notice collection are delivered. Trace remaining native/transitive components and source-offer obligations before a public release. The table above does not certify the current validation artifacts as notice-complete.
 - Review exact model/weight terms before offering learned models inside desktop distributions. Maintain source, revision, weight hashes and required notices together.

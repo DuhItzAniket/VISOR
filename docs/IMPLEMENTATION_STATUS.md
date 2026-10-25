@@ -6,24 +6,20 @@ Updated 2026-10-26. This is the current snapshot; chronological changes, prior c
 
 Added offline collection of actual installed dependency/runtime notices and a checked-in, hash-pinned 203-file Qt/PySide notice corpus. The bundle validates the notice index against actual Qt version and file hashes. A separate frozen-file inventory records hashes, distribution/source origins, overlapping claims and unresolved entries, without publishing developer absolute paths or claiming full transitive compliance.
 
-Native run 40225818839 exposed fresh Qt wheels without standalone notice files. The repair explicitly records a version-matched pinned-source fallback for Qt/PySide/Shiboken only; other missing notices still fail. Focused repair checks passed (23 tests/3 host symlink skips); a new native run follows. No failed build is advertised as verified.
+Native run [40227340916](https://github.com/DuhItzAniket/VISOR/actions/runs/40227340916) passed all four targets at **a6fc4fd**, including frozen startup, all notice hashes, PNG/JPEG/BMP/TIFF/WebP decoding and the classical workflows. Missing Qt wheel notices use an explicitly recorded version-matched pinned-source fallback; missing notices for other components still fail. Unused PDF-image/Qt Virtual Keyboard plugins and optional NumPy testing/F2PY/YAML dependencies are excluded; NumPy's implicit stdlib secrets import is explicitly retained.
 
-The following packaged check exposed an implicit NumPy Cython import of stdlib secrets after optional NumPy testing dependencies were excluded. Added the explicit required hidden import; bundled startup and workflow remain the gate before download links change. Latest local full source suite: 225 passed/5 skipped in 48.39s.
-
-Audit run 40226712653 at db573a2 subsequently passed all four targets. Per-platform audit inspection prompted a mapping refinement for relocated libraries: one unique collection source is required; ambiguous/system/native origins stay explicit. Final metadata refresh follows. Complete transitive/native/source-offer review remains open.
-
-Excluded unused PDF-image/Qt Virtual Keyboard plugins and optional NumPy testing/F2PY/YAML dependencies. A preliminary Windows bundle passed all existing workflows plus 218 notice hashes and PNG/JPEG/BMP/TIFF/WebP decoding; excluded Qt modules were absent. Final native refresh follows the committed source, including the final dependency exclusions/overlap handling. New source checks: **224 passed, 2 skipped in 40.80s**, 22 focused audit/notice/version checks, Ruff and focused audit/builder Mypy passed. Previously verified download links below remain tied to their exact source revision.
+Downloaded and inspected all four audit artifacts; each inventory hash matches build-info and each smoke report succeeds. Windows: 218 notice files, 423 filesystem entries, zero unresolved origins. Linux: 214/664/140; macOS ARM64: 214/766/197; macOS Intel: 214/769/199. Unresolved entries include native/system libraries and layout links; counts are not counts of missing licenses. A mapped filesystem origin also does not establish transitive/native/source-offer compliance. Linux includes OpenCV's additional Qt5 libraries; minimizing and tracing that dependency profile is tracked under I16.
 
 ## Current verification
 
 | Scope | Verified result |
 |---|---|
-| Full local source suite, including installed optional models | **224 passed, 2 skipped in 40.80s** before the final symlink guard refinement; focused/native refresh follows |
+| Full local source suite, including installed optional models | **227 passed, 5 skipped in 42.99s**; three skips are this Windows host's unprivileged symlink restriction. Focused audit/notice/version: 25 passed/3 skipped |
 | Lint | Ruff passed for src, tests and shared desktop builder; whitespace check passed |
 | Type checking | Focused modules passed, including result contracts, matching/geometry, runtime/setup, registry/pipeline, jobs, evaluation/study, video, image input and builder. No whole-UI Mypy pass is claimed |
 | Source wheel | 0.2.0 wheel built in isolation; Apache-2.0 SPDX metadata and full project LICENSE/NOTICE verified inside the wheel |
-| Latest completed native matrix | [40222886823](https://github.com/DuhItzAniket/VISOR/actions/runs/40222886823), source **1f76d41**: Windows x64, macOS ARM64, macOS Intel and Linux x64 passed core tests, lint, packaging and bundled workflows, including project LICENSE/NOTICE |
-| Native core test counts at 1f76d41 | Windows **193 passed, 2 skipped, 17 model tests deselected**; macOS/Linux each **191 passed, 4 skipped, 17 deselected** |
+| Latest completed native matrix | [40227340916](https://github.com/DuhItzAniket/VISOR/actions/runs/40227340916), source **a6fc4fd**: Windows x64, macOS ARM64, macOS Intel and Linux x64 passed core tests, lint, packaging and bundled workflows, including project/dependency notice checks |
+| Native core test counts at a6fc4fd | Windows **213 passed, 2 skipped, 17 model tests deselected**; macOS/Linux each **211 passed, 4 skipped, 17 deselected** |
 | Separate optional CPU lane | [40217775833](https://github.com/DuhItzAniket/VISOR/actions/runs/40217775833), c67936c: 17 real-model tests passed. Later full local suite also includes installed-model checks; CUDA is unverified |
 
 The owner selected Apache-2.0. Source wheel and all four native bundles verified project notice inclusion. Local Windows build-info reports 0.2.0 from the frozen source and Apache-2.0; its expanded bundled check passed. See [desktop distribution](DESKTOP_DISTRIBUTION.md) for downloads, exact revisions and remaining release limits. Later documentation commits do not change the packaged application code.

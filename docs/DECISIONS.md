@@ -1,5 +1,9 @@
 # Architecture Decisions
 
+## 2026-10-26: Audit actual artifacts without inventing ownership
+
+Collect exact installed dependency/interpreter notices offline and a hash-pinned Qt source corpus; version-matched Qt source fallback is explicit when wheels omit standalone texts. Hash the actual frozen filesystem outside the app, preserving ambiguous origins and opaque native/embedded contents. Unique relocated filename mapping is labeled; links/signature metadata are not library ownership. These records support review rather than certify transitive/source-offer compliance. Exclude unused Qt PDF-image/Virtual Keyboard plugins while protecting advertised image codecs through actual frozen decoding checks.
+
 ## 2026-10-26: Apache-2.0 for original VISOR source
 
 The owner selected Apache-2.0. Root LICENSE/NOTICE, SPDX package metadata and source-wheel/desktop notice inclusion implement that choice. Dependencies, model weights and datasets retain their terms. Project licensing does not close the separate per-artifact third-party notice review.
