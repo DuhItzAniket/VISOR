@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Verify the audit bundles and refine relocated-file evidence
+
+- Run 40226712653 completed successfully at db573a2 on all four native targets, including third-party notice hashes/Qt version, all five input formats, classical workflows, exports/project replay and shutdown. The explicit NumPy stdlib import repaired the previous startup failure.
+- Downloaded small audit artifacts from each platform. Initial origin gaps included platform relocation and framework layout/signature metadata, as well as genuine system/native dependency gaps. Refined mapping only when a collected filename has one unique source; ambiguous filenames remain unresolved. Layout symlinks and signature metadata are identified without claiming library ownership. System/Homebrew source areas are recorded without developer-private paths.
+- Focused relocated/ambiguous mapping regressions passed; full focused audit/notice/version set: 25 passed/3 Windows host-symlink skips. Ruff and focused audit/builder Mypy passed. A final native metadata refresh follows. These records do not certify transitive component/source-offer compliance.
+
 ## 2026-10-26 — Preserve NumPy's implicit standard-library dependency
 
 - Run 40226317768 passed notice staging/building but its bundled startup check exposed NumPy 1.26's Cython random extension importing stdlib secrets implicitly. Removing optional NumPy test dependencies also removed the incidental import edge that had collected it.

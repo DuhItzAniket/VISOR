@@ -146,6 +146,7 @@ def artifact_inventory(bundle: Path, toc_path: Path, output: Path, *, project_ro
                 "kind": "installed_distribution", "component": name, "package_path": str(file).replace("\\", "/")})
     entries = ast.literal_eval(toc_path.read_text(encoding="utf-8"))[0]
     origins: dict[str, dict[str, Any]] = {}
+    relocated: dict[str, dict[str, dict[str, Any]]] = {}
     for name, source, kind in entries:
         path = Path(source).resolve()
         claims = owners.get(str(path), [])
@@ -162,7 +163,15 @@ def artifact_inventory(bundle: Path, toc_path: Path, output: Path, *, project_ro
                 origin = {"kind": "project_notice", "name": path.name}
             else:
                 origin = {"kind": "unresolved", "name": path.name}
+                for area, base in (("homebrew", "/opt/homebrew"), ("homebrew", "/usr/local/Cellar"),
+                                   ("system", "/usr/lib"), ("system", "/lib")):
+                    if path.is_relative_to(Path(base)):
+                        origin.update({"source_area": area, "source_relative_path": path.relative_to(base).as_posix()})
+                        break
         origins[str(name).replace("\\", "/")] = {**origin, "collection_type": kind}
+        if kind in ("DATA", "BINARY", "EXTENSION", "EXECUTABLE"):
+            filename = PurePosixPath(str(name).replace("\\", "/")).name
+            relocated.setdefault(filename, {})[str(path)] = {**origin, "collection_type": kind}
     records: list[dict[str, Any]] = []
     for path in sorted(bundle.rglob("*")):
         if not path.is_file() and not path.is_symlink():
@@ -176,7 +185,20 @@ def artifact_inventory(bundle: Path, toc_path: Path, output: Path, *, project_ro
         for prefix in ("_internal/", "Contents/Resources/", "Contents/Frameworks/", "Contents/MacOS/"):
             if relative.startswith(prefix):
                 aliases.append(relative.removeprefix(prefix))
-        origin = next((origins[alias] for alias in aliases if alias in origins), {"kind": "unresolved"})
+        origin = next((origins[alias] for alias in aliases if alias in origins), None)
+        if origin is None:
+            candidates = relocated.get(path.name, {})
+            if path.is_symlink():
+                origin = {"kind": "bundle_layout_symlink"}
+            elif path.parent.name == "_CodeSignature" and path.name == "CodeResources":
+                origin = {"kind": "signature_metadata", "scope": "May be generated or rewritten by bundle tools; not a library ownership claim."}
+            elif len(candidates) == 1:
+                # PyInstaller relocates collected libraries into macOS
+                # Frameworks and flattens some Linux shared-library paths.
+                # Only use this evidence when there is exactly one source.
+                origin = {**next(iter(candidates.values())), "mapping": "unique_collection_filename"}
+            else:
+                origin = {"kind": "unresolved"}
         record: dict[str, Any] = {"path": relative, "origin": origin}
         if path.is_file():
             record.update({"sha256": digest(path), "bytes": path.stat().st_size})

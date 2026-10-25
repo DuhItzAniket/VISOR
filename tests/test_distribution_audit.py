@@ -157,6 +157,30 @@ def test_overlapping_distribution_records_preserve_both_claims(tmp_path, audit_i
     assert {claim["component"] for claim in origin["claims"]} == {"numpy", "opencv-contrib-python"}
 
 
+@pytest.mark.parametrize("ambiguous", [False, True])
+def test_relocated_library_uses_only_a_unique_collection_source(tmp_path, audit_inputs, ambiguous):
+    packages, _, _ = audit_inputs
+    entries = []
+    for component in ("numpy", "opencv-contrib-python") if ambiguous else ("numpy",):
+        source = Path(packages[component].locate_file("shared.dylib"))
+        source.write_bytes(component.encode())
+        packages[component].files.append(PurePosixPath("shared.dylib"))
+        entries.append((f"{component}/libs/shared.dylib", str(source), "BINARY"))
+    bundle = tmp_path / "app"
+    target = bundle / "Contents/Frameworks/shared.dylib"
+    target.parent.mkdir(parents=True)
+    target.write_bytes(b"relocated library with possibly rewritten load commands")
+    toc = tmp_path / "collect.toc"
+    toc.write_text(repr((entries,)))
+    result = artifact_inventory(bundle, toc, tmp_path / "inventory.json", project_root=tmp_path,
+                                distribution=packages.__getitem__)
+    origin = result["files"][0]["origin"]
+    if ambiguous:
+        assert origin["kind"] == "unresolved"
+    else:
+        assert origin["component"] == "numpy" and origin["mapping"] == "unique_collection_filename"
+
+
 @pytest.mark.parametrize("kind", ["relative-internal", "absolute-internal", "escaping"])
 def test_inventory_symlinks_are_portable_and_stay_inside_bundle(tmp_path, audit_inputs, kind):
     packages, _, _ = audit_inputs

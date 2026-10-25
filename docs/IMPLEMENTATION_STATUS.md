@@ -10,6 +10,8 @@ Native run 40225818839 exposed fresh Qt wheels without standalone notice files. 
 
 The following packaged check exposed an implicit NumPy Cython import of stdlib secrets after optional NumPy testing dependencies were excluded. Added the explicit required hidden import; bundled startup and workflow remain the gate before download links change. Latest local full source suite: 225 passed/5 skipped in 48.39s.
 
+Audit run 40226712653 at db573a2 subsequently passed all four targets. Per-platform audit inspection prompted a mapping refinement for relocated libraries: one unique collection source is required; ambiguous/system/native origins stay explicit. Final metadata refresh follows. Complete transitive/native/source-offer review remains open.
+
 Excluded unused PDF-image/Qt Virtual Keyboard plugins and optional NumPy testing/F2PY/YAML dependencies. A preliminary Windows bundle passed all existing workflows plus 218 notice hashes and PNG/JPEG/BMP/TIFF/WebP decoding; excluded Qt modules were absent. Final native refresh follows the committed source, including the final dependency exclusions/overlap handling. New source checks: **224 passed, 2 skipped in 40.80s**, 22 focused audit/notice/version checks, Ruff and focused audit/builder Mypy passed. Previously verified download links below remain tied to their exact source revision.
 
 ## Current verification
