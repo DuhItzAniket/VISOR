@@ -40,4 +40,8 @@ Projected area can exceed 100% of target area for a partially visible reference.
 
 ## Export migration
 
-Analysis JSON schema is now 2. Existing fields remain, with nullable learned candidate counts/thresholds, added correspondence distance/score records, runtime/timing metadata, and geometry provenance. CSV adds measured stage/device/matcher/estimator fields. Consumers must handle null/empty values as unavailable, not zero. The `.visor` project format remains version 1; it describes inputs/configuration, not an archived analysis result.
+Analysis JSON schema is now 2. Existing fields remain, with nullable learned candidate counts/thresholds, added correspondence distance/score records, runtime/timing metadata, and geometry provenance. CSV adds measured stage/device/matcher/estimator fields. Consumers must handle null/empty values as unavailable, not zero.
+
+The `.visor` project format is now 2 and preserves matching strategy and robust estimator in addition to core/display settings. Image paths are saved relative to the project when possible, allowing the project and its image directory to move together; images are not embedded. Paths across Windows drives remain absolute. Version 1 is still readable and defaults to the original ratio matcher/RANSAC semantics. Unavailable project engines are reported rather than silently replaced. Loading restores overlay settings as well as matching/geometry controls.
+
+Nondefault symmetric-ratio matching now measures its complete forward/reverse operation once; nested stage durations must not be added again. Cross-check has no numeric filter threshold, so it reports null. Conflicting matching-strategy flags are rejected instead of being resolved by hidden precedence.

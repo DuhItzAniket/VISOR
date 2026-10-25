@@ -71,7 +71,7 @@ AnalysisResult  (frozen dataclass)
 
 ## Threading model
 
-All OpenCV work runs on a `QThread` subclass (`AnalysisWorker`, `ComparisonWorker`, `BenchmarkWorker`). Results are emitted via Qt signals back to the main thread. A `threading.Event` cancel token is checked at safe pipeline boundaries between stages.
+Analysis and long-running jobs run on `QThread` subclasses (`AnalysisWorker`, `ComparisonWorker`, `BenchmarkWorker` and the other specialized workers). Results are emitted via Qt signals back to the main thread. A `threading.Event` cancel token is checked at safe pipeline boundaries between stages. Presentation-only overlay redraw currently executes on the UI thread; profiling and offloading large redraws remains a product-performance task.
 
 `JobController` owns a revision ticket for each worker. Input or algorithm changes increment the revision and set its cancellation event. `JobRelay` lives on the main thread, rejects obsolete/cancelled success/error signals and delivers at most one terminal event. Worker completion clears only its own ticket. Closing requests cancellation and defers window destruction until completion without waiting synchronously on the UI thread. Source dependency installation likewise retains ownership until its finished signal; it is not forcibly interrupted during environment mutation.
 

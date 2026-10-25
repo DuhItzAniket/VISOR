@@ -27,6 +27,11 @@ class MatchingOptions:
     def __post_init__(self) -> None:
         if not 0.0 < self.ratio_threshold < 1.0:
             raise ValueError("Ratio threshold must be between zero and one.")
+        flags = (self.cross_check, self.symmetric_ratio, self.use_flann)
+        if any(not isinstance(flag, bool) for flag in flags):
+            raise TypeError("Matching strategy flags must be booleans.")
+        if sum(flags) > 1:
+            raise ValueError("Choose only one matching strategy.")
 
 
 def _norm_for(features: FeatureSet, engine: str) -> int:
@@ -45,14 +50,14 @@ def match_cross_check(reference: FeatureSet, target: FeatureSet, engine: str) ->
     """Mutual-nearest-neighbor matching without a ratio test."""
     start = perf_counter()
     if reference.descriptors is None or target.descriptors is None:
-        return MatchSet((), 0, 0, "BF cross-check", "mutual nearest", 0.0, 0.0)
+        return MatchSet((), 0, 0, "BF cross-check", "mutual nearest", None, (perf_counter() - start) * 1000)
     matcher = cv2.BFMatcher(_norm_for(reference, engine), crossCheck=True)
     pairs = matcher.match(reference.descriptors, target.descriptors)
     accepted = tuple(
         MatchInfo(p.queryIdx, p.trainIdx, float(p.distance), None) for p in pairs
     )
     elapsed = (perf_counter() - start) * 1000
-    return MatchSet(accepted, len(pairs), len(accepted), "Brute force cross-check", "mutual nearest", 0.0, elapsed)
+    return MatchSet(accepted, len(pairs), len(accepted), "Brute force cross-check", "mutual nearest", None, elapsed)
 
 
 def match_with_flann(
@@ -105,7 +110,7 @@ def match_symmetric_ratio(
     reverse = match_features(target, reference, engine, ratio_threshold)
     reverse_lookup = {(m.query_index, m.train_index) for m in reverse.matches}
     kept = tuple(m for m in forward.matches if (m.train_index, m.query_index) in reverse_lookup)
-    elapsed = (perf_counter() - start) * 1000 + forward.duration_ms + reverse.duration_ms
+    elapsed = (perf_counter() - start) * 1000
     return MatchSet(
         kept, forward.candidate_count, len(kept),
         forward.matcher, "symmetric Lowe ratio", ratio_threshold, elapsed,

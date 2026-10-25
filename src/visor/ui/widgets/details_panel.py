@@ -160,8 +160,12 @@ class AnalysisDetailsPanel(QWidget):
             for group_title, fields in groups:
                 group_box = QGroupBox(group_title)
                 form = QFormLayout(group_box)
+                form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
                 for key, value in fields:
                     val_label = QLabel(value)
+                    val_label.setTextFormat(Qt.TextFormat.PlainText)
+                    val_label.setWordWrap(True)
+                    val_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
                     val_label.setProperty("class", "value-label")
                     form.addRow(QLabel(key + ":"), val_label)
                 layout.addWidget(group_box)
@@ -177,8 +181,12 @@ class AnalysisDetailsPanel(QWidget):
             for title, fields in self._keypoints_data:
                 group_box = QGroupBox(title)
                 form = QFormLayout(group_box)
+                form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
                 for key, value in fields:
                     val_label = QLabel(value)
+                    val_label.setTextFormat(Qt.TextFormat.PlainText)
+                    val_label.setWordWrap(True)
+                    val_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
                     val_label.setProperty("class", "value-label")
                     form.addRow(QLabel(key + ":"), val_label)
                 layout.addWidget(group_box)

@@ -1,8 +1,21 @@
 from __future__ import annotations
 
+import sys
+
 import cv2
 import numpy as np
 import pytest
+
+
+@pytest.fixture(autouse=True)
+def isolated_window_settings(monkeypatch, tmp_path):
+    """UI checks must not restore or overwrite the developer's real layout."""
+    module = sys.modules.get("visor.ui.main_window")
+    if module is not None:
+        from PySide6.QtCore import QSettings
+
+        settings = QSettings(str(tmp_path / "qt-window-settings.ini"), QSettings.Format.IniFormat)
+        monkeypatch.setattr(module, "QSettings", lambda *args: settings)
 
 
 @pytest.fixture

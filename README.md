@@ -24,9 +24,9 @@ Current work: [research review](docs/RESEARCH_REVIEW.md), [improvement plan](doc
 - **Video tracking** — track a reference object through a video file frame by frame
 - **Camera calibration** — chessboard-based intrinsic calibration
 - **Export** — JSON analysis, CSV metrics, comparison CSV, benchmark CSV, HTML report, PNG/JPEG visualization
-- **Project save/load** — stores image paths, selected engine and core SIFT/ORB/display parameters in a `.visor` file
+- **Project save/load** — portable image references, selected engine, matching/estimator choices and core SIFT/ORB/display parameters; older projects remain readable
 - **Dark theme** — restrained professional dark UI
-- **Threaded analysis** — all OpenCV work runs off the UI thread with cancellation support
+- **Threaded analysis** — analysis and long-running jobs use workers with cooperative cancellation and stale-result protection
 
 ## Quick start
 

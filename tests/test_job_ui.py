@@ -91,6 +91,15 @@ def test_current_job_delivers_and_reenables_actions(workspace):
     assert window.run_button.isEnabled()
 
 
+def test_new_analysis_clears_previous_result_before_work(workspace):
+    app, window, _, _ = workspace
+    window._latest_result = object()
+    window._start_analysis()
+    assert window._latest_result is None
+    window._worker.release.set()
+    _pump(app, lambda: window._worker is None)
+
+
 def test_close_remains_responsive_and_waits_without_blocking(workspace):
     app, window, successes, failures = workspace
     window._start_analysis()

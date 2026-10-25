@@ -1,5 +1,26 @@
 # Implementation Status
 
+## Current source verification — 2026-10-25
+
+- Full local suite after project format 2 and native-review fixes: **169 passed, 2 skipped in 32.63s**. Ruff and focused exporting/matcher Mypy passed. The subsequent test fixture isolates Qt window preferences so regression runs do not overwrite the developer's real layout.
+- Native artifacts below remain the verified fe5ec16 desktop baseline until the final replay/UI refresh completes. Published evaluation measurements remain unchanged and identify their clean b2c7f0b evaluator source.
+
+## Windows interaction and session replay follow-up — 2026-10-25
+
+- Actual local Windows executable review covered native pickers/shortcuts, SIFT/ORB completion, match rendering, PNG export, engine-change invalidation and clean Ctrl+Q close. UI Automation exposed the intended control names. See WINDOWS_REVIEW.md; this is not complete screen-reader/scaling/install validation.
+- Follow-up source changes automatically reveal the first image result, distinguish accepted/no-fit states, widen engine choices, wrap/plain-text details and clear primary results before repeated analysis.
+- Project format 2 now restores matching/estimator/overlay choices and uses relative image references when possible; version 1 remains readable. Unavailable project engines cannot silently substitute a classical engine.
+- Corrected symmetric matching's nested timing double count, made cross-check threshold unavailable rather than zero and rejected ambiguous strategy flags. Focused replay/UI/matching regression set passed; final complete/native refresh follows.
+- Pre-follow-up full local suite including published raw evidence: 161 passed, 2 skipped in 51.41s. The published data reports remain tied to unchanged evaluator b2c7f0b.
+
+## Latest native validation and published evaluation — 2026-10-25
+
+- Native desktop [run 40213846401](https://github.com/DuhItzAniket/VISOR/actions/runs/40213846401) passed all three targets at fe5ec16: Windows x64 131 passed/2 skipped/17 model tests deselected; macOS ARM64 and Linux x64 each 129 passed/4 skipped/17 deselected. Lint, native packaging and bundled workflow checks passed on each runner. This includes the new workspace, job guards, registry, result contract and diagnostics. Artifacts are unsigned validation builds; see DESKTOP_DISTRIBUTION.md.
+- Developer evaluator b2c7f0b has 11 additional focused regressions. Latest local core suite: 142 passed, 2 skipped, 17 deselected in 12.66s. The prior full installed-model suite at ac28f47 passed 144 tests/2 skips; source developer evaluation modules were added after the native artifact revision.
+- Published [raw evaluation evidence](evaluation/README.md): 18 synthetic development attempts and 72 attempts on a small full-image HPatches reporting sample, with clean source revision, settings, hashes, effective results and all failures. Reporting sample: ten positive pairs/two distinct cross-scene negatives, three repetitions, CPU budget 1500; no runtime/annotation errors.
+- On that sample, mean corner error ≤3 px occurred in 9/30 positive SIFT attempts and 12/30 ORB attempts; valid-fit counts were 21/30 and 30/30. Each engine rejected all six repeated negative attempts. This small sample does not establish general false-positive rates or an engine ranking. Wrong but valid fits motivate I15, using separate development scenes rather than tuning to the reporting sample.
+- Added a source/package notice [inventory](THIRD_PARTY_INVENTORY.md). Complete per-artifact notices, project license choice, model redistribution review, signing/notarization and native manual/accessibility/scaling review remain open release gates.
+
 ## Reproducible evaluation runner — 2026-10-25
 
 - I07 implemented as `python -m visor.evaluate`: portable manifests, hashed input/truth files, actual matrices/settings/runtime versions, source revision/dirty state and raw warmup/repetition/failure rows. Accuracy against truth, fit residual and negative false acceptance have separate definitions.

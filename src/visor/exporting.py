@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import html
 import json
+import os
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -16,6 +17,8 @@ from visor import __version__
 from visor.batch import BatchReport
 from visor.benchmark import BenchmarkReport
 from visor.engines import ORBConfiguration, SIFTConfiguration
+from visor.geometry_robust import RobustMethod
+from visor.matching_strategies import MatchingOptions
 from visor.models import (
     VALID_ENGINE_NAMES,
     AnalysisResult,
@@ -25,7 +28,7 @@ from visor.models import (
 )
 
 APP_VERSION = __version__
-PROJECT_FORMAT_VERSION = 1
+PROJECT_FORMAT_VERSION = 2
 
 
 @dataclass(frozen=True)
@@ -36,6 +39,12 @@ class ProjectSession:
     settings: AnalysisSettings
     sift: SIFTConfiguration
     orb: ORBConfiguration
+    matching: MatchingOptions | None = None
+    robust_method: RobustMethod = "RANSAC"
+
+    def __post_init__(self) -> None:
+        if self.engine not in VALID_ENGINE_NAMES or self.robust_method not in ("RANSAC", "MAGSAC", "LMEDS"):
+            raise ValueError("Unsupported project engine or estimator.")
 
 
 def analysis_document(result: AnalysisResult) -> dict[str, Any]:
@@ -258,33 +267,45 @@ def export_visualization(image: np.ndarray, path: Path) -> None:
 
 
 def save_project(session: ProjectSession, path: Path) -> None:
+    def project_path(value: str) -> str:
+        resolved = Path(value).resolve()
+        try:
+            return Path(os.path.relpath(resolved, path.parent.resolve())).as_posix()
+        except ValueError:
+            return resolved.as_posix()  # Different Windows drives cannot be made relative.
+
     data = {
         "format_version": PROJECT_FORMAT_VERSION,
         "application_version": APP_VERSION,
-        "reference_path": session.reference_path,
-        "target_path": session.target_path,
+        "reference_path": project_path(session.reference_path),
+        "target_path": project_path(session.target_path),
         "engine": session.engine,
         "settings": asdict(session.settings),
         "sift": asdict(session.sift),
         "orb": asdict(session.orb),
+        "matching": asdict(session.matching or MatchingOptions(ratio_threshold=session.settings.ratio_threshold)),
+        "robust_method": session.robust_method,
     }
     path.write_text(json.dumps(data, indent=2), encoding="utf-8")
 
 
 def load_project(path: Path) -> ProjectSession:
     data = json.loads(path.read_text(encoding="utf-8"))
-    if data.get("format_version") != PROJECT_FORMAT_VERSION:
+    if not isinstance(data, dict) or data.get("format_version") not in (1, PROJECT_FORMAT_VERSION):
         raise ValueError("This project file version is unsupported.")
-    reference = Path(data["reference_path"])
-    target = Path(data["target_path"])
+    reference = (path.parent / data["reference_path"]).resolve()
+    target = (path.parent / data["target_path"]).resolve()
     if not reference.is_file() or not target.is_file():
         raise ValueError("The project references an image file that cannot be found.")
     engine = data.get("engine")
     if engine not in VALID_ENGINE_NAMES:
         raise ValueError("The project file contains an unknown feature engine.")
+    settings = AnalysisSettings(**data.get("settings", {}))
+    matching = MatchingOptions(**data.get("matching", {"ratio_threshold": settings.ratio_threshold}))
     return ProjectSession(
         str(reference), str(target), engine,
-        AnalysisSettings(**data.get("settings", {})),
+        settings,
         SIFTConfiguration(**data.get("sift", {})),
         ORBConfiguration(**data.get("orb", {})),
+        matching, data.get("robust_method", "RANSAC"),
     )

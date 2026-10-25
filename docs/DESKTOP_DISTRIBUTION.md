@@ -17,13 +17,13 @@ PyInstaller's documented model supports self-contained bundles but requires buil
 
 Native build evidence (2026-10-19): [run 39300439636](https://github.com/DuhItzAniket/VISOR/actions/runs/39300439636), source `303ba33`, completed successfully on Windows x64, macOS ARM64, and Ubuntu x64. All three jobs produced packages and passed the bundled workflow check. Artifacts are named `VISOR-Windows-X64`, `VISOR-macOS-ARM64`, and `VISOR-Linux-X64`. These are unsigned validation builds, not a public production release or proof of install/uninstall behavior on every desktop.
 
-Latest validation: [run 39301662952](https://github.com/DuhItzAniket/VISOR/actions/runs/39301662952) at `ba7e05d` also passed the full core regression suite and lint on each native runner before packaging. Windows: 91 passed/17 skipped; macOS and Linux: 89 passed/19 skipped. See [current status](IMPLEMENTATION_STATUS.md) for skip scope and release gates.
+Current validation (2026-10-25): [run 40213846401](https://github.com/DuhItzAniket/VISOR/actions/runs/40213846401) at `fe5ec16` passed native core suites, lint, packaging and bundled workflow checks on each target. Windows: 131 passed/2 skipped/17 model tests deselected; macOS and Linux: 129 passed/4 skipped/17 deselected. The additional skips off Windows are the platform-specific exact snapshots. See [current status](IMPLEMENTATION_STATUS.md) for limits and the later developer-only evaluator changes.
 
 Artifacts from the latest run:
 
-- [Windows x64 setup and portable ZIP](https://github.com/DuhItzAniket/VISOR/actions/runs/39301662952/artifacts/12212317478)
-- [macOS Apple Silicon DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/39301662952/artifacts/12211972533)
-- [Linux x64 Debian and portable packages](https://github.com/DuhItzAniket/VISOR/actions/runs/39301662952/artifacts/12211237948)
+- [Windows x64 setup and portable ZIP](https://github.com/DuhItzAniket/VISOR/actions/runs/40213846401/artifacts/12607265110)
+- [macOS Apple Silicon DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40213846401/artifacts/12607011450)
+- [Linux x64 Debian and portable packages](https://github.com/DuhItzAniket/VISOR/actions/runs/40213846401/artifacts/12607230438)
 
 GitHub may require sign-in to download Actions artifacts; artifacts also have a retention period. These links are validation downloads, not permanent public release URLs.
 
@@ -55,6 +55,6 @@ On Windows use `VISOR.exe`; on macOS use `VISOR.app/Contents/MacOS/VISOR`. CI se
 
 ## Optional engines
 
-The initial standard desktop bundles include SIFT/ORB and explicitly exclude Torch/LightGlue/XFeat to avoid packaging developer-installed GPU dependencies accidentally. Packaged UI hides pip installation controls and reports unavailable optional engines. A complete packaged learned-engine runtime remains work in I04/I05/I13; users should not be told to install Python to complete an advertised packaged feature.
+The standard desktop bundles validate SIFT/ORB and explicitly exclude Torch/LightGlue/XFeat to avoid packaging developer-installed GPU dependencies accidentally. Registry-supported additional classical engines are enabled when the bundled OpenCV API provides them. Packaged UI hides pip installation controls and reports unavailable learned engines. Source learned adapters are repaired, but a complete packaged learned runtime and its model notices remain I12/I13 work; users should not be told to install Python to complete an advertised packaged feature.
 
 Do not label an optional engine available simply because its Python module can be discovered. Weights, API compatibility and actual execution must be checked before packaging it. Maintain code/model licenses and notices before distributing additional weights.

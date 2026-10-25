@@ -1,5 +1,25 @@
 # Implementation Log
 
+## 2026-10-25 — Source verification after replay and review fixes
+
+- Full local suite: 169 passed, 2 skipped in 32.63s. Ruff and focused exporting/matcher Mypy passed. Follow-up core suite also exercised isolated Qt preferences; native refresh follows the commit.
+- Added an autouse fixture that isolates the application's QSettings only when the UI module is already imported, keeping scientific-only tests independent of Qt imports and preventing test runs from changing the developer's native layout.
+
+## 2026-10-25 — Native Windows interaction and project replay correctness
+
+- Rebuilt the actual standalone Windows executable and exercised native pickers (Ctrl+1/Ctrl+2), F5 SIFT/ORB, match rendering, PNG export, engine-change invalidation and Ctrl+Q. Control names were exposed through UI Automation. Kept the native review scope separate from offscreen CI and full accessibility/install gates.
+- Fixed issues observed during review: first result visibility, accepted/no-fit status, stale retry results, clipped engine choices and unwrapped/rich-text detail values.
+- Added project format 2 with matching strategy, robust method and overlay replay, relative image references and version-1 migration. Missing engines now produce an explicit message rather than a substitute engine. Undecodable referenced images remain visible as input recovery states.
+- Corrected an additional nondefault symmetric-matcher double count; cross-check threshold is null and conflicting strategy flags fail clearly. Focused session/matching/UI checks passed; final full/native checks are recorded separately.
+- Full suite before these follow-ups and including raw evidence consistency checks: 161 passed, 2 skipped in 51.41s.
+
+## 2026-10-25 — Native release evidence and raw dataset reporting
+
+- Three-platform run 40213846401 passed at fe5ec16. Windows core: 131 passed, 2 skipped, 17 model tests deselected; macOS/Linux: 129 passed, 4 skipped, 17 deselected. All lint, package and bundled workflow checks passed. Recorded new artifact links and retained the unsigned/manual-validation limits.
+- Evaluator b2c7f0b core follow-up: 142 passed, 2 skipped, 17 deselected in 12.66s. Evaluated synthetic fixtures (18 measured attempts) and a preselected bounded HPatches sample (72 attempts) from a clean evaluator checkout. Downloaded only selected archive ranges (~17.7 MB), kept images outside Git, and published full raw compressed reports with manifests/hashes.
+- HPatches reporting sample consists of i_ajuntament/v_abstract (five positive pairs each) and two visually inspected cross-scene negatives. SIFT: 21/30 positive fits, 9/30 within 3 px mean corner error; ORB: 30/30 fits, 12/30 within 3 px. Both rejected six repeated negative attempts. No runtime/annotation errors; scene/sample size limits prohibit broad ranking or reliability claims.
+- Added I15 from the observed wrong-but-valid fits, retaining this reporting set unchanged and requiring separate development scenes for policy tuning. Added a fact-based third-party notice inventory and explicit unresolved owner/release decisions.
+
 ## 2026-10-25 — I07 reproducible runner and I08 dataset preparation
 
 - Added JSON manifest validation, relative-path synthetic/HPatches preparation and a developer evaluation CLI. Records input/truth hashes, actual matrices, source/dirty state, versions/settings/device, fresh-engine timing scope and every warmup/measured attempt.

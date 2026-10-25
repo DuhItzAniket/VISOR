@@ -48,6 +48,7 @@ class ImageDropWidget(QFrame):
         self.preview.setWordWrap(True)
 
         self.metadata_label = QLabel("PNG, JPEG, BMP, TIFF, or WebP")
+        self.metadata_label.setTextFormat(Qt.TextFormat.PlainText)
         self.metadata_label.setObjectName("mutedText")
         self.metadata_label.setWordWrap(True)
         self.browse_button = QPushButton("Choose image…")

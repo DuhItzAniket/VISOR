@@ -504,6 +504,8 @@ class MainWindow(QMainWindow):
         self.engine_selector.addItems(["SIFT", "ORB"])
         self.engine_selector.setAccessibleName("Analysis engine")
         self.engine_selector.setMinimumContentsLength(20)
+        self.engine_selector.view().setMinimumWidth(340)
+        self.engine_selector.view().setAccessibleName("Engine choices")
         self.engine_selector.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
         engine_label.setBuddy(self.engine_selector)
         self.run_button = QPushButton("Run analysis")
@@ -942,6 +944,8 @@ class MainWindow(QMainWindow):
             return
         engine = cast(EngineName, engine_text)
         settings, sift, orb, matching_options, robust_method = self._read_configurations()
+        self._clear_result_views()
+        self._update_overview_summary()
         self.run_button.setEnabled(False)
         self.compare_button.setEnabled(False)
         self.benchmark_button.setEnabled(False)
@@ -964,6 +968,8 @@ class MainWindow(QMainWindow):
         if reference is None or target is None or self._worker is not None:
             return
         settings, sift, orb, matching_options, robust_method = self._read_configurations()
+        self._clear_result_views()
+        self._update_overview_summary()
         self.run_button.setEnabled(False)
         self.compare_button.setEnabled(False)
         self.benchmark_button.setEnabled(False)
@@ -1028,6 +1034,8 @@ class MainWindow(QMainWindow):
         self._latest_batch = None
         if self._worker is not None:
             self.statusBar().showMessage("Inputs or parameters changed; cancelling the previous run and discarding its result.")
+        elif not self._closing_requested:
+            self.statusBar().showMessage("Inputs or parameters changed. Run analysis to generate a new result.")
         self._update_overview_summary()
 
     def _finish_deferred_close(self) -> None:
@@ -1118,6 +1126,10 @@ class MainWindow(QMainWindow):
         if self._latest_result is not None:
             result = self._latest_result
             summary_lines.append(
+                "Planar fit accepted; accuracy requires independent ground truth."
+                if result.geometry.valid else f"No valid mapping: {escape(result.geometry.message)}"
+            )
+            summary_lines.append(
                 f"Last run: {result.engine} | {len(result.reference_features.keypoints):,} / {len(result.target_features.keypoints):,} keypoints | "
                 f"{result.match_set.good_count:,} good matches | {result.geometry.inlier_count:,} inliers"
             )
@@ -1140,16 +1152,18 @@ class MainWindow(QMainWindow):
             self.warped_view.set_placeholder("Rectified view is unavailable because no valid homography was found.")
         self.details_panel.populate(result)
         self.details_tabs.setCurrentIndex(0)
+        if self.result_tabs.currentIndex() == 0:
+            self.result_tabs.setCurrentWidget(self.localization_view if result.geometry.valid else self.matches_view)
         ref = result.reference_features
         target = result.target_features
         g = result.geometry
         p = result.performance
         summary = (
-            f"{result.engine} complete — {len(ref.keypoints):,}/{len(target.keypoints):,} keypoints, "
+            f"{result.engine}: {'fit accepted' if g.valid else 'no valid mapping'} — {len(ref.keypoints):,}/{len(target.keypoints):,} keypoints, "
             f"{result.match_set.good_count:,} good matches, {g.inlier_count:,} inliers · {p.total_ms:.0f} ms"
         )
         self.statusBar().showMessage(summary)
-        self.log_engine_event("OK", summary)
+        self.log_engine_event("OK" if g.valid else "INFO", summary)
 
     def _show_comparison(self, comparison: ComparisonResult) -> None:
         self._show_result(comparison.orb)
@@ -1671,10 +1685,10 @@ class MainWindow(QMainWindow):
         filename, _ = QFileDialog.getSaveFileName(self, "Save VISOR project", "analysis.visor", "VISOR project (*.visor)")
         if not filename:
             return
-        settings, sift, orb, _, _ = self._read_configurations()
+        settings, sift, orb, matching, method = self._read_configurations()
         session = ProjectSession(
             str(self._paths["Reference image"]), str(self._paths["Target image"]),
-            cast(EngineName, self.engine_selector.currentText()), settings, sift, orb,
+            cast(EngineName, self.engine_selector.currentText()), settings, sift, orb, matching, method,
         )
         try:
             save_project(session, Path(filename))
@@ -1693,11 +1707,23 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Could not open project", str(exc))
             return
         engine_index = self.engine_selector.findText(session.engine)
-        self.engine_selector.setCurrentIndex(max(engine_index, 0))
+        if engine_index < 0 or not self.engine_selector.model().item(engine_index).isEnabled():
+            QMessageBox.warning(self, "Project engine unavailable",
+                                f"{session.engine} is unavailable in this runtime. The project was not loaded with a substitute engine.")
+            return
+        self.engine_selector.setCurrentIndex(engine_index)
         self.ratio_control.setValue(session.settings.ratio_threshold)
         self.ransac_control.setValue(session.settings.ransac_threshold)
+        matching = session.matching or MatchingOptions(ratio_threshold=session.settings.ratio_threshold)
+        strategy = ("Cross-check" if matching.cross_check else "FLANN" if matching.use_flann
+                    else "Symmetric ratio" if matching.symmetric_ratio else "Default ratio test")
+        self.matcher_strategy.setCurrentText(strategy)
+        self.ratio_control.setValue(matching.ratio_threshold)
+        self.robust_estimator.setCurrentText(session.robust_method)
         for name, action in self.view_toggles.items():
             action.setChecked(getattr(session.settings, name))
+        self.match_line_thickness.setValue(round(session.settings.feature_line_thickness))
+        self._sync_overlay_controls()
         self.sift_features.setValue(session.sift.max_features)
         self.sift_layers.setValue(session.sift.octave_layers)
         self.sift_contrast.setValue(session.sift.contrast_threshold)
@@ -1714,7 +1740,10 @@ class MainWindow(QMainWindow):
         self.orb_fast.setValue(session.orb.fast_threshold)
         self.reference_input.load_path(Path(session.reference_path))
         self.target_input.load_path(Path(session.target_path))
-        self.statusBar().showMessage(f"Project loaded: {Path(filename).name}")
+        if self.reference_input.image_path is None or self.target_input.image_path is None:
+            self.statusBar().showMessage("Project settings loaded, but an image could not be decoded. Choose a replacement image.")
+        else:
+            self.statusBar().showMessage(f"Project loaded: {Path(filename).name}")
 
     def _export_json(self) -> None:
         self._export_analysis(export_json, "JSON files (*.json)", "analysis.json")

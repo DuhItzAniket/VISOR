@@ -69,6 +69,7 @@ def test_selected_target_keypoint_exposes_correspondence_membership(textured_pai
     window = main_window.MainWindow()
     try:
         window._show_result(result)
+        assert window.result_tabs.currentWidget() is window.localization_view
         match_index = next(i for i, flag in enumerate(result.geometry.inlier_mask) if flag)
         match = result.match_set.matches[match_index]
         point = result.target_features.keypoints[match.train_index]
@@ -76,6 +77,31 @@ def test_selected_target_keypoint_exposes_correspondence_membership(textured_pai
         fields = window.details_panel._keypoints_data[-1][1]
         assert any("solver inlier" in value for _, value in fields)
         assert any(label == "Descriptor distance" for label, _ in fields)
+    finally:
+        window.close()
+        app.processEvents()
+
+
+def test_failed_fit_opens_matches_and_reports_failure(textured_pair, tmp_path, monkeypatch):
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    from pathlib import Path
+
+    from PySide6.QtCore import QSettings
+    from PySide6.QtWidgets import QApplication
+
+    from visor.pipeline import analyze_images
+    from visor.ui import main_window
+
+    app = QApplication.instance() or QApplication([])
+    settings = QSettings(str(tmp_path / "window.ini"), QSettings.Format.IniFormat)
+    monkeypatch.setattr(main_window, "QSettings", lambda *args: settings)
+    reference, _, image, *_ = textured_pair
+    result = analyze_images(reference, Path("blank.png"), image, np.zeros_like(image), "SIFT")
+    window = main_window.MainWindow()
+    try:
+        window._show_result(result)
+        assert window.result_tabs.currentWidget() is window.matches_view
+        assert "no valid mapping" in window.statusBar().currentMessage()
     finally:
         window.close()
         app.processEvents()
