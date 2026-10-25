@@ -1,5 +1,11 @@
 # Implementation Status
 
+## I15 development measurements and frozen choices — 2026-10-25
+
+- Published [independent development evidence](evaluation/RELIABILITY_FINDINGS.md): 192 measured attempts on 20 truth-backed pairs and 12 distinct negatives from four scenes, with three repetitions and two engines. Evaluator dec9b33 recorded a clean source tree; no runtime/annotation errors.
+- The preregistered rule selects SIFT minimum 20 inliers and ORB minimum 40, each requiring reference hull fraction ≥0.01 and no additional residual cap. In development, both preserve all baseline positives within 3 px and reject the observed >5 px accepted fits; SIFT also rejects one distinct negative pair accepted by baseline. ORB loses one distinct positive pair that had been within 5 px.
+- Published every candidate and the exact selection before inspecting the reserved i_books/v_artisans performance. This is development evidence under selection bias, not a default desktop behavior change or production accuracy claim. Reserved reporting follows without retuning.
+
 ## Current desktop builds and offline study tool — 2026-10-25
 
 - Copy-only-drop desktop [run 40219803747](https://github.com/DuhItzAniket/VISOR/actions/runs/40219803747) passed all four native targets at **7bf73d6**. Windows: **165 passed/2 skipped/17 deselected**; macOS ARM64/Intel and Linux: **163 passed/4 skipped/17 deselected**. Lint, packaging and every bundled workflow step passed, including Qt URL-drop copy semantics. [Download links](DESKTOP_DISTRIBUTION.md) identify this revision. Local Windows rebuild and the expanded bundled check passed too.

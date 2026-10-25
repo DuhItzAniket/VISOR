@@ -1,5 +1,10 @@
 # Implementation Log
 
+## 2026-10-25 — Publish development evidence before reserved reporting
+
+- Evaluated the preregistered four development scenes from clean dec9b33: 32 pairs, two engines, three measured repetitions/one warmup, 192 measured rows and 64 warmups, no runtime/annotation errors. Kept raw data and every candidate; recomputation regressions verify summary and selection consistency.
+- Fixed selection chooses SIFT ≥20 inliers and ORB ≥40, each with reference support ≥0.01 and no residual cap. Development preserves baseline ≤3 px positives while removing accepted >5 px fits; SIFT's one distinct negative acceptance is rejected. ORB also rejects one distinct ≤5 px positive. Published the exact selection and hashes before reserved-scene measurement. No desktop estimator/default changed.
+
 ## 2026-10-25 — Complete drop build matrix and add independent study analysis
 
 - Native run 40219803747 passed Windows/macOS ARM64/macOS Intel/Linux at 7bf73d6, including copy-only Qt URL event checks, classical full workflows, lint and packaging. Windows: 165 passed/2 skipped/17 deselected; other targets: 163 passed/4 skipped/17 deselected. Refreshed download links. Local Windows build and expanded smoke check passed.

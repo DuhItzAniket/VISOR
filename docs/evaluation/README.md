@@ -39,3 +39,5 @@ This small sample does **not** establish an engine ranking, published HPatches b
 ## Next experiment
 
 Keep this reporting sample unchanged. Select separate development scenes to investigate low-support but apparently valid fits; compare matching policies and support/plausibility diagnostics there. Then freeze any policy before testing additional held-out scenes and user-relevant unrelated/occluded/low-texture pairs. Track this work as I15 in the improvement ledger.
+
+This follow-up now has a preregistered protocol and [independent development evidence with frozen choices](RELIABILITY_FINDINGS.md). Its reports use their own recorded source revision and do not modify either original report above.
