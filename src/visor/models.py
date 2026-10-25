@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from math import isfinite
 from pathlib import Path
-from typing import Literal
+from typing import Literal, TypeAlias
 
 import numpy as np
 from numpy.typing import NDArray
@@ -25,10 +25,10 @@ VALID_ENGINE_NAMES: tuple[EngineName, ...] = (
     "DISK+LightGlue",
     "SIFT+LightGlue",
 )
-FloatArray = NDArray[np.float32]
-ByteArray = NDArray[np.uint8]
-DescriptorArray = NDArray[np.float32] | NDArray[np.uint8]
-MatrixArray = NDArray[np.float64]
+FloatArray: TypeAlias = NDArray[np.float32]
+ByteArray: TypeAlias = NDArray[np.uint8]
+DescriptorArray: TypeAlias = NDArray[np.float32] | NDArray[np.uint8]
+MatrixArray: TypeAlias = NDArray[np.float64]
 
 
 @dataclass(frozen=True)
@@ -57,23 +57,46 @@ class FeatureSet:
     descriptors: DescriptorArray | None
     descriptor_info: DescriptorInfo
     extraction_ms: float
+    keypoint_metadata: tuple[str, ...] = ("size", "angle", "response", "octave", "class_id")
 
 
 @dataclass(frozen=True)
 class MatchInfo:
     query_index: int
     train_index: int
-    distance: float
+    distance: float | None
     ratio: float | None
+    confidence: float | None = None
+
+
 @dataclass(frozen=True)
 class MatchSet:
     matches: tuple[MatchInfo, ...]
-    candidate_count: int
+    candidate_count: int | None
     good_count: int
     matcher: str
     filter_name: str
-    threshold: float
+    threshold: float | None
     duration_ms: float
+
+
+@dataclass(frozen=True)
+class PairMatchResult:
+    reference: FeatureSet
+    target: FeatureSet
+    match_set: MatchSet
+    device: str
+
+
+@dataclass(frozen=True)
+class GeometryProvenance:
+    requested_method: str
+    executed_method: str | None
+    model: str
+    threshold_policy: str
+    requested_threshold_px: float
+    effective_threshold_px: float | None = None
+    attempted_thresholds_px: tuple[float, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -88,6 +111,7 @@ class GeometryResult:
     reprojection_error_px: float | None
     projected_corners: tuple[tuple[float, float], ...]
     center: tuple[float, float] | None
+    provenance: GeometryProvenance | None = None
 
 
 @dataclass(frozen=True)
@@ -98,6 +122,16 @@ class PerformanceMetrics:
     matching_ms: float
     geometry_ms: float
     total_ms: float
+    initialization_ms: float = 0.0
+    preprocessing_ms: float = 0.0
+    visualization_ms: float = 0.0
+
+
+@dataclass(frozen=True)
+class RuntimeInfo:
+    device: str = "cpu"
+    timing_scope: str = "Wall-clock stages; total includes image loading and orchestration overhead."
+    engine_reused: bool = False
 
 
 @dataclass(frozen=True)
@@ -141,6 +175,7 @@ class AnalysisResult:
     reference_image: NDArray[np.uint8]
     target_image: NDArray[np.uint8]
     similarity: SimilarityEstimate | None = None
+    runtime: RuntimeInfo = RuntimeInfo()
 
 
 @dataclass(frozen=True)

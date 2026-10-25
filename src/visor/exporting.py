@@ -41,7 +41,7 @@ class ProjectSession:
 def analysis_document(result: AnalysisResult) -> dict[str, Any]:
     geometry = result.geometry
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "application_version": APP_VERSION,
         "inputs": {
             "reference_path": str(result.reference_path),
@@ -51,11 +51,14 @@ def analysis_document(result: AnalysisResult) -> dict[str, Any]:
         },
         "engine": result.engine,
         "engine_configuration": result.engine_configuration,
+        "runtime": asdict(result.runtime),
         "configuration": asdict(result.settings),
         "features": {
             "reference_count": len(result.reference_features.keypoints),
             "target_count": len(result.target_features.keypoints),
             "descriptor": asdict(result.reference_features.descriptor_info),
+            "reference_keypoint_metadata": result.reference_features.keypoint_metadata,
+            "target_keypoint_metadata": result.target_features.keypoint_metadata,
         },
         "matching": {
             "matcher": result.match_set.matcher,
@@ -64,6 +67,7 @@ def analysis_document(result: AnalysisResult) -> dict[str, Any]:
             "candidate_pairs": result.match_set.candidate_count,
             "good_matches": result.match_set.good_count,
             "duration_ms": result.match_set.duration_ms,
+            "correspondences": [asdict(match) for match in result.match_set.matches],
         },
         "geometry": {
             "valid": geometry.valid,
@@ -75,6 +79,7 @@ def analysis_document(result: AnalysisResult) -> dict[str, Any]:
             "projected_corners_px": geometry.projected_corners,
             "center_px": geometry.center,
             "homography": None if geometry.homography is None else geometry.homography.tolist(),
+            "provenance": None if geometry.provenance is None else asdict(geometry.provenance),
             "similarity_estimates": None if result.similarity is None else {
                 "rotation_deg": result.similarity.rotation_deg,
                 "scale": result.similarity.scale,
@@ -114,6 +119,17 @@ def export_csv(result: AnalysisResult, path: Path) -> None:
         "matching_ms": result.performance.matching_ms,
         "geometry_ms": result.performance.geometry_ms,
         "total_ms": result.performance.total_ms,
+        "initialization_ms": result.performance.initialization_ms,
+        "preprocessing_ms": result.performance.preprocessing_ms,
+        "visualization_ms": result.performance.visualization_ms,
+        "device": result.runtime.device,
+        "matcher": result.match_set.matcher,
+        "matching_filter": result.match_set.filter_name,
+        "matching_threshold": result.match_set.threshold,
+        "requested_estimator": None if geometry.provenance is None else geometry.provenance.requested_method,
+        "executed_estimator": None if geometry.provenance is None else geometry.provenance.executed_method,
+        "threshold_policy": None if geometry.provenance is None else geometry.provenance.threshold_policy,
+        "effective_threshold_px": None if geometry.provenance is None else geometry.provenance.effective_threshold_px,
     }
     with path.open("w", encoding="utf-8-sig", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=fields.keys())
@@ -128,6 +144,8 @@ def export_html_report(result: AnalysisResult, path: Path) -> None:
     perf = doc["performance_ms"]
     rows = [
         ("Engine", html.escape(str(doc["engine"]))),
+        ("Device", html.escape(str(doc["runtime"]["device"]))),
+        ("Matcher / filter", html.escape(f"{result.match_set.matcher} / {result.match_set.filter_name}")),
         ("Reference image", html.escape(str(doc["inputs"]["reference_path"]))),
         ("Target image", html.escape(str(doc["inputs"]["target_path"]))),
         ("Reference size", f"{doc['inputs']['reference_size_px'][0]} × {doc['inputs']['reference_size_px'][1]} px"),
@@ -140,6 +158,9 @@ def export_html_report(result: AnalysisResult, path: Path) -> None:
         ("Message", html.escape(str(geometry["message"]))),
         ("Total time", f"{perf['total_ms']:.2f} ms"),
     ]
+    if geometry["provenance"] is not None:
+        rows.extend((f"Estimator: {key}", html.escape(str(value)) if value is not None else "unavailable")
+                    for key, value in geometry["provenance"].items())
     summary_rows = "\n".join(
         f"<tr><th>{label}</th><td>{value}</td></tr>" for label, value in rows
     )

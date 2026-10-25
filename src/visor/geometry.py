@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
+from math import isfinite
 from time import perf_counter
 from typing import Literal
 
@@ -9,7 +11,7 @@ import cv2
 import numpy as np
 
 from visor.geometry_validation import validate_planar_fit
-from visor.models import FeatureSet, GeometryResult, MatchSet
+from visor.models import FeatureSet, GeometryProvenance, GeometryResult, MatchSet
 
 GeometryModel = Literal["Homography", "Affine partial", "Affine"]
 
@@ -24,6 +26,11 @@ def estimate_geometry(
     model: GeometryModel = "Homography",
 ) -> tuple[GeometryResult, float]:
     start = perf_counter()
+    if model not in ("Homography", "Affine partial", "Affine"):
+        raise ValueError(f"Unsupported geometry model: {model!r}.")
+    if not isfinite(ransac_threshold) or ransac_threshold <= 0:
+        raise ValueError("RANSAC threshold must be finite and positive.")
+    provenance = GeometryProvenance("RANSAC", None, model, "legacy_adaptive", ransac_threshold)
     count = len(matches.matches)
     required = 4 if model == "Homography" else 3
     if count < required:
@@ -31,7 +38,7 @@ def estimate_geometry(
             False, f"At least {required} good matches are required for {model.lower()}.",
             None, (), 0, count, 0.0, None, (), None,
         )
-        return result, (perf_counter() - start) * 1000
+        return replace(result, provenance=provenance), (perf_counter() - start) * 1000
 
     src = np.array(
         [(reference.keypoints[m.query_index].x, reference.keypoints[m.query_index].y) for m in matches.matches],
@@ -43,7 +50,9 @@ def estimate_geometry(
     ).reshape(-1, 1, 2)
 
     thresholds = sorted({float(ransac_threshold), max(1.0, float(ransac_threshold) * 0.75), max(2.0, float(ransac_threshold) * 1.5), 10.0})
+    attempted: list[float] = []
     for threshold in thresholds:
+        attempted.append(threshold)
         if model == "Homography":
             estimated, mask = cv2.findHomography(src, dst, cv2.RANSAC, threshold)
             matrix = None if estimated is None else estimated
@@ -58,6 +67,10 @@ def estimate_geometry(
             matrix, mask, src, dst, reference_size, target_size,
             f"{model} with adaptive RANSAC", required,
         )
+        result = replace(result, provenance=replace(
+            provenance, executed_method="RANSAC", effective_threshold_px=threshold,
+            attempted_thresholds_px=tuple(attempted),
+        ))
         if result.valid or "outside the target" in result.message:
             return result, (perf_counter() - start) * 1000
 

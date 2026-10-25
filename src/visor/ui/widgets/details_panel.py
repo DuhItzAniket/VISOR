@@ -114,16 +114,17 @@ class AnalysisDetailsPanel(QWidget):
         self._keypoints_data.clear()
         self._render()
 
-    def append_keypoint(self, engine: str, index: int, point: KeypointInfo) -> None:
+    def append_keypoint(self, engine: str, index: int, point: KeypointInfo,
+                        metadata: tuple[str, ...] = ("size", "angle", "response", "octave", "class_id")) -> None:
         title = f"SELECTED {engine.upper()} KEYPOINT #{index}"
         fields = [
             ("X", f"{point.x:.2f} px"),
             ("Y", f"{point.y:.2f} px"),
-            ("Size", f"{point.size:.2f} px"),
-            ("Angle", f"{point.angle:.1f}°"),
-            ("Response", f"{point.response:.6f}"),
-            ("Pyramid octave", str(point.octave)),
-            ("Class ID", str(point.class_id)),
+            ("Size", f"{point.size:.2f} px" if "size" in metadata else "unavailable"),
+            ("Angle", f"{point.angle:.1f}°" if "angle" in metadata else "unavailable"),
+            ("Response", f"{point.response:.6f}" if "response" in metadata else "unavailable"),
+            ("Pyramid octave", str(point.octave) if "octave" in metadata else "unavailable"),
+            ("Class ID", str(point.class_id) if "class_id" in metadata else "unavailable"),
         ]
         self._keypoints_data.append((title, fields))
         self._render()
@@ -247,10 +248,11 @@ class AnalysisDetailsPanel(QWidget):
                 ("Extraction time (target)", f"{result.target_features.extraction_ms:.1f} ms"),
             ]),
             ("MATCHING", [
-                ("Raw matches (KNN pairs)", str(result.match_set.candidate_count)),
+                ("Candidate queries", str(result.match_set.candidate_count) if result.match_set.candidate_count is not None else "not exposed by matcher"),
                 ("Good matches", str(result.match_set.good_count)),
                 ("Matcher", result.match_set.matcher),
-                ("Filter", f"{result.match_set.filter_name} ({result.match_set.threshold})"),
+                ("Filter", result.match_set.filter_name),
+                ("Filter threshold", str(result.match_set.threshold) if result.match_set.threshold is not None else "not used"),
             ])
         ]
         return f"Overview ({result.engine})", groups
@@ -274,10 +276,10 @@ class AnalysisDetailsPanel(QWidget):
                 ]),
                 ("KEYPOINT STATISTICS", [
                     ("Total", str(len(target.keypoints))),
-                    ("Mean size", f"{mean_size:.2f} px"),
-                    ("Mean response", f"{mean_response:.6f}"),
-                    ("Mean angle", f"{mean_angle:.1f}°"),
-                    ("Octave distribution", octaves),
+                    ("Mean size", f"{mean_size:.2f} px" if "size" in target.keypoint_metadata else "unavailable"),
+                    ("Mean response", f"{mean_response:.6f}" if "response" in target.keypoint_metadata else "unavailable"),
+                    ("Mean angle", f"{mean_angle:.1f}°" if "angle" in target.keypoint_metadata else "unavailable"),
+                    ("Octave distribution", octaves if "octave" in target.keypoint_metadata else "unavailable"),
                 ]),
                 ("DESCRIPTOR", [
                     ("Dimensions", str(ref.descriptor_info.dimensions)),
@@ -318,10 +320,10 @@ class AnalysisDetailsPanel(QWidget):
                 ("CONFIGURATION", [(str(key), str(value)) for key, value in sorted(config.items(), key=lambda item: str(item[0]))] or [("Preset", "defaults")]),
                 ("KEYPOINT STATISTICS", [
                     ("Total", str(len(target.keypoints))),
-                    ("Mean size", f"{mean_size:.2f} px"),
-                    ("Mean response", f"{mean_response:.6f}"),
-                    ("Mean angle", f"{mean_angle:.1f}°"),
-                    ("Octave distribution", octaves),
+                    ("Mean size", f"{mean_size:.2f} px" if "size" in target.keypoint_metadata else "unavailable"),
+                    ("Mean response", f"{mean_response:.6f}" if "response" in target.keypoint_metadata else "unavailable"),
+                    ("Mean angle", f"{mean_angle:.1f}°" if "angle" in target.keypoint_metadata else "unavailable"),
+                    ("Octave distribution", octaves if "octave" in target.keypoint_metadata else "unavailable"),
                 ]),
                 ("DESCRIPTOR", [
                     ("Dimensions", str(ref.descriptor_info.dimensions)),
@@ -346,7 +348,7 @@ class AnalysisDetailsPanel(QWidget):
             tl, tr, br, bl = g.projected_corners
             cx, cy = g.center
             loc = [
-                ("Detected", "yes"),
+                ("Valid planar fit", "yes"),
                 ("Center", f"({cx:.1f}, {cy:.1f}) px"),
                 ("Top-left", f"({tl[0]:.1f}, {tl[1]:.1f}) px"),
                 ("Top-right", f"({tr[0]:.1f}, {tr[1]:.1f}) px"),
@@ -355,7 +357,7 @@ class AnalysisDetailsPanel(QWidget):
             ]
         else:
             loc = [
-                ("Detected", "no"),
+                ("Valid planar fit", "no"),
                 ("Center", "unavailable"),
                 ("Top-left", "unavailable"),
                 ("Top-right", "unavailable"),
@@ -385,6 +387,16 @@ class AnalysisDetailsPanel(QWidget):
             ("LOCALIZATION", loc),
             ("SIMILARITY ESTIMATES", estimates),
         ]
+        if g.provenance is not None:
+            provenance = g.provenance
+            groups.insert(1, ("ESTIMATOR", [
+                ("Requested / executed", f"{provenance.requested_method} / {provenance.executed_method or 'not run'}"),
+                ("Model", provenance.model),
+                ("Threshold policy", provenance.threshold_policy),
+                ("Requested base", f"{provenance.requested_threshold_px:g} px"),
+                ("Effective threshold", f"{provenance.effective_threshold_px:g} px" if provenance.effective_threshold_px is not None else "not used"),
+                ("Attempted thresholds", ", ".join(f"{value:g}" for value in provenance.attempted_thresholds_px) or "none"),
+            ]))
         return f"Geometry ({result.engine})", groups
 
     def _build_performance(self, result: AnalysisResult) -> tuple[str, list[tuple[str, list[tuple[str, str]]]]]:
@@ -392,11 +404,17 @@ class AnalysisDetailsPanel(QWidget):
         groups = [
             ("TIMING", [
                 ("Image loading", f"{p.image_loading_ms:.1f} ms"),
+                ("Engine initialization", f"{p.initialization_ms:.1f} ms"),
+                ("Grayscale conversion", f"{p.preprocessing_ms:.1f} ms"),
                 ("Extraction (reference)", f"{p.extraction_reference_ms:.1f} ms"),
                 ("Extraction (target)", f"{p.extraction_target_ms:.1f} ms"),
                 ("Matching", f"{p.matching_ms:.1f} ms"),
                 ("Geometry", f"{p.geometry_ms:.1f} ms"),
+                ("Visualization / rectification", f"{p.visualization_ms:.1f} ms"),
                 ("Total", f"{p.total_ms:.1f} ms"),
+                ("Device", result.runtime.device),
+                ("Timing scope", result.runtime.timing_scope),
+                ("Engine reused", "yes" if result.runtime.engine_reused else "no; initialization included"),
             ])
         ]
         return f"Performance ({result.engine})", groups

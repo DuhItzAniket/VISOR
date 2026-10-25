@@ -40,7 +40,10 @@ def render_match_canvas(
                 cv2.circle(canvas, (round(point.x) + offset, round(point.y)), 2, (175, 135, 70), 1, cv2.LINE_AA)
     selected = list(enumerate(matches.matches))
     if len(selected) > maximum_drawn:
-        selected = sorted(selected, key=lambda pair: pair[1].distance)[:maximum_drawn]
+        selected = sorted(selected, key=lambda pair: (
+            pair[1].distance if pair[1].distance is not None else float("inf"),
+            -pair[1].confidence if pair[1].confidence is not None else 0.0,
+        ))[:maximum_drawn]
     for index, match in selected:
         is_known = len(geometry.inlier_mask) == len(matches.matches)
         is_inlier = is_known and geometry.inlier_mask[index]

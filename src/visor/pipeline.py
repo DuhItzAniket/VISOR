@@ -12,7 +12,6 @@ import cv2
 import numpy as np
 
 from visor.engines import ORBConfiguration, ORBFeatureEngine, SIFTConfiguration, SIFTFeatureEngine
-from visor.geometry import estimate_homography
 from visor.geometry_decompose import SimilarityEstimate, decompose_homography_estimate
 from visor.geometry_robust import RobustMethod, estimate_with_robust_method
 from visor.learned_engines import (
@@ -31,9 +30,8 @@ from visor.models import (
     ByteArray,
     ComparisonResult,
     EngineName,
-    MatchInfo,
-    MatchSet,
     PerformanceMetrics,
+    RuntimeInfo,
 )
 from visor.visualization import render_localization, render_match_canvas
 
@@ -131,18 +129,24 @@ def analyze_images(
 ) -> AnalysisResult:
     engine_name = _validate_engine_name(engine_name)
     settings = settings or AnalysisSettings()
+    if robust_method not in ("RANSAC", "MAGSAC", "LMEDS"):
+        raise ValueError(f"Unsupported robust estimator: {robust_method!r}.")
     total_start = perf_counter()
+    preprocess_start = perf_counter()
     reference_gray = cast(ByteArray, cv2.cvtColor(reference_image, cv2.COLOR_BGR2GRAY))
     target_gray = cast(ByteArray, cv2.cvtColor(target_image, cv2.COLOR_BGR2GRAY))
+    preprocessing_ms = (perf_counter() - preprocess_start) * 1000
 
     if engine_name in ("SuperPoint+LightGlue", "XFeat", "ALIKED+LightGlue", "DISK+LightGlue", "SIFT+LightGlue"):
         return _analyze_learned(
             reference_path, target_path, reference_image, target_image,
             reference_gray, target_gray, settings, engine_name, sp_config, xfeat_config, image_loading_ms,
-            total_start, cancel_event,
+            total_start, cancel_event, robust_method, preprocessing_ms, matching_options,
         )
 
+    initialization_start = perf_counter()
     engine = SIFTFeatureEngine(sift_config) if engine_name == "SIFT" else ORBFeatureEngine(orb_config)
+    initialization_ms = (perf_counter() - initialization_start) * 1000
     _check_cancel(cancel_event)
     reference_features = engine.extract(reference_gray)
     _check_cancel(cancel_event)
@@ -156,6 +160,7 @@ def analyze_images(
         (reference_image.shape[1], reference_image.shape[0]), settings.ransac_threshold,
         (target_image.shape[1], target_image.shape[0]), robust_method,
     )
+    visualization_start = perf_counter()
     matches_image = render_match_canvas(reference_image, target_image, reference_features, target_features, match_set, geometry, settings)
     localization_image = render_localization(target_image, target_features, geometry, settings)
     warped_image = None
@@ -166,10 +171,12 @@ def analyze_images(
             target_image, np.linalg.inv(geometry.homography),
             (reference_image.shape[1], reference_image.shape[0]),
         ))
+    visualization_ms = (perf_counter() - visualization_start) * 1000
+    _check_cancel(cancel_event)
     total_ms = (perf_counter() - total_start) * 1000 + image_loading_ms
     performance = PerformanceMetrics(
         image_loading_ms, reference_features.extraction_ms, target_features.extraction_ms,
-        match_set.duration_ms, geometry_ms, total_ms,
+        match_set.duration_ms, geometry_ms, total_ms, initialization_ms, preprocessing_ms, visualization_ms,
     )
     return AnalysisResult(
         engine_name, reference_path, target_path,
@@ -198,9 +205,16 @@ def _analyze_learned(
     image_loading_ms: float,
     total_start: float,
     cancel_event: Event | None,
+    robust_method: RobustMethod,
+    preprocessing_ms: float,
+    matching_options: MatchingOptions | None,
 ) -> AnalysisResult:
     """Pipeline branch for learned feature engines (SuperPoint+LightGlue, XFeat, ALIKED+LightGlue)."""
     from dataclasses import asdict as _asdict
+    if matching_options and (matching_options.cross_check or matching_options.symmetric_ratio or matching_options.use_flann):
+        raise ValueError("Classical matching strategies are not supported by this learned engine. Select its native matcher.")
+    _check_cancel(cancel_event)
+    initialization_start = perf_counter()
     if engine_name in ("DISK+LightGlue", "SIFT+LightGlue"):
         from visor.learned_extra import (
             DISKLightGlueEngine,
@@ -227,27 +241,20 @@ def _analyze_learned(
     else:
         engine_obj = SuperPointLightGlueEngine(sp_config)
         engine_config = _asdict(sp_config) if sp_config is not None else _asdict(SuperPointConfiguration())
-    _check_cancel(cancel_event)
-    ref_features, tgt_features, raw_matches = engine_obj.extract_and_match(reference_gray, target_gray)
-    _check_cancel(cancel_event)
+    from visor.learned_pair import synchronize
 
-    # Build a MatchSet from LightGlue's (M,2) index pairs
-    match_infos = tuple(
-        MatchInfo(int(m[0]), int(m[1]), 0.0, None)
-        for m in raw_matches
-    )
-    match_set = MatchSet(
-        match_infos, len(ref_features.keypoints), len(match_infos),
-        "LightGlue", "confidence threshold", 0.0,
-        ref_features.extraction_ms + tgt_features.extraction_ms,
-    )
+    synchronize(getattr(engine_obj, "_device", "cpu"))
+    initialization_ms = (perf_counter() - initialization_start) * 1000
     _check_cancel(cancel_event)
-
-    geometry, geometry_ms = estimate_homography(
+    pair = engine_obj.match_pair(reference_gray, target_gray)
+    ref_features, tgt_features, match_set = pair.reference, pair.target, pair.match_set
+    _check_cancel(cancel_event)
+    geometry, geometry_ms = estimate_with_robust_method(
         ref_features, tgt_features, match_set,
         (reference_image.shape[1], reference_image.shape[0]), settings.ransac_threshold,
-        (target_image.shape[1], target_image.shape[0]),
+        (target_image.shape[1], target_image.shape[0]), robust_method,
     )
+    visualization_start = perf_counter()
     matches_image = render_match_canvas(
         reference_image, target_image, ref_features, tgt_features, match_set, geometry, settings,
     )
@@ -259,10 +266,12 @@ def _analyze_learned(
             target_image, np.linalg.inv(geometry.homography),
             (reference_image.shape[1], reference_image.shape[0]),
         ))
+    visualization_ms = (perf_counter() - visualization_start) * 1000
+    _check_cancel(cancel_event)
     total_ms = (perf_counter() - total_start) * 1000 + image_loading_ms
     performance = PerformanceMetrics(
         image_loading_ms, ref_features.extraction_ms, tgt_features.extraction_ms,
-        match_set.duration_ms, geometry_ms, total_ms,
+        match_set.duration_ms, geometry_ms, total_ms, initialization_ms, preprocessing_ms, visualization_ms,
     )
     return AnalysisResult(
         engine_name, reference_path, target_path,
@@ -272,6 +281,7 @@ def _analyze_learned(
         matches_image, localization_image, warped_image, settings, engine_config,
         reference_image, target_image,
         similarity_of(geometry),
+        RuntimeInfo(pair.device, "Completed wall-clock stages, including tensor transfer/conversion; GPU stages synchronized."),
     )
 
 

@@ -1,5 +1,13 @@
 # Implementation Log
 
+## 2026-10-25 — I04/I06 measured pair results and estimator provenance
+
+- Added typed PairMatchResult and one shared LightGlue extraction/matching loop. Timed stages include completed device operations and CPU conversion; initialization and visualization are separate from matching. Preserved the legacy tuple adapter for existing callers.
+- Kept actual LightGlue assignment scores, left unmeasured descriptor distances/candidate counts null, and exposed unavailable keypoint metadata. XFeat matching now uses mutual L2 nearest neighbors with measured distances; its extraction API repair follows under I05.
+- Learned results now honor selected RANSAC/MAGSAC/LMEDS. Added method/model/threshold provenance, explicitly retaining the legacy adaptive RANSAC sequence and recording that LMEDS does not use a pixel threshold. Classical golden values were unchanged.
+- Added analysis schema 2, extended CSV/HTML and UI reporting, disabled inapplicable classical matcher controls for learned choices, and documented migration/timing scope in RESULT_CONTRACT.md.
+- Verification: 52 focused tests passed; full local suite 120 passed, 2 skipped in 52.34s. Ruff passed; focused Mypy passed on models/pair module. Dedicated GPU profiling, XFeat real-model verification and new native bundles remain pending.
+
 ## 2026-10-20 — I14 professional product standard and workspace refinement
 
 - Recorded the user's professional-product requirement as a durable design, scientific reporting and release review standard; linked it from development rules and the improvement ledger.

@@ -19,7 +19,8 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from visor.models import DescriptorArray, DescriptorInfo, FeatureSet, KeypointInfo
+from visor.learned_pair import LightGluePairEngine
+from visor.models import DescriptorInfo, FeatureSet, KeypointInfo, MatchInfo, MatchSet, PairMatchResult
 
 logger = logging.getLogger(__name__)
 
@@ -100,15 +101,16 @@ class SuperPointConfiguration:
             raise ValueError("detection_threshold must be finite and between 0 and 1.")
 
 
-class SuperPointLightGlueEngine:
+class SuperPointLightGlueEngine(LightGluePairEngine):
     """SuperPoint extractor + LightGlue matcher as a FeatureEngine.
 
-    The primary path is ``extract_and_match`` which fuses extraction and
-    matching in one forward pass. ``extract`` is also provided for the
+    The primary path is ``extract_and_match`` which measures extraction and
+    matching in separate completed stages. ``extract`` is also provided for the
     FeatureEngine protocol (single-image use).
     """
 
     name = "SuperPoint+LightGlue"
+    _dimensions = 256
 
     def __init__(self, config: SuperPointConfiguration | None = None) -> None:
         _ensure_runtime_usable(self.name)
@@ -123,75 +125,9 @@ class SuperPointLightGlueEngine:
             max_num_keypoints=self.config.max_keypoints,
             detection_threshold=self.config.detection_threshold,
         ).eval().to(self._device)
-        self._matcher = LightGlue(features="superpoint").eval().to(self._device)
+        self._matcher = LightGlue(features="superpoint", filter_threshold=self._match_threshold).eval().to(self._device)
         logger.info("SuperPoint+LightGlue engine initialised on %s", self._device)
 
-    def extract(self, gray: NDArray[np.uint8]) -> FeatureSet:
-        """Extract SuperPoint keypoints and descriptors (FeatureEngine protocol)."""
-        import torch
-        from lightglue.utils import rbd
-
-        t = _to_tensor(gray).to(self._device)
-        start = perf_counter()
-        with torch.no_grad():
-            raw = self._extractor.extract(t)
-        elapsed = (perf_counter() - start) * 1000
-
-        feats = rbd(raw)
-        kp_tensor = feats["keypoints"]
-        desc_tensor = feats["descriptors"]
-        keypoints = _keypoints_from_tensor(kp_tensor)
-        descriptors: DescriptorArray = desc_tensor.cpu().numpy().astype(np.float32)
-        count = len(keypoints)
-        dims = int(descriptors.shape[1]) if count > 0 else 256
-        info = DescriptorInfo(count, dims, "FLOAT32", descriptors.nbytes, "L2")
-        return FeatureSet(keypoints, descriptors, info, elapsed)
-
-    def extract_and_match(
-        self,
-        ref_gray: NDArray[np.uint8],
-        tgt_gray: NDArray[np.uint8],
-    ) -> tuple[FeatureSet, FeatureSet, NDArray[np.int64]]:
-        """Extract features from both images and run LightGlue matching.
-
-        Returns (ref_features, tgt_features, matches) where matches is an
-        (M, 2) array of (ref_index, tgt_index) pairs.
-        """
-        import torch
-        from lightglue.utils import rbd
-
-        ref_t = _to_tensor(ref_gray).to(self._device)
-        tgt_t = _to_tensor(tgt_gray).to(self._device)
-
-        start = perf_counter()
-        with torch.no_grad():
-            ref_raw = self._extractor.extract(ref_t)
-            tgt_raw = self._extractor.extract(tgt_t)
-            match_raw = self._matcher({"image0": ref_raw, "image1": tgt_raw})
-        elapsed = (perf_counter() - start) * 1000
-
-        ref_feats = rbd(ref_raw)
-        tgt_feats = rbd(tgt_raw)
-        match_data = rbd(match_raw)
-
-        ref_kp = _keypoints_from_tensor(ref_feats["keypoints"])
-        tgt_kp = _keypoints_from_tensor(tgt_feats["keypoints"])
-
-        ref_desc: DescriptorArray = ref_feats["descriptors"].cpu().numpy().astype(np.float32)
-        tgt_desc: DescriptorArray = tgt_feats["descriptors"].cpu().numpy().astype(np.float32)
-
-        ref_dims = int(ref_desc.shape[1]) if len(ref_kp) > 0 else 256
-        tgt_dims = int(tgt_desc.shape[1]) if len(tgt_kp) > 0 else 256
-
-        ref_info = DescriptorInfo(len(ref_kp), ref_dims, "FLOAT32", ref_desc.nbytes, "L2")
-        tgt_info = DescriptorInfo(len(tgt_kp), tgt_dims, "FLOAT32", tgt_desc.nbytes, "L2")
-
-        half = elapsed / 2
-        ref_feature_set = FeatureSet(ref_kp, ref_desc, ref_info, half)
-        tgt_feature_set = FeatureSet(tgt_kp, tgt_desc, tgt_info, half)
-
-        matches: NDArray[np.int64] = match_data["matches"].cpu().numpy()  # (M, 2)
-        return ref_feature_set, tgt_feature_set, matches
 
 
 # ---------------------------------------------------------------------------
@@ -274,30 +210,22 @@ class XFeatEngine:
         info = DescriptorInfo(len(feature_keypoints), dims, "FLOAT32", int(desc.nbytes), "L2")
         return FeatureSet(feature_keypoints, desc, info, elapsed)
 
-    def extract_and_match(
-        self,
-        ref_gray: NDArray[np.uint8],
-        tgt_gray: NDArray[np.uint8],
-    ) -> tuple[FeatureSet, FeatureSet, NDArray[np.int64]]:
-        ref_features = self.extract(ref_gray)
-        tgt_features = self.extract(tgt_gray)
+    def match_pair(self, ref_gray: NDArray[np.uint8], tgt_gray: NDArray[np.uint8]) -> PairMatchResult:
+        import cv2
 
-        if ref_features.descriptors is None or tgt_features.descriptors is None:
-            return ref_features, tgt_features, np.empty((0, 2), dtype=np.int64)
+        ref = self.extract(ref_gray)
+        tgt = self.extract(tgt_gray)
+        start = perf_counter()
+        pairs = ()
+        if ref.descriptors is not None and tgt.descriptors is not None and len(ref.keypoints) and len(tgt.keypoints):
+            raw = cv2.BFMatcher(cv2.NORM_L2, crossCheck=True).match(ref.descriptors, tgt.descriptors)
+            pairs = tuple(MatchInfo(m.queryIdx, m.trainIdx, float(m.distance), None)
+                          for m in sorted(raw, key=lambda m: m.queryIdx))
+        matches = MatchSet(pairs, len(ref.keypoints) if len(tgt.keypoints) else 0, len(pairs),
+                           "Brute force / L2", "mutual nearest neighbor", None, (perf_counter() - start) * 1000)
+        return PairMatchResult(ref, tgt, matches, str(self._device))
 
-        matches = np.empty((0, 2), dtype=np.int64)
-        if len(ref_features.keypoints) and len(tgt_features.keypoints):
-            # Pure-numpy L2 nearest-neighbour — no sklearn dependency
-            ref_d = ref_features.descriptors.astype(np.float32)
-            tgt_d = tgt_features.descriptors.astype(np.float32)
-            # Compute pairwise L2 distances via (a-b)^2 = a^2 - 2ab + b^2
-            ref_sq = (ref_d ** 2).sum(axis=1, keepdims=True)   # (N,1)
-            tgt_sq = (tgt_d ** 2).sum(axis=1, keepdims=True).T  # (1,M)
-            dists = ref_sq - 2.0 * (ref_d @ tgt_d.T) + tgt_sq   # (N,M)
-            nn_indices = np.argmin(dists, axis=1).astype(np.int64)  # (N,)
-            ref_indices = np.arange(len(ref_features.keypoints), dtype=np.int64)
-            matches = np.column_stack((ref_indices, nn_indices))
-        return ref_features, tgt_features, matches
+    extract_and_match = LightGluePairEngine.extract_and_match
 
 
 # ---------------------------------------------------------------------------
@@ -317,7 +245,7 @@ class ALIKEDConfiguration:
             raise ValueError("detection_threshold must be finite and between 0 and 1.")
 
 
-class ALIKEDLightGlueEngine:
+class ALIKEDLightGlueEngine(LightGluePairEngine):
     """ALIKED extractor + LightGlue matcher as a FeatureEngine.
 
     ALIKED produces 128-D descriptors and is designed for efficiency.
@@ -325,6 +253,8 @@ class ALIKEDLightGlueEngine:
     """
 
     name = "ALIKED+LightGlue"
+    _dimensions = 128
+    _rgb = True
 
     def __init__(self, config: ALIKEDConfiguration | None = None) -> None:
         _ensure_runtime_usable(self.name)
@@ -341,7 +271,7 @@ class ALIKEDLightGlueEngine:
                 torchvision.ops.deform_conv2d  # noqa: B018 — probe availability
                 # Quick probe: create a tiny tensor and run deform_conv2d on CUDA
                 _t = torch.zeros(1, 1, 4, 4, device="cuda")
-                _off = torch.zeros(1, 18, 4, 4, device="cuda")
+                _off = torch.zeros(1, 18, 2, 2, device="cuda")
                 _w = torch.zeros(1, 1, 3, 3, device="cuda")
                 torchvision.ops.deform_conv2d(_t, _off, _w)
             except (NotImplementedError, RuntimeError):
@@ -352,63 +282,9 @@ class ALIKEDLightGlueEngine:
             max_num_keypoints=self.config.max_keypoints,
             detection_threshold=self.config.detection_threshold,
         ).eval().to(self._device)
-        self._matcher = LightGlue(features="aliked").eval().to(self._device)
+        self._matcher = LightGlue(features="aliked", filter_threshold=self._match_threshold).eval().to(self._device)
         logger.info("ALIKED+LightGlue engine initialised on %s", self._device)
 
-    def extract(self, gray: NDArray[np.uint8]) -> FeatureSet:
-        """Extract ALIKED keypoints and descriptors (FeatureEngine protocol)."""
-        import torch
-        from lightglue.utils import rbd
-
-        # ALIKED expects a 3-channel image; replicate grayscale to RGB
-        rgb = np.stack([gray, gray, gray], axis=2)
-        t = torch.from_numpy(rgb).float().permute(2, 0, 1).unsqueeze(0).div(255.0).to(self._device)
-        start = perf_counter()
-        with torch.no_grad():
-            raw = self._extractor.extract(t)
-        elapsed = (perf_counter() - start) * 1000
-
-        feats = rbd(raw)
-        keypoints = _keypoints_from_tensor(feats["keypoints"])
-        descriptors: DescriptorArray = feats["descriptors"].cpu().numpy().astype(np.float32)
-        count = len(keypoints)
-        dims = int(descriptors.shape[1]) if count > 0 else 128
-        info = DescriptorInfo(count, dims, "FLOAT32", descriptors.nbytes, "L2")
-        return FeatureSet(keypoints, descriptors, info, elapsed)
-
-    def extract_and_match(
-        self,
-        ref_gray: NDArray[np.uint8],
-        tgt_gray: NDArray[np.uint8],
-    ) -> tuple[FeatureSet, FeatureSet, NDArray[np.int64]]:
-        """Extract ALIKED features from both images and run LightGlue matching."""
-        import torch
-        from lightglue.utils import rbd
-
-        def _prep(g: NDArray[np.uint8]) -> Any:
-            rgb = np.stack([g, g, g], axis=2)
-            return torch.from_numpy(rgb).float().permute(2, 0, 1).unsqueeze(0).div(255.0).to(self._device)
-
-        ref_t, tgt_t = _prep(ref_gray), _prep(tgt_gray)
-        start = perf_counter()
-        with torch.no_grad():
-            ref_raw = self._extractor.extract(ref_t)
-            tgt_raw = self._extractor.extract(tgt_t)
-            match_raw = self._matcher({"image0": ref_raw, "image1": tgt_raw})
-        elapsed = (perf_counter() - start) * 1000
-
-        ref_feats, tgt_feats, match_data = rbd(ref_raw), rbd(tgt_raw), rbd(match_raw)
-        ref_kp = _keypoints_from_tensor(ref_feats["keypoints"])
-        tgt_kp = _keypoints_from_tensor(tgt_feats["keypoints"])
-        ref_desc: DescriptorArray = ref_feats["descriptors"].cpu().numpy().astype(np.float32)
-        tgt_desc: DescriptorArray = tgt_feats["descriptors"].cpu().numpy().astype(np.float32)
-        ref_dims = int(ref_desc.shape[1]) if len(ref_kp) > 0 else 128
-        tgt_dims = int(tgt_desc.shape[1]) if len(tgt_kp) > 0 else 128
-        half = elapsed / 2
-        ref_fs = FeatureSet(ref_kp, ref_desc, DescriptorInfo(len(ref_kp), ref_dims, "FLOAT32", ref_desc.nbytes, "L2"), half)
-        tgt_fs = FeatureSet(tgt_kp, tgt_desc, DescriptorInfo(len(tgt_kp), tgt_dims, "FLOAT32", tgt_desc.nbytes, "L2"), half)
-        matches: NDArray[np.int64] = match_data["matches"].cpu().numpy()
-        return ref_fs, tgt_fs, matches
 
 
 def is_lightglue_available() -> bool:

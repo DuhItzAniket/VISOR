@@ -89,4 +89,4 @@ class FeatureEngine(Protocol):
 
 New matchers are added to `matching.match_features` behind the engine name dispatch. New geometry solvers are added to `geometry.estimate_geometry` behind the `model` parameter. The UI and pipeline require no changes for new classical engines.
 
-Learned engines (SuperPoint, LightGlue, XFeat, ALIKED) are future additions that follow the same `FeatureEngine` protocol.
+Learned pair engines provide `match_pair(reference_gray, target_gray) -> PairMatchResult`, alongside single-image extraction. A shared measured LightGlue loop converts model output into typed CPU domain records. The pipeline consumes actual matcher metadata and uses the same robust estimator entry point for all engines. Legacy tuple-returning `extract_and_match` remains a compatibility wrapper. See RESULT_CONTRACT.md for timing and export semantics.

@@ -1,5 +1,13 @@
 # Implementation Status
 
+## Engine reporting and estimator provenance — 2026-10-25
+
+- I04/I06 implemented in source: typed learned pair results, independently measured completed extraction/matching stages, separate initialization/preprocessing/rendering, actual device and assignment scores; no fabricated learned descriptor distances or candidate counts.
+- Learned and classical paths honor the selected robust estimator. Every attempted geometry fit records method and threshold provenance; the existing adaptive RANSAC sequence is preserved and explicitly labeled.
+- JSON analysis schema 2 and expanded CSV/HTML/UI details describe these semantics. See [RESULT_CONTRACT.md](RESULT_CONTRACT.md). Optional model keypoint fields absent from extractor output are displayed as unavailable.
+- Verification: 52 focused tests passed; full local suite 120 passed, 2 skipped in 52.34s, including installed optional model tests. Ruff passed; focused Mypy passed for models and the measured pair adapter. Dedicated device profiling and fresh native bundles remain pending.
+- XFeat's upstream API repair is next (I05); its old import path is not claimed operational. The source matching contract now correctly identifies its mutual L2 matcher.
+
 ## Product quality follow-up — 2026-10-20
 
 - Established [PRODUCT_QUALITY_STANDARD.md](PRODUCT_QUALITY_STANDARD.md) and I14 as an ongoing acceptance requirement.

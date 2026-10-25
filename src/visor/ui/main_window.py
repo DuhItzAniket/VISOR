@@ -783,7 +783,12 @@ class MainWindow(QMainWindow):
         self.match_line_thickness.valueChanged.connect(self._refresh_visualization)
         self.match_line_thickness.valueChanged.connect(self._sync_overlay_controls)
         common_form.addRow("Ratio threshold", self.ratio_control)
-        common_form.addRow("RANSAC threshold (px)", self.ransac_control)
+        self.ransac_control.setToolTip(
+            "RANSAC uses the recorded legacy adaptive threshold sequence around this base. "
+            "MAGSAC uses it as an upper bound; LMEDS does not use this threshold. "
+            "Results record the thresholds actually attempted."
+        )
+        common_form.addRow("Estimator base (px)", self.ransac_control)
         common_form.addRow("Feature line thickness", self.match_line_thickness)
         self.matcher_strategy = QComboBox()
         self.matcher_strategy.addItems(["Default ratio test", "Cross-check", "FLANN", "Symmetric ratio"])
@@ -839,6 +844,8 @@ class MainWindow(QMainWindow):
         if hasattr(self, "engine_settings"):
             name = self.engine_selector.itemText(index)
             self.engine_settings.setVisible(name in ("SIFT", "ORB"))
+            self.ratio_control.setEnabled(name in ("SIFT", "ORB"))
+            self.matcher_strategy.setEnabled(name in ("SIFT", "ORB"))
             self.engine_settings.setCurrentIndex(0 if name == "SIFT" else 1 if name == "ORB" else self.engine_settings.currentIndex())
         self._update_overview_summary()
 
@@ -906,9 +913,9 @@ class MainWindow(QMainWindow):
         strategy = self.matcher_strategy.currentText() if hasattr(self, "matcher_strategy") else "Default ratio test"
         matching_options = MatchingOptions(
             ratio_threshold=self.ratio_control.value(),
-            cross_check=strategy == "Cross-check",
-            symmetric_ratio=strategy == "Symmetric ratio",
-            use_flann=strategy == "FLANN",
+            cross_check=strategy == "Cross-check" and self.matcher_strategy.isEnabled(),
+            symmetric_ratio=strategy == "Symmetric ratio" and self.matcher_strategy.isEnabled(),
+            use_flann=strategy == "FLANN" and self.matcher_strategy.isEnabled(),
         )
         robust_text = self.robust_estimator.currentText() if hasattr(self, "robust_estimator") else "RANSAC"
         robust_method: RobustMethod = robust_text if robust_text in ("RANSAC", "MAGSAC", "LMEDS") else "RANSAC"
@@ -1553,7 +1560,8 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("No target keypoint is within 30 px of the selected coordinate.")
             return
         self.details_tabs.setCurrentIndex(0)
-        self.details_panel.append_keypoint(self._latest_result.engine, index, point)
+        self.details_panel.append_keypoint(self._latest_result.engine, index, point,
+                                           self._latest_result.target_features.keypoint_metadata)
         self.statusBar().showMessage(f"Selected {self._latest_result.engine} target keypoint #{index} at ({point.x:.1f}, {point.y:.1f}) px")
 
     def _on_image_changed(self, role: str, path: object) -> None:

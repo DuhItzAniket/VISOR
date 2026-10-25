@@ -43,3 +43,7 @@ A one-folder distribution (`dist/VISOR/`) is easier to inspect and debug than a 
 ## Defer caching
 
 Feature extraction caching would require a content-hash key, invalidation logic, and disk management. The benefit is only measurable when the same image is analyzed repeatedly with the same configuration. This is deferred until profiling shows it is worthwhile.
+
+## Measure learned stages and preserve estimator provenance (2026-10-25)
+
+Learned engines return typed pair results with separately measured extraction/matching stages, actual device and matcher scores. Assignment scores are not descriptor distances or localization probabilities. Analysis JSON moves to schema 2 with nullable unavailable fields and measured runtime/geometry provenance; see RESULT_CONTRACT.md. Preserve the legacy adaptive RANSAC sequence for regression compatibility while exposing its actual attempted thresholds. Learned paths use the same selected robust estimator as classical paths.
