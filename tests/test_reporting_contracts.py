@@ -108,7 +108,9 @@ def test_learned_pipeline_honors_estimator_and_reports_runtime(textured_pair, mo
     matches = MatchSet(tuple(MatchInfo(m.query_index, m.train_index, None, None, 0.9) for m in matched.matches),
                        None, matched.good_count, "LightGlue", "assignment score", 0.1, 3.0)
     pair = PairMatchResult(replace(ref, extraction_ms=5.0), replace(tgt, extraction_ms=9.0), matches, "cpu")
-    monkeypatch.setattr(pipeline, "SuperPointLightGlueEngine", lambda cfg: SimpleNamespace(match_pair=lambda a, b: pair))
+    from visor.engine_registry import REGISTRY
+
+    monkeypatch.setitem(REGISTRY, "SuperPoint+LightGlue", lambda cfg: SimpleNamespace(match_pair=lambda a, b: pair))
     result = pipeline.analyze(reference, target, "SuperPoint+LightGlue", robust_method=method)
     assert result.geometry.valid
     assert result.geometry.provenance.requested_method == method

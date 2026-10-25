@@ -1,5 +1,11 @@
 # Implementation Status
 
+## Shared engine capabilities — 2026-10-25
+
+- I09 now routes pipeline construction through one registry for all nine built-in engines. Capability records drive the selector/status dialog, list configuration fields and distinguish dependency presence from weight/device validation at use.
+- Fixed available AKAZE/BRISK choices being rejected by the main pipeline; both now execute their own factories and descriptor norms. Missing engines never silently use ORB. Learned dependency probing does not import Torch or fetch weights.
+- Focused registry/reporting/classical checks: 27 passed, then 25 follow-up capability/reporting/UI checks passed. Focused Mypy on registry/pipeline passed. Fresh broader/native verification follows; prior native artifact links still identify the older code baseline.
+
 ## Job ownership and asynchronous shutdown — 2026-10-25
 
 - I10 worker lifecycle implemented: input/algorithm changes cancel and invalidate the active revision; late results and errors are discarded. Main-thread relays deliver at most one terminal event and clean up finished worker objects.

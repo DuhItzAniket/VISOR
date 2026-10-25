@@ -1,11 +1,7 @@
-"""Optional classical engines: AKAZE, BRISK, KAZE.
+"""AKAZE and BRISK wrappers guarded by the actual OpenCV runtime's API.
 
-These wrap ``cv2.AKAZE_create`` / ``cv2.BRISK_create`` when the OpenCV build
-provides them. The pinned ``opencv-contrib-python 5.0`` wheel in this repo
-does NOT ship them, so the factories raise :class:`EngineUnavailable` with an
-actionable message instead of failing halfway through a run. If a future
-environment provides them (e.g. opencv 4.9), they light up with no pipeline
-changes — SIFT/ORB paths are untouched.
+The shared registry resolves their real factories. Missing implementations
+raise EngineUnavailable; no other detector is silently substituted.
 """
 
 from __future__ import annotations

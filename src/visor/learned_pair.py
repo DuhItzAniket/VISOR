@@ -101,6 +101,7 @@ class LightGluePairEngine:
     _dimensions: int = 128
     _rgb: bool = False
     _match_threshold: float = 0.1
+    runtime_revision: str | None = None
 
     def _extract_raw(self, gray: NDArray[np.uint8]) -> tuple[Any, FeatureSet]:
         import torch

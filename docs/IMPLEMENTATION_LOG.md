@@ -1,5 +1,12 @@
 # Implementation Log
 
+## 2026-10-25 — I09 shared factory and capability discovery
+
+- Unified all nine built-in factories with typed configured/pair engine protocols and dataclass configuration metadata. Pipeline construction now uses the registry; UI selector and availability dialog share its probes/reasons.
+- Distinguish installed dependencies/cache presence from weights/device verified at use. Probes neither import Torch nor download models. Added readable availability text and tooltips for available engines as well as missing dependencies.
+- Corrected AKAZE/BRISK advertised availability versus pipeline rejection and removed their inaccurate wheel-version docstring. Both real classical paths passed known-pair checks on this environment; SIFT/ORB goldens were retained.
+- Verification: 27 focused registry/reporting/classical checks passed, followed by 25 capability/reporting/UI checks. Focused registry/pipeline Mypy passed. Broader source/native evidence is tracked separately.
+
 ## 2026-10-25 — I10 stale-job protection and responsive close
 
 - Added a Qt-independent revision/ticket controller and main-thread QObject signal relay for all seven analysis worker types. Superseded/cancelled results and errors are ignored, terminal delivery is single-use, and finishing an old ticket cannot release a newer job.

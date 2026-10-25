@@ -30,54 +30,18 @@ class EngineEntry(NamedTuple):
 
 
 def _collect_entries() -> list[EngineEntry]:
-    from visor.learned_engines import is_lightglue_available, is_xfeat_available
+    from visor.engine_registry import engine_capabilities
     from visor.model_runtime import LIGHTGLUE_REQUIREMENT
 
-    entries: list[EngineEntry] = []
-
-    # Classical built-ins — always available
-    entries.append(EngineEntry("SIFT", True, "Classical", "opencv-contrib-python (installed)", ""))
-    entries.append(EngineEntry("ORB", True, "Classical", "opencv-contrib-python (installed)", ""))
-
-    # Classical optional — depend on OpenCV build
-    try:
-        import cv2
-        akaze_ok = hasattr(cv2, "AKAZE_create")
-        brisk_ok = hasattr(cv2, "BRISK_create")
-    except ImportError:
-        akaze_ok = brisk_ok = False
-
-    entries.append(EngineEntry(
-        "AKAZE", akaze_ok, "Classical (optional)",
-        "OpenCV build with AKAZE support",
-        "pip install opencv-contrib-python" if not akaze_ok else "",
-    ))
-    entries.append(EngineEntry(
-        "BRISK", brisk_ok, "Classical (optional)",
-        "OpenCV build with BRISK support",
-        "pip install opencv-contrib-python" if not brisk_ok else "",
-    ))
-
-    # Learned — LightGlue family
-    lg_ok = is_lightglue_available()
-    lg_cmd = f"python -m pip install {LIGHTGLUE_REQUIREMENT}"
-    for name in ("SuperPoint+LightGlue", "ALIKED+LightGlue", "DISK+LightGlue", "SIFT+LightGlue"):
-        entries.append(EngineEntry(
-            name, lg_ok, "Learned",
-            "torch + lightglue",
-            "" if lg_ok else lg_cmd,
-        ))
-
-    # XFeat
-    xf_ok = is_xfeat_available()
-
-    entries.append(EngineEntry(
-        "XFeat", xf_ok, "Learned",
-        "torch + tqdm + pinned source/weights cache",
-        "" if xf_ok else "python -m visor.model_setup --xfeat",
-    ))
-
+    entries = []
+    for item in engine_capabilities():
+        command = ""
+        if not item.available and item.category == "Learned" and not getattr(sys, "frozen", False):
+            command = "python -m visor.model_setup --xfeat" if item.name == "XFeat" else f"python -m pip install {LIGHTGLUE_REQUIREMENT}"
+        entries.append(EngineEntry(item.name, item.available, item.category,
+                                   f"{item.readiness}: {item.reason}", command))
     return entries
+
 
 
 class EngineStatusDialog(QDialog):
@@ -88,6 +52,7 @@ class EngineStatusDialog(QDialog):
         self.setWindowTitle("Engine Availability")
         self.setMinimumWidth(680)
         self.setMinimumHeight(420)
+        self.resize(900, 520)
         self._build()
 
     def _build(self) -> None:
@@ -130,9 +95,9 @@ class EngineStatusDialog(QDialog):
             row_layout.setContentsMargins(8, 4, 8, 4)
             row_layout.setSpacing(10)
 
-            status = "✓" if entry.available else "✗"
+            status = "Available" if entry.available else "Unavailable"
             status_label = QLabel(status)
-            status_label.setFixedWidth(18)
+            status_label.setMinimumWidth(74)
             status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             status_label.setStyleSheet(
                 "color: #5cb85c; font-weight: bold;" if entry.available
@@ -144,7 +109,7 @@ class EngineStatusDialog(QDialog):
 
             req_label = QLabel(entry.requires)
             req_label.setObjectName("mutedText")
-            req_label.setWordWrap(False)
+            req_label.setWordWrap(True)
 
             row_layout.addWidget(status_label)
             row_layout.addWidget(name_label)

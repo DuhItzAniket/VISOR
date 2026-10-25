@@ -14,7 +14,7 @@ from visor.geometry_decompose import SimilarityEstimate
 
 EngineName = Literal[
     "SIFT", "ORB", "SuperPoint+LightGlue", "XFeat", "ALIKED+LightGlue",
-    "DISK+LightGlue", "SIFT+LightGlue",
+    "DISK+LightGlue", "SIFT+LightGlue", "AKAZE", "BRISK",
 ]
 VALID_ENGINE_NAMES: tuple[EngineName, ...] = (
     "SIFT",
@@ -24,6 +24,8 @@ VALID_ENGINE_NAMES: tuple[EngineName, ...] = (
     "ALIKED+LightGlue",
     "DISK+LightGlue",
     "SIFT+LightGlue",
+    "AKAZE",
+    "BRISK",
 )
 FloatArray: TypeAlias = NDArray[np.float32]
 ByteArray: TypeAlias = NDArray[np.uint8]

@@ -43,9 +43,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from visor import engines_classical_extra as classical_extra
 from visor.batch import BatchReport, load_manifest, run_batch
 from visor.benchmark import BenchmarkReport, run_benchmark
+from visor.engine_registry import engine_capabilities
 from visor.engines import ORBConfiguration, SIFTConfiguration
 from visor.exporting import (
     ProjectSession,
@@ -62,7 +62,6 @@ from visor.exporting import (
 from visor.geometry_robust import RobustMethod
 from visor.jobs import JobController, JobTicket
 from visor.learned_engines import is_lightglue_available, is_xfeat_available
-from visor.learned_extra import is_disk_available
 from visor.matching_strategies import MatchingOptions
 from visor.model_runtime import LIGHTGLUE_REQUIREMENT
 from visor.models import (
@@ -523,17 +522,8 @@ class MainWindow(QMainWindow):
         self.cancel_button.setObjectName("secondaryButton")
         self.cancel_button.setEnabled(False)
         self.cancel_button.clicked.connect(self._cancel_running)
-        optional_entries: list[tuple[str, bool, str]] = [
-            ("XFeat", is_xfeat_available(), "install XFeat — click 'Install learned engines'"),
-            ("SuperPoint+LightGlue", is_lightglue_available(), "install LightGlue — click 'Install learned engines'"),
-            ("ALIKED+LightGlue", is_lightglue_available(), "install LightGlue — click 'Install learned engines'"),
-            ("DISK+LightGlue", is_disk_available(), "install LightGlue — click 'Install learned engines'"),
-            ("SIFT+LightGlue", is_lightglue_available(), "install LightGlue — click 'Install learned engines'"),
-            ("AKAZE", classical_extra.is_akaze_available(), "needs an OpenCV build with AKAZE"),
-            ("BRISK", classical_extra.is_brisk_available(), "needs an OpenCV build with BRISK"),
-        ]
-        for name, available, hint in optional_entries:
-            self._add_engine_entry(name, available, hint)
+        for entry in engine_capabilities()[2:]:
+            self._add_engine_entry(entry.name, entry.available, entry.reason)
         self.engine_selector.setToolTip("Feature extraction and descriptor matching engine")
         self.engine_selector.currentIndexChanged.connect(self._engine_changed)
         self.install_learned_button = QPushButton("Install learned engines")
@@ -708,9 +698,8 @@ class MainWindow(QMainWindow):
         index = self.engine_selector.count() - 1
         item = self.engine_selector.model().item(index)  # type: ignore[union-attr]
         item.setEnabled(available)
-        if not available:
-            reason = "Not included in this desktop distribution." if getattr(sys, "frozen", False) else hint
-            self.engine_selector.setItemData(index, reason, Qt.ItemDataRole.ToolTipRole)
+        reason = "Not included in this desktop distribution." if not available and getattr(sys, "frozen", False) else hint
+        self.engine_selector.setItemData(index, reason, Qt.ItemDataRole.ToolTipRole)
 
     def _build_diagnostics_dock(self) -> None:
         self.engine_console = QPlainTextEdit()
@@ -862,8 +851,9 @@ class MainWindow(QMainWindow):
         if hasattr(self, "engine_settings"):
             name = self.engine_selector.itemText(index)
             self.engine_settings.setVisible(name in ("SIFT", "ORB"))
-            self.ratio_control.setEnabled(name in ("SIFT", "ORB"))
-            self.matcher_strategy.setEnabled(name in ("SIFT", "ORB"))
+            classical = any(item.name == name and item.classical_matching for item in engine_capabilities())
+            self.ratio_control.setEnabled(classical)
+            self.matcher_strategy.setEnabled(classical)
             self.engine_settings.setCurrentIndex(0 if name == "SIFT" else 1 if name == "ORB" else self.engine_settings.currentIndex())
         self._update_overview_summary()
 
@@ -1566,26 +1556,13 @@ class MainWindow(QMainWindow):
 
     def _refresh_engine_selector(self) -> None:
         """Re-evaluate optional engine availability and update the selector items."""
-        from visor import engines_classical_extra as _ce
-        from visor.learned_engines import is_lightglue_available as _lg
-        from visor.learned_engines import is_xfeat_available as _xf
-        from visor.learned_extra import is_disk_available as _disk
-        optional_entries: list[tuple[str, bool, str]] = [
-            ("XFeat", _xf(), "install XFeat — click 'Install learned engines'"),
-            ("SuperPoint+LightGlue", _lg(), "install LightGlue — click 'Install learned engines'"),
-            ("ALIKED+LightGlue", _lg(), "install LightGlue — click 'Install learned engines'"),
-            ("DISK+LightGlue", _disk(), "install LightGlue — click 'Install learned engines'"),
-            ("SIFT+LightGlue", _lg(), "install LightGlue — click 'Install learned engines'"),
-            ("AKAZE", _ce.is_akaze_available(), "needs an OpenCV build with AKAZE"),
-            ("BRISK", _ce.is_brisk_available(), "needs an OpenCV build with BRISK"),
-        ]
         selected = self.engine_selector.currentText()
         self.engine_selector.blockSignals(True)
         # Remove all optional items (keep SIFT=0, ORB=1)
         while self.engine_selector.count() > 2:
             self.engine_selector.removeItem(2)
-        for name, available, hint in optional_entries:
-            self._add_engine_entry(name, available, hint)
+        for entry in engine_capabilities()[2:]:
+            self._add_engine_entry(entry.name, entry.available, entry.reason)
         selected_index = self.engine_selector.findText(selected)
         self.engine_selector.setCurrentIndex(max(selected_index, 0))
         self.engine_selector.blockSignals(False)

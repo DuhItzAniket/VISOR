@@ -11,16 +11,14 @@ from typing import cast
 import cv2
 import numpy as np
 
-from visor.engines import ORBConfiguration, ORBFeatureEngine, SIFTConfiguration, SIFTFeatureEngine
+from visor.engine_registry import PairEngine, create_engine
+from visor.engines import ORBConfiguration, SIFTConfiguration
 from visor.geometry_decompose import SimilarityEstimate, decompose_homography_estimate
 from visor.geometry_robust import RobustMethod, estimate_with_robust_method
 from visor.learned_engines import (
     ALIKEDConfiguration,
-    ALIKEDLightGlueEngine,
     SuperPointConfiguration,
-    SuperPointLightGlueEngine,
     XFeatConfiguration,
-    XFeatEngine,
 )
 from visor.matching_strategies import MatchingOptions, match_with_options
 from visor.models import (
@@ -145,7 +143,10 @@ def analyze_images(
         )
 
     initialization_start = perf_counter()
-    engine = SIFTFeatureEngine(sift_config) if engine_name == "SIFT" else ORBFeatureEngine(orb_config)
+    config = asdict(sift_config or SIFTConfiguration()) if engine_name == "SIFT" else (
+        asdict(orb_config or ORBConfiguration()) if engine_name == "ORB" else None
+    )
+    engine = create_engine(engine_name, config)
     initialization_ms = (perf_counter() - initialization_start) * 1000
     _check_cancel(cancel_event)
     reference_features = engine.extract(reference_gray)
@@ -217,31 +218,27 @@ def _analyze_learned(
     initialization_start = perf_counter()
     if engine_name in ("DISK+LightGlue", "SIFT+LightGlue"):
         from visor.learned_extra import (
-            DISKLightGlueEngine,
             GenericLightGlueConfiguration,
-            SIFTLightGlueEngine,
         )
         generic_cfg = GenericLightGlueConfiguration(
             max_keypoints=sp_config.max_keypoints if sp_config else 1024,
             use_cuda=sp_config.use_cuda if sp_config else True,
         )
-        engine_obj = DISKLightGlueEngine(generic_cfg) if engine_name == "DISK+LightGlue" else SIFTLightGlueEngine(generic_cfg)
         engine_config = _asdict(generic_cfg)
     elif engine_name == "ALIKED+LightGlue":
         aliked_cfg = ALIKEDConfiguration(
             max_keypoints=sp_config.max_keypoints if sp_config else 1024,
             use_cuda=sp_config.use_cuda if sp_config else True,
         )
-        engine_obj = ALIKEDLightGlueEngine(aliked_cfg)
         engine_config = _asdict(aliked_cfg)
     elif engine_name == "XFeat":
         xfeat_cfg = xfeat_config or XFeatConfiguration()
-        engine_obj = XFeatEngine(xfeat_cfg)
         engine_config = _asdict(xfeat_cfg)
-        engine_config["upstream_revision"] = engine_obj.runtime_revision
     else:
-        engine_obj = SuperPointLightGlueEngine(sp_config)
         engine_config = _asdict(sp_config) if sp_config is not None else _asdict(SuperPointConfiguration())
+    engine_obj = cast(PairEngine, create_engine(engine_name, engine_config))
+    if engine_name == "XFeat":
+        engine_config["upstream_revision"] = engine_obj.runtime_revision
     from visor.learned_pair import synchronize
 
     synchronize(getattr(engine_obj, "_device", "cpu"))
