@@ -735,5 +735,8 @@
   ],
   "report_sha256": "f4f0f8000b774079f8b6aca84996723af18544497498c266ef4ec63eaa1890bc",
   "selection_sha256": "8eaf60eafcef5ce889a9d0bacc20434f7fe4fad6d31a818687d74e6dcd00215e",
-  "analysis_code_sha256": "2aa8e25c308c98e216b87cc784dc5c93bd7a6b4749213730e8af27d2854a7bfd"
+  "analysis_code_sha256": "2aa8e25c308c98e216b87cc784dc5c93bd7a6b4749213730e8af27d2854a7bfd",
+  "selection_content_sha256": "d95702007c6d8c76db3d71d9d0b04fc774ab22e7df9e9242eec1d896833145b2",
+  "selection_sha256_scope": "Original input bytes; checkout line endings may differ.",
+  "provenance_note": "2026-10-26: added canonical JSON hash after cross-platform EOL check; no gate, counts or decisions changed."
 }

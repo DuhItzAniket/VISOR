@@ -8,7 +8,14 @@ import sys
 
 import pytest
 
-from visor.reliability_study import DiagnosticGate, gate_counts, main, report_frozen_gates, select_gates
+from visor.reliability_study import (
+    DiagnosticGate,
+    gate_counts,
+    json_content_sha256,
+    main,
+    report_frozen_gates,
+    select_gates,
+)
 
 
 def _row(name="good", *, inliers=12, support=0.2, residual=1, corner=1, negative=False, split="development"):
@@ -116,3 +123,24 @@ def test_cli_reads_compressed_evidence_records_hash_and_refuses_overwrite(tmp_pa
     with pytest.raises(SystemExit) as failure:
         main()
     assert failure.value.code == 2 and output.read_bytes() == original
+
+
+def test_reporting_content_hash_survives_lf_crlf_but_detects_changed_choice(tmp_path, monkeypatch):
+    selection = select_gates(_report([_row()]))
+    heldout = _report([_row("new", split="heldout")])
+    heldout["input_sha256"] = {"new.ppm": "new-hash"}
+    report = tmp_path / "report.json"
+    report.write_text(json.dumps(heldout))
+    results = []
+    for suffix, newline in (("lf", "\n"), ("crlf", "\r\n")):
+        frozen = tmp_path / f"selection-{suffix}.json"
+        frozen.write_bytes(json.dumps(selection, indent=2).replace("\n", newline).encode())
+        output = tmp_path / f"result-{suffix}.json"
+        monkeypatch.setattr(sys, "argv", ["study", "report", str(report), str(frozen), str(output)])
+        assert main() == 0
+        assert b"\r\n" not in output.read_bytes()
+        results.append(json.loads(output.read_text()))
+    assert results[0]["selection_sha256"] != results[1]["selection_sha256"]
+    assert results[0]["selection_content_sha256"] == results[1]["selection_content_sha256"]
+    selection["engines"]["ORB"]["selected_gate"]["minimum_inliers"] += 1
+    assert json_content_sha256(selection) != results[0]["selection_content_sha256"]

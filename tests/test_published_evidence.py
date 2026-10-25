@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from visor.evaluate import summarize
-from visor.reliability_study import report_frozen_gates, select_gates
+from visor.reliability_study import json_content_sha256, report_frozen_gates, select_gates
 
 
 @pytest.mark.parametrize("name,attempts,revision", [("synthetic-20261025.json.gz", 18, "b2c7f0b"),
@@ -46,7 +46,12 @@ def test_reporting_analysis_recomputes_without_retuning():
     frozen = json.loads(selection_path.read_text())
     published = json.loads((directory / "reliability-reporting-analysis-20261025.json").read_text())
     assert published["report_sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
-    assert published["selection_sha256"] == hashlib.sha256(selection_path.read_bytes()).hexdigest()
+    normalized = selection_path.read_bytes().replace(b"\r\n", b"\n")
+    # The original run hashed Windows bytes. Git normalizes tracked JSON on
+    # other platforms; preserve the original hash and verify canonical content.
+    assert published["selection_sha256"] in {
+        hashlib.sha256(normalized).hexdigest(), hashlib.sha256(normalized.replace(b"\n", b"\r\n")).hexdigest()}
+    assert published["selection_content_sha256"] == json_content_sha256(frozen)
     measured = report_frozen_gates(report, frozen)
     assert measured["engines"] == published["engines"]
     assert measured["decisions"] == published["decisions"]

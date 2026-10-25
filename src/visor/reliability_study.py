@@ -158,6 +158,12 @@ def _digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def json_content_sha256(document: dict[str, Any]) -> str:
+    """Hash parsed JSON content independently of whitespace and checkout EOLs."""
+    canonical = json.dumps(document, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 def _read(path: Path) -> dict[str, Any]:
     def reject(value):
         raise ValueError(f"Non-finite JSON number: {value}")
@@ -181,12 +187,15 @@ def main() -> int:
             result = select_gates(_read(args.development))
             result["development_report_sha256"] = _digest(args.development)
         else:
-            result = report_frozen_gates(_read(args.heldout), _read(args.selection))
+            selection = _read(args.selection)
+            result = report_frozen_gates(_read(args.heldout), selection)
             result["report_sha256"] = _digest(args.heldout)
             result["selection_sha256"] = _digest(args.selection)
+            result["selection_content_sha256"] = json_content_sha256(selection)
+            result["selection_sha256_scope"] = "Original input bytes; checkout line endings may differ."
         result["analysis_code_sha256"] = _digest(Path(__file__))
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        with args.output.open("x", encoding="utf-8") as stream:
+        with args.output.open("x", encoding="utf-8", newline="\n") as stream:
             json.dump(result, stream, indent=2, allow_nan=False)
     except (OSError, ValueError, KeyError, TypeError) as exc:
         parser.exit(2, f"Study failed: {exc}\n")

@@ -1,5 +1,12 @@
 # Implementation Status
 
+## Cross-platform evidence provenance repair — 2026-10-26
+
+- Final b926702 matrix exposed one evidence-check failure on Linux/macOS: the reporting analysis hashed original Windows CRLF selection bytes, while Git checks out LF elsewhere. This was an actual CI failure; the new native matrix must pass before its artifacts replace the previous verified links.
+- Added canonical parsed-JSON hashing alongside the preserved original byte hash, LF study output/evidence rules and a regression exercising both line endings plus a changed choice. Corrected published provenance without changing a gate, metric, decision or compressed raw report. Eighteen focused evidence/study tests and focused study Mypy passed; broader/new-native checks follow.
+- Actual rebuilt Windows pickers opened Pictures/Documents and cancellation preserved the empty session. Local final bundled workflow passed all steps. Full native screen-reader/scaling/install gates remain open.
+- Final local source checks after the repair: **202 passed, 2 skipped in 32.64s**, Ruff and focused study Mypy passed. Failed run 40221478271 completed with Windows successful and all three non-Windows jobs failing the single provenance assertion; a new matrix follows the verified repair.
+
 ## Native file-dialog defaults — 2026-10-25
 
 - Review-driven source fix starts image/project/export/video dialogs in Qt's platform Pictures/Documents/Movies locations, shares the last image directory, remembers successful project/export choices and reuses the current project filename. Cancelled/failed exports do not overwrite successful destination preferences. README now leads with the standalone desktop workflow and separates source-developer instructions.

@@ -47,4 +47,6 @@ An actual Explorer-to-VISOR drag was attempted with the fixture directory open. 
 
 Native review also showed file dialogs initially browsing the process/application folder. A subsequent source fix uses Qt's platform Pictures/Documents/Movies defaults, shares/remembers image folders, remembers successful export/project directories and reuses the loaded/saved project filename. Mocked-dialog regressions cover defaults, persistence, cancellation and failed exports. Native review of that final folder-default change is recorded separately after rebuilding.
 
+Native follow-up on 2026-10-26, rebuilt b926702: Ctrl+1 opened the platform Pictures directory and Ctrl+O opened Documents (Windows' configured user-folder locations). Cancelling each picker left the session empty and Ready; Ctrl+Q closed normally. No unrelated file was opened. The expanded local bundled drop/SIFT/ORB/export/project/shutdown check also passed. This confirms the picker defaults, independently of the unrelated CRLF/LF evidence-test failure in the native CI matrix.
+
 Install/uninstall on clean desktops, monitor changes and 150%/200% scaling, Narrator/other screen readers, full mouse/keyboard-only paths, real drag-and-drop from Explorer, and native macOS/Linux interaction remain separate gates. No operating-system accessibility or security settings were changed during this review.

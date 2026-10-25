@@ -1,5 +1,12 @@
 # Implementation Log
 
+## 2026-10-26 — Repair platform-dependent evidence hash checks
+
+- Native matrix 40221478271 exposed a Linux/macOS regression in the published reporting provenance assertion: original Windows CRLF file-byte hash differs from Git's LF checkout. Preserved the failed-run evidence and did not label that matrix successful.
+- Added canonical parsed-JSON content hashing, explicitly scoped original-byte hashes and LF output/evidence attributes. Published JSON provenance now includes the canonical hash and a repair note; frozen definitions, every candidate/count/decision and binary compressed raw reports are unchanged. Eighteen focused checks include LF/CRLF round trips and rejection of changed content; study Mypy passed. Broader/native checks follow.
+- Rebuilt local Windows picker review confirmed platform Pictures/Documents defaults, cancellation without changed inputs and normal close. Final local bundled SIFT/ORB/drop/export/project/shutdown check passed.
+- Repair verification: full local 202 passed/2 skipped in 32.64s, Ruff and focused study Mypy passed. Run 40221478271 completed with Windows success and Linux/both Mac jobs failing the same single evidence-hash assertion. Fresh native validation follows the repair; no failure was hidden.
+
 ## 2026-10-25 — Use platform user folders in native file dialogs
 
 - Corrected the application-folder starting location observed during Windows review. Qt platform locations now supply Pictures/Documents/Movies defaults; per-category successful choices persist in existing local app settings. Both image slots share the last image folder, including after restart. Project Save suggests the current project filename; exports remember successful destinations, leaving preferences unchanged after cancellation or an export error.

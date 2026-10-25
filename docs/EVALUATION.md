@@ -81,3 +81,5 @@ python -m visor.reliability_study report heldout.json.gz frozen-selection.json r
 ```
 
 Selection accepts only development rows; reporting accepts only held-out rows, identical execution settings and disjoint pair ids/image hashes. Outputs are created exclusively and cannot overwrite existing inputs/reports. The selection records every candidate and the chosen gate; reporting records each attempt's decision and keeps all truth-backed failures in denominators. Input/code hashes make the derived analysis reviewable. This module never changes fitted transforms, solver masks or desktop defaults. Publish the selection before inspecting reporting performance.
+
+Reporting records both the original selection-file byte hash and a canonical parsed-JSON content hash (sorted keys, compact separators, UTF-8). Git can normalize CRLF/LF across platforms without changing a choice; verify content with the canonical hash. New study JSON outputs and tracked evidence JSON use LF. Compressed raw reports retain their exact bytes. Provenance repairs must preserve the original input-byte hash and explicitly record that choices/results did not change.
