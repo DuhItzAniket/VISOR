@@ -1,5 +1,10 @@
 # Implementation Log
 
+## 2026-10-25 — Extend native matrix to Intel Macs
+
+- Checked GitHub's current standard runner documentation and added macos-15-intel with an Intel-only manual dispatch option to avoid repeating completed target builds unnecessarily.
+- Source application code is unchanged; native Intel validation must complete before support is claimed. Replay/video refresh and optional CPU checks run at c67936c independently.
+
 ## 2026-10-25 — Stream video decoding and reject unsupported tracking engines
 
 - Replaced eager decoded-frame accumulation with an iterable pipeline, keeping one decoded frame in processing rather than an entire clip. Preserved feature extraction reuse and per-frame algorithm results.

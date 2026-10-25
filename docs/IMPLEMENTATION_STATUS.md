@@ -1,5 +1,10 @@
 # Implementation Status
 
+## Intel Mac validation extension — 2026-10-25
+
+- Added a separate macOS Intel runner target alongside Apple Silicon. The manual desktop workflow can run all four targets or Intel alone. Intel is pending until its native job actually passes; no universal binary is claimed.
+- Final replay/video desktop and optional CPU model runs are in progress at c67936c. Adding the Intel job changes the workflow only; application code is unchanged by this extension.
+
 ## Video resource handling follow-up — 2026-10-25
 
 - File-based tracking decodes frames lazily into the per-frame tracker instead of retaining the entire decoded clip. Capture release is guaranteed on normal completion and tracking/cancellation failure. Total time includes reference/video decoding.
