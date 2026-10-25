@@ -1,0 +1,739 @@
+{
+  "kind": "frozen_gate_reporting",
+  "schema_version": 1,
+  "engines": {
+    "ORB": {
+      "baseline": {
+        "attempts": 36,
+        "distinct_pairs": 12,
+        "runtime_errors": 0,
+        "annotation_errors": 3,
+        "truth_attempts": 27,
+        "negative_attempts": 6,
+        "baseline_failed_attempts": 9,
+        "accepted_fits": 27,
+        "policy_rejections": 0,
+        "accepted_negatives": 0,
+        "accepted_truth_mean_corner_le_3px": 24,
+        "accepted_truth_mean_corner_le_5px": 27,
+        "accepted_truth_mean_corner_gt_5px": 0
+      },
+      "gate": {
+        "minimum_inliers": 40,
+        "minimum_reference_support": 0.01,
+        "maximum_residual_p95_px": null
+      },
+      "gated": {
+        "attempts": 36,
+        "distinct_pairs": 12,
+        "runtime_errors": 0,
+        "annotation_errors": 3,
+        "truth_attempts": 27,
+        "negative_attempts": 6,
+        "baseline_failed_attempts": 9,
+        "accepted_fits": 27,
+        "policy_rejections": 0,
+        "accepted_negatives": 0,
+        "accepted_truth_mean_corner_le_3px": 24,
+        "accepted_truth_mean_corner_le_5px": 27,
+        "accepted_truth_mean_corner_gt_5px": 0
+      },
+      "accurate_positive_retention": 1.0,
+      "retains_at_least_75_percent": true,
+      "scope": "Small preregistered sample; not a production reliability claim."
+    },
+    "SIFT": {
+      "baseline": {
+        "attempts": 36,
+        "distinct_pairs": 12,
+        "runtime_errors": 0,
+        "annotation_errors": 3,
+        "truth_attempts": 27,
+        "negative_attempts": 6,
+        "baseline_failed_attempts": 9,
+        "accepted_fits": 27,
+        "policy_rejections": 0,
+        "accepted_negatives": 0,
+        "accepted_truth_mean_corner_le_3px": 24,
+        "accepted_truth_mean_corner_le_5px": 24,
+        "accepted_truth_mean_corner_gt_5px": 3
+      },
+      "gate": {
+        "minimum_inliers": 20,
+        "minimum_reference_support": 0.01,
+        "maximum_residual_p95_px": null
+      },
+      "gated": {
+        "attempts": 36,
+        "distinct_pairs": 12,
+        "runtime_errors": 0,
+        "annotation_errors": 3,
+        "truth_attempts": 27,
+        "negative_attempts": 6,
+        "baseline_failed_attempts": 9,
+        "accepted_fits": 27,
+        "policy_rejections": 0,
+        "accepted_negatives": 0,
+        "accepted_truth_mean_corner_le_3px": 24,
+        "accepted_truth_mean_corner_le_5px": 24,
+        "accepted_truth_mean_corner_gt_5px": 3
+      },
+      "accurate_positive_retention": 1.0,
+      "retains_at_least_75_percent": true,
+      "scope": "Small preregistered sample; not a production reliability claim."
+    }
+  },
+  "decisions": [
+    {
+      "pair": "i_books/1-2",
+      "engine": "ORB",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.5094168347947027,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-2",
+      "engine": "ORB",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.5094168347947027,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-2",
+      "engine": "ORB",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.5094168347947027,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-3",
+      "engine": "ORB",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 1.2384643863831017,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-3",
+      "engine": "ORB",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 1.2384643863831017,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-3",
+      "engine": "ORB",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 1.2384643863831017,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-4",
+      "engine": "ORB",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.807376597416001,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-4",
+      "engine": "ORB",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.807376597416001,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-4",
+      "engine": "ORB",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.807376597416001,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-5",
+      "engine": "ORB",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.5758459047900516,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-5",
+      "engine": "ORB",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.5758459047900516,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-5",
+      "engine": "ORB",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.5758459047900516,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-6",
+      "engine": "ORB",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.19289067706925936,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-6",
+      "engine": "ORB",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.19289067706925936,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-6",
+      "engine": "ORB",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.19289067706925936,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-2",
+      "engine": "ORB",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.9377727807172785,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-2",
+      "engine": "ORB",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.9377727807172785,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-2",
+      "engine": "ORB",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.9377727807172785,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-3",
+      "engine": "ORB",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 1.8637059711004422,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-3",
+      "engine": "ORB",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 1.8637059711004422,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-3",
+      "engine": "ORB",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 1.8637059711004422,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-4",
+      "engine": "ORB",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 3.5021119862613244,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-4",
+      "engine": "ORB",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 3.5021119862613244,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-4",
+      "engine": "ORB",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 3.5021119862613244,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-5",
+      "engine": "ORB",
+      "iteration": 0,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": "ValueError: Ground-truth horizon crosses the reference image."
+    },
+    {
+      "pair": "v_artisans/1-5",
+      "engine": "ORB",
+      "iteration": 1,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": "ValueError: Ground-truth horizon crosses the reference image."
+    },
+    {
+      "pair": "v_artisans/1-5",
+      "engine": "ORB",
+      "iteration": 2,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": "ValueError: Ground-truth horizon crosses the reference image."
+    },
+    {
+      "pair": "v_artisans/1-6",
+      "engine": "ORB",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.5023402245646871,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-6",
+      "engine": "ORB",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.5023402245646871,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-6",
+      "engine": "ORB",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.5023402245646871,
+      "error": null
+    },
+    {
+      "pair": "negative/i_books-to-v_artisans",
+      "engine": "ORB",
+      "iteration": 0,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": null
+    },
+    {
+      "pair": "negative/i_books-to-v_artisans",
+      "engine": "ORB",
+      "iteration": 1,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": null
+    },
+    {
+      "pair": "negative/i_books-to-v_artisans",
+      "engine": "ORB",
+      "iteration": 2,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": null
+    },
+    {
+      "pair": "negative/v_artisans-to-i_books",
+      "engine": "ORB",
+      "iteration": 0,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": null
+    },
+    {
+      "pair": "negative/v_artisans-to-i_books",
+      "engine": "ORB",
+      "iteration": 1,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": null
+    },
+    {
+      "pair": "negative/v_artisans-to-i_books",
+      "engine": "ORB",
+      "iteration": 2,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-2",
+      "engine": "SIFT",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.16261365112462997,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-2",
+      "engine": "SIFT",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.16261365112462997,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-2",
+      "engine": "SIFT",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.16261365112462997,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-3",
+      "engine": "SIFT",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.07461680622285133,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-3",
+      "engine": "SIFT",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.07461680622285133,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-3",
+      "engine": "SIFT",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.07461680622285133,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-4",
+      "engine": "SIFT",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.050144071668682996,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-4",
+      "engine": "SIFT",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.050144071668682996,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-4",
+      "engine": "SIFT",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.050144071668682996,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-5",
+      "engine": "SIFT",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.07648295307707106,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-5",
+      "engine": "SIFT",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.07648295307707106,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-5",
+      "engine": "SIFT",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.07648295307707106,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-6",
+      "engine": "SIFT",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.09982012387709292,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-6",
+      "engine": "SIFT",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.09982012387709292,
+      "error": null
+    },
+    {
+      "pair": "i_books/1-6",
+      "engine": "SIFT",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.09982012387709292,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-2",
+      "engine": "SIFT",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.7008863772736544,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-2",
+      "engine": "SIFT",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.7008863772736544,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-2",
+      "engine": "SIFT",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.7008863772736544,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-3",
+      "engine": "SIFT",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 1.6551337766566128,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-3",
+      "engine": "SIFT",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 1.6551337766566128,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-3",
+      "engine": "SIFT",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 1.6551337766566128,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-4",
+      "engine": "SIFT",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 9.87702564732212,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-4",
+      "engine": "SIFT",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 9.87702564732212,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-4",
+      "engine": "SIFT",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 9.87702564732212,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-5",
+      "engine": "SIFT",
+      "iteration": 0,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": "ValueError: Ground-truth horizon crosses the reference image."
+    },
+    {
+      "pair": "v_artisans/1-5",
+      "engine": "SIFT",
+      "iteration": 1,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": "ValueError: Ground-truth horizon crosses the reference image."
+    },
+    {
+      "pair": "v_artisans/1-5",
+      "engine": "SIFT",
+      "iteration": 2,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": "ValueError: Ground-truth horizon crosses the reference image."
+    },
+    {
+      "pair": "v_artisans/1-6",
+      "engine": "SIFT",
+      "iteration": 0,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.27962238360100056,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-6",
+      "engine": "SIFT",
+      "iteration": 1,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.27962238360100056,
+      "error": null
+    },
+    {
+      "pair": "v_artisans/1-6",
+      "engine": "SIFT",
+      "iteration": 2,
+      "baseline_valid": true,
+      "retained_by_gate": true,
+      "corner_error_mean_px": 0.27962238360100056,
+      "error": null
+    },
+    {
+      "pair": "negative/i_books-to-v_artisans",
+      "engine": "SIFT",
+      "iteration": 0,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": null
+    },
+    {
+      "pair": "negative/i_books-to-v_artisans",
+      "engine": "SIFT",
+      "iteration": 1,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": null
+    },
+    {
+      "pair": "negative/i_books-to-v_artisans",
+      "engine": "SIFT",
+      "iteration": 2,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": null
+    },
+    {
+      "pair": "negative/v_artisans-to-i_books",
+      "engine": "SIFT",
+      "iteration": 0,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": null
+    },
+    {
+      "pair": "negative/v_artisans-to-i_books",
+      "engine": "SIFT",
+      "iteration": 1,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": null
+    },
+    {
+      "pair": "negative/v_artisans-to-i_books",
+      "engine": "SIFT",
+      "iteration": 2,
+      "baseline_valid": false,
+      "retained_by_gate": false,
+      "corner_error_mean_px": null,
+      "error": null
+    }
+  ],
+  "report_sha256": "f4f0f8000b774079f8b6aca84996723af18544497498c266ef4ec63eaa1890bc",
+  "selection_sha256": "8eaf60eafcef5ce889a9d0bacc20434f7fe4fad6d31a818687d74e6dcd00215e",
+  "analysis_code_sha256": "2aa8e25c308c98e216b87cc784dc5c93bd7a6b4749213730e8af27d2854a7bfd"
+}

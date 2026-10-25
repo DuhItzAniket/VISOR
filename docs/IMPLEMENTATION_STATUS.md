@@ -1,5 +1,12 @@
 # Implementation Status
 
+## I15 independent reporting result — 2026-10-25
+
+- Completed the preregistered [initial reliability experiment](evaluation/RELIABILITY_FINDINGS.md): 192 development and 72 reporting attempts, with choices published before reporting. Reserved-source f85c7e0 recorded a clean tree; evaluator/analysis algorithms match development dec9b33.
+- The frozen gates retain all baseline ≤3 px positives but reject no additional reporting fits. SIFT's v_artisans/1-4 remains accepted at 9.88 px mean corner error with 343 inliers and 0.359 reference coverage. **Neither gate is promoted into desktop defaults**; no retuning on the reporting scenes.
+- Reporting has no runtime failures. One truth transform crosses the full reference rectangle's horizon (v_artisans/1-5); six repeated rows are retained as annotation errors and excluded from corner-accuracy denominators. Each engine has 27 evaluable positive and six negative attempts, from nine/two distinct pairs. No pair was replaced after inspection.
+- Published raw reports, hashes, the full development grid and per-attempt reporting decisions; consistency regressions recompute these results. Broader user-relevant data and stability/overlap investigation remain necessary before general reliability claims.
+
 ## I15 development measurements and frozen choices — 2026-10-25
 
 - Published [independent development evidence](evaluation/RELIABILITY_FINDINGS.md): 192 measured attempts on 20 truth-backed pairs and 12 distinct negatives from four scenes, with three repetitions and two engines. Evaluator dec9b33 recorded a clean source tree; no runtime/annotation errors.

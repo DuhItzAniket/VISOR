@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-25 — Report reserved scenes without retuning and decline gate promotion
+
+- After publishing the selection at f85c7e0, evaluated reserved i_books/v_artisans using identical settings from that clean revision: 72 measured rows/24 warmups. First-image previews confirm books and mosaic are distinct; both negative directions retained. No runtime failures.
+- v_artisans/1-5 ground-truth horizon crosses the full reference rectangle; three rows per engine remain recorded as annotation errors and excluded from truth denominators. No replacement selected. Remaining truth attempts: 27 per engine; negatives: six per engine, representing nine/two distinct pairs.
+- Applying only the frozen choices rejected no additional reporting fits. SIFT still accepted v_artisans/1-4 at 9.88 px mean corner error, 343 inliers and support fraction 0.359. Both gates retained all baseline ≤3 px positives, but the predeclared independent-benefit condition was not met. Declined promotion into desktop defaults; no retuning. Published raw reporting evidence and per-attempt decisions with recomputation checks.
+
 ## 2026-10-25 — Publish development evidence before reserved reporting
 
 - Evaluated the preregistered four development scenes from clean dec9b33: 32 pairs, two engines, three measured repetitions/one warmup, 192 measured rows and 64 warmups, no runtime/annotation errors. Kept raw data and every candidate; recomputation regressions verify summary and selection consistency.

@@ -1,6 +1,6 @@
 # Independent reliability study — 2026-10-25
 
-Protocol frozen at `689522d`: [selection and analysis plan](../RELIABILITY_STUDY.md). Evaluator and study tool source: `dec9b33`. The development report recorded a clean checkout. This is a small diagnostic-gate experiment, not a revised registration algorithm or production reliability claim.
+Protocol frozen at `689522d`: [selection and analysis plan](../RELIABILITY_STUDY.md). Development source: `dec9b33`; reporting source: `f85c7e0`, which publishes the choices and changes only documentation/data consistency checks. Both raw reports recorded clean checkouts. The evaluator/study algorithms are identical across those revisions. This is a small diagnostic-gate experiment, not a revised registration algorithm or production reliability claim.
 
 ## Development evidence and frozen choices
 
@@ -24,7 +24,23 @@ SIFT's three accepted negative attempts repeat one distinct negative pair. ORB's
 
 ## Reserved reporting
 
-i_books and v_artisans remain reserved. The selected definitions above are published before their performance is inspected. Run baseline registration with identical settings, then apply only the frozen choices. Do not retune on these scenes or the original published reporting sample. This section will record adverse as well as favorable results.
+i_books and v_artisans were evaluated only after the selected definitions were pushed at f85c7e0. First-image previews show books versus a mosaic mural; both directed negatives were retained. Ten positive pairs/two negatives, two engines and three repetitions produce 72 measured rows plus 24 warmups. Bounded retrieval transferred ~17.5 MB; hashes and provenance are embedded in the raw report.
+
+- [Raw reserved reporting report](reliability-reporting-20261025.json.gz), 753,670 bytes; SHA256 `f4f0f8000b774079f8b6aca84996723af18544497498c266ef4ec63eaa1890bc`.
+- [Frozen-gate reporting analysis and all attempt decisions](reliability-reporting-analysis-20261025.json); SHA256 `b85d4b5d362937d0eae1b9cec65c53b9d6d8b356a29000c8338ecc10c84aa9cc`.
+
+There were **no runtime failures**. The truth transform for v_artisans/1-5 crosses the reference rectangle's horizon under the evaluator's whole-image corner convention. Its three repetitions per engine are retained as annotation-error rows and excluded from truth-accuracy denominators. This is a limitation of this metric/annotation combination, not a claim that every use of that dataset transform is invalid. No replacement pair was selected. Nine distinct positive pairs remain evaluable, giving 27 truth-backed attempts per engine; two distinct negatives give six attempts.
+
+| Engine / decision | Accepted positives within 3 px | Accepted positives within 5 px | Accepted positives above 5 px | Accepted labeled negatives |
+|---|---|---|---|---|
+| SIFT baseline | 24/27 | 24/27 | 3/27 | 0/6 |
+| SIFT frozen gate | 24/27 | 24/27 | 3/27 | 0/6 |
+| ORB baseline | 24/27 | 27/27 | 0/27 | 0/6 |
+| ORB frozen gate | 24/27 | 27/27 | 0/27 | 0/6 |
+
+Both policies retain all baseline ≤3 px positives, but **reject no additional reporting fits**. SIFT v_artisans/1-4 remains accepted with mean corner error 9.88 px, 343 inliers and reference hull fraction 0.359. Inlier count and reference coverage alone do not establish corner accuracy. Repeated runs of that pair are not three independent failures.
+
+**Decision:** do not promote either gate into the desktop default. The development gain did not demonstrate independent reporting benefit, and the predeclared decision rule treats that as evidence against promotion. Do not retune these gates on the reporting scenes. Future work needs additional independent scenes, user-relevant object/background negatives and investigation of spatial/extrapolation stability and overlap-aware ground-truth conventions. The original published sample and classical golden fixtures remain unchanged.
 
 ## Reproduction
 
