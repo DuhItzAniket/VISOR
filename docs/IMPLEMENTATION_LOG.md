@@ -1,5 +1,13 @@
 # Implementation Log
 
+## 2026-10-25 — I10 stale-job protection and responsive close
+
+- Added a Qt-independent revision/ticket controller and main-thread QObject signal relay for all seven analysis worker types. Superseded/cancelled results and errors are ignored, terminal delivery is single-use, and finishing an old ticket cannot release a newer job.
+- Algorithm/input changes clear old analysis/details and request cooperative cancellation. Analysis menus cannot start competing work during installation or shutdown.
+- Removed blocking QThread.wait from closeEvent. Close now requests cancellation and defers window destruction via the event loop until workers finish; source installation is allowed to finish with visible status. Finished workers/relays are deleted safely.
+- Added calibration cancellation boundaries and controlled worker regressions for input/config change, cancellation, competing work, install lifetime and responsive close. Focused lifecycle/UI/calibration checks passed; subsequent core/native verification is recorded separately.
+- Optional CPU GitHub run 40212401735 passed 17 checks (113 deselected) in 53.06s at 7214553. That evidence is separate from the newer job changes.
+
 ## 2026-10-25 — I05 pinned XFeat API and optional runtime separation
 
 - Confirmed the upstream repository has no setup.py and exposes modules.xfeat.XFeat.detectAndCompute rather than xfeat.Extractor. Pinned XFeat source/weights to e92685f and LightGlue setup to eb42fee.

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 
 import cv2
@@ -52,12 +52,15 @@ def calibrate_from_chessboard_images(
     paths: Sequence[Path] | Sequence[str],
     pattern_size: tuple[int, int] = (9, 6),
     square_size: float = 1.0,
+    cancel_check: Callable[[], None] | None = None,
 ) -> tuple[NDArray[np.float64], NDArray[np.float64], float, int]:
     """Detect a chessboard in each image and calibrate from the found views.
 
     Returns ``(camera_matrix, dist_coeffs, rms, views_used)``. Raises
     ``ValueError`` when no image yields a detectable pattern.
     """
+    if cancel_check is not None:
+        cancel_check()
     cols, rows = pattern_size
     xs, ys = np.meshgrid(np.arange(cols), np.arange(rows))
     grid = np.stack([xs.ravel(), ys.ravel(), np.zeros(cols * rows)], axis=1).astype(np.float32)
@@ -66,6 +69,8 @@ def calibrate_from_chessboard_images(
     image_samples: list[NDArray[np.float32]] = []
     image_size: tuple[int, int] | None = None
     for raw in paths:
+        if cancel_check is not None:
+            cancel_check()
         path = Path(raw)
         image = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE)
         if image is None:
@@ -82,7 +87,11 @@ def calibrate_from_chessboard_images(
         image_samples.append(refined.reshape(-1, 2))
     if not object_samples or image_size is None:
         raise ValueError("No usable chessboard views found in the given images.")
+    if cancel_check is not None:
+        cancel_check()
     camera, dist, rms = calibrate_camera(object_samples, image_samples, image_size)
+    if cancel_check is not None:
+        cancel_check()
     return camera, dist, rms, len(object_samples)
 
 

@@ -73,6 +73,8 @@ AnalysisResult  (frozen dataclass)
 
 All OpenCV work runs on a `QThread` subclass (`AnalysisWorker`, `ComparisonWorker`, `BenchmarkWorker`). Results are emitted via Qt signals back to the main thread. A `threading.Event` cancel token is checked at safe pipeline boundaries between stages.
 
+`JobController` owns a revision ticket for each worker. Input or algorithm changes increment the revision and set its cancellation event. `JobRelay` lives on the main thread, rejects obsolete/cancelled success/error signals and delivers at most one terminal event. Worker completion clears only its own ticket. Closing requests cancellation and defers window destruction until completion without waiting synchronously on the UI thread. Source dependency installation likewise retains ownership until its finished signal; it is not forcibly interrupted during environment mutation.
+
 ## Geometry scope
 
 Homography is a planar mapping. Projected corners, center, and derived rotation/scale are image-space estimates. The application labels them as estimates and does not claim general 3D pose recovery. The geometry layer is designed to accept future `Essential Matrix` and `PnP` solvers without changing the UI.

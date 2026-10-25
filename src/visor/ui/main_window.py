@@ -11,7 +11,7 @@ from threading import Event
 from typing import cast
 
 import numpy as np
-from PySide6.QtCore import QByteArray, QSettings, Qt, QThread, Signal
+from PySide6.QtCore import QByteArray, QSettings, Qt, QThread, QTimer, Signal
 from PySide6.QtGui import QAction, QIcon, QTextCursor
 from PySide6.QtWidgets import (
     QComboBox,
@@ -60,6 +60,7 @@ from visor.exporting import (
     save_project,
 )
 from visor.geometry_robust import RobustMethod
+from visor.jobs import JobController, JobTicket
 from visor.learned_engines import is_lightglue_available, is_xfeat_available
 from visor.learned_extra import is_disk_available
 from visor.matching_strategies import MatchingOptions
@@ -71,8 +72,9 @@ from visor.models import (
     ComparisonResult,
     EngineName,
 )
-from visor.pipeline import AnalysisCancelled, analyze, compare_engines
+from visor.pipeline import AnalysisCancelled, _check_cancel, analyze, compare_engines
 from visor.sweeps import run_robustness_sweep
+from visor.ui.job_relay import JobRelay
 from visor.ui.widgets.details_panel import AnalysisDetailsPanel
 from visor.ui.widgets.image_canvas import ImageCanvas
 from visor.ui.widgets.image_drop import ImageDropWidget
@@ -210,7 +212,9 @@ class CalibrationWorker(QThread):
     def run(self) -> None:
         try:
             from visor.calibration import calibrate_from_chessboard_images
-            camera, dist, rms, views = calibrate_from_chessboard_images(self.images)
+            camera, dist, rms, views = calibrate_from_chessboard_images(
+                self.images, cancel_check=lambda: _check_cancel(self.cancel_event),
+            )
             self.completed.emit((camera, dist, rms, views))
         except AnalysisCancelled:
             self.cancelled.emit()
@@ -335,6 +339,8 @@ class MainWindow(QMainWindow):
         self.resize(1280, 820)
         self._paths: dict[str, Path] = {}
         self._worker: QThread | None = None
+        self._jobs = JobController()
+        self._closing_requested = False
         self._cancel_event: Event | None = None
         self._result_arrays: dict[ImageCanvas, np.ndarray] = {}
         self._latest_result: AnalysisResult | None = None
@@ -348,6 +354,7 @@ class MainWindow(QMainWindow):
         self._build_workspace()
         self._build_details_dock()
         self._build_diagnostics_dock()
+        self._connect_configuration_changes()
         self.setStatusBar(QStatusBar(self))
         window_menu = self.window_menu
         window_menu.addAction(self.details_dock.toggleViewAction())
@@ -933,6 +940,8 @@ class MainWindow(QMainWindow):
         return settings, sift, orb, matching_options, robust_method
 
     def _start_analysis(self) -> None:
+        if not self._job_can_start():
+            return
         reference = self._paths.get("Reference image")
         target = self._paths.get("Target image")
         if reference is None or target is None or self._worker is not None:
@@ -954,13 +963,12 @@ class MainWindow(QMainWindow):
             reference, target, engine, settings, sift, orb, self._cancel_event,
             matching_options, robust_method,
         )
-        self._worker.completed.connect(self._show_result)
-        self._worker.failed.connect(self._show_error)
-        self._worker.cancelled.connect(self._show_cancelled)
-        self._worker.finished.connect(self._worker_finished)
+        self._connect_worker(self._show_result)
         self._worker.start()
 
     def _start_comparison(self) -> None:
+        if not self._job_can_start():
+            return
         reference = self._paths.get("Reference image")
         target = self._paths.get("Target image")
         if reference is None or target is None or self._worker is not None:
@@ -977,25 +985,72 @@ class MainWindow(QMainWindow):
             reference, target, settings, sift, orb, self._cancel_event,
             matching_options, robust_method,
         )
-        self._worker.completed.connect(self._show_comparison)
-        self._worker.failed.connect(self._show_error)
-        self._worker.cancelled.connect(self._show_cancelled)
-        self._worker.finished.connect(self._worker_finished)
+        self._connect_worker(self._show_comparison)
         self._worker.start()
 
-    def _worker_finished(self) -> None:
+    def _connect_worker(self, callback) -> None:
+        """Bind this worker once, using main-thread slots and a revision ticket."""
+        worker = self._worker
+        assert worker is not None and self._cancel_event is not None
+        ticket = self._jobs.begin(self._cancel_event)
+        relay = JobRelay(self._jobs, ticket, callback, self._show_error, self._show_cancelled,
+                         lambda: self._worker_finished(worker, ticket), self)
+        worker.completed.connect(relay.success)
+        worker.failed.connect(relay.failure)
+        worker.cancelled.connect(relay.cancelled)
+        worker.finished.connect(relay.finished)
+
+    def _worker_finished(self, worker: QThread, ticket: JobTicket) -> None:
+        if not self._jobs.finish(ticket):
+            worker.deleteLater()
+            return
         self._worker = None
-        ready = "Reference image" in self._paths and "Target image" in self._paths
+        ready = "Reference image" in self._paths and "Target image" in self._paths and not self._closing_requested
         self.run_button.setEnabled(ready)
         self.compare_button.setEnabled(ready)
-        self.benchmark_button.setEnabled("Reference image" in self._paths)
+        self.benchmark_button.setEnabled("Reference image" in self._paths and not self._closing_requested)
         self.cancel_button.setEnabled(False)
         self._cancel_event = None
+        worker.deleteLater()
+        self._finish_deferred_close()
+
+    def _job_can_start(self) -> bool:
+        installing = self._install_worker is not None and self._install_worker.isRunning()
+        if self._worker is not None or installing or self._closing_requested:
+            self.statusBar().showMessage("Wait for the current operation to finish.")
+            return False
+        return True
+
+    def _connect_configuration_changes(self) -> None:
+        for control in (self.ratio_control, self.ransac_control, self.sift_features, self.sift_layers,
+                        self.sift_contrast, self.sift_edge, self.sift_sigma, self.orb_features,
+                        self.orb_scale, self.orb_levels, self.orb_edge, self.orb_first_level,
+                        self.orb_patch, self.orb_fast):
+            control.valueChanged.connect(self._invalidate_analysis)
+        for control in (self.engine_selector, self.orb_wta, self.orb_score,
+                        self.matcher_strategy, self.robust_estimator):
+            control.currentIndexChanged.connect(self._invalidate_analysis)
+
+    def _invalidate_analysis(self, *_args) -> None:
+        self._jobs.invalidate()
+        self._clear_result_views()
+        self._latest_benchmark = None
+        self._latest_batch = None
+        if self._worker is not None:
+            self.statusBar().showMessage("Inputs or parameters changed; cancelling the previous run and discarding its result.")
+        self._update_overview_summary()
+
+    def _finish_deferred_close(self) -> None:
+        installing = self._install_worker is not None and self._install_worker.isRunning()
+        if self._closing_requested and self._worker is None and not installing:
+            QTimer.singleShot(0, self.close)
 
     def _clear_result_views(self) -> None:
         self._result_arrays = {}
         self._latest_result = None
         self._latest_comparison = None
+        if hasattr(self, "details_panel"):
+            self.details_panel.clear()
         for view in (self.matches_view, self.localization_view, self.warped_view):
             view.set_placeholder("No analysis loaded for this viewport yet.")
 
@@ -1052,6 +1107,7 @@ class MainWindow(QMainWindow):
 
     def _cancel_running(self) -> None:
         if self._cancel_event is not None:
+            self._jobs.cancel()
             self._cancel_event.set()
             self.cancel_button.setEnabled(False)
             self.statusBar().showMessage("Cancellation requested; waiting for the active OpenCV operation to finish…")
@@ -1119,6 +1175,8 @@ class MainWindow(QMainWindow):
         self.log_engine_event("OK", summary)
 
     def _start_benchmark(self) -> None:
+        if not self._job_can_start():
+            return
         reference = self._paths.get("Reference image")
         if reference is None or self._worker is not None:
             self.statusBar().showMessage("Load a reference image before running the benchmark lab.")
@@ -1132,10 +1190,7 @@ class MainWindow(QMainWindow):
         self.log_engine_event("INFO", f"Benchmarking image transformations from {reference.name}.")
         self._cancel_event = Event()
         self._worker = BenchmarkWorker(reference, settings, sift, orb, self._cancel_event)
-        self._worker.completed.connect(self._show_benchmark)
-        self._worker.failed.connect(self._show_error)
-        self._worker.cancelled.connect(self._show_cancelled)
-        self._worker.finished.connect(self._worker_finished)
+        self._connect_worker(self._show_benchmark)
         self._worker.start()
 
     def _show_benchmark(self, report: BenchmarkReport) -> None:
@@ -1166,6 +1221,8 @@ class MainWindow(QMainWindow):
         dialog.exec()
 
     def _start_sweep(self) -> None:
+        if not self._job_can_start():
+            return
         reference = self._paths.get("Reference image")
         if reference is None or self._worker is not None:
             self.statusBar().showMessage("Load a reference image before running the robustness sweep.")
@@ -1179,10 +1236,7 @@ class MainWindow(QMainWindow):
         self.log_engine_event("INFO", f"Running rotation/scale sweep from {reference.name}.")
         self._cancel_event = Event()
         self._worker = SweepWorker(reference, settings, sift, orb, self._cancel_event)
-        self._worker.completed.connect(self._show_sweep)
-        self._worker.failed.connect(self._show_error)
-        self._worker.cancelled.connect(self._show_cancelled)
-        self._worker.finished.connect(self._worker_finished)
+        self._connect_worker(self._show_sweep)
         self._worker.start()
 
     def _show_sweep(self, report: BenchmarkReport) -> None:
@@ -1213,6 +1267,8 @@ class MainWindow(QMainWindow):
         dialog.exec()
 
     def _start_batch(self) -> None:
+        if not self._job_can_start():
+            return
         if self._worker is not None:
             return
         filename, _ = QFileDialog.getOpenFileName(self, "Open batch manifest", "", "CSV manifest (*.csv)")
@@ -1227,10 +1283,7 @@ class MainWindow(QMainWindow):
         self.log_engine_event("INFO", f"Running batch from manifest {Path(filename).name}.")
         self._cancel_event = Event()
         self._worker = BatchWorker(Path(filename), settings, sift, orb, self._cancel_event)
-        self._worker.completed.connect(self._show_batch)
-        self._worker.failed.connect(self._show_error)
-        self._worker.cancelled.connect(self._show_cancelled)
-        self._worker.finished.connect(self._worker_finished)
+        self._connect_worker(self._show_batch)
         self._worker.start()
 
     def _show_batch(self, report: BatchReport) -> None:
@@ -1264,6 +1317,8 @@ class MainWindow(QMainWindow):
         dialog.exec()
 
     def _start_video_tracking(self) -> None:
+        if not self._job_can_start():
+            return
         reference = self._paths.get("Reference image")
         if reference is None or self._worker is not None:
             self.statusBar().showMessage("Load a reference image before tracking video.")
@@ -1288,10 +1343,7 @@ class MainWindow(QMainWindow):
         self._worker = VideoWorker(
             reference, Path(filename), cast(EngineName, engine_text), settings, self._cancel_event,
         )
-        self._worker.completed.connect(self._show_track_report)
-        self._worker.failed.connect(self._show_error)
-        self._worker.cancelled.connect(self._show_cancelled)
-        self._worker.finished.connect(self._worker_finished)
+        self._connect_worker(self._show_track_report)
         self._worker.start()
 
     def _show_track_report(self, report) -> None:  # type: ignore[no-untyped-def]
@@ -1320,6 +1372,8 @@ class MainWindow(QMainWindow):
         dialog.exec()
 
     def _start_calibration(self) -> None:
+        if not self._job_can_start():
+            return
         if self._worker is not None:
             return
         folder = QFileDialog.getExistingDirectory(self, "Open folder with chessboard images")
@@ -1340,10 +1394,7 @@ class MainWindow(QMainWindow):
         self.log_engine_event("INFO", f"Calibrating camera from {len(images)} images in {Path(folder).name}.")
         self._cancel_event = Event()
         self._worker = CalibrationWorker(images, self._cancel_event)
-        self._worker.completed.connect(self._show_calibration)
-        self._worker.failed.connect(self._show_error)
-        self._worker.cancelled.connect(self._show_cancelled)
-        self._worker.finished.connect(self._worker_finished)
+        self._connect_worker(self._show_calibration)
         self._worker.start()
 
     def _show_calibration(self, result: tuple) -> None:
@@ -1445,6 +1496,8 @@ class MainWindow(QMainWindow):
         if self._worker is not None:
             self.statusBar().showMessage("An analysis is already running. Wait for it to finish before installing.")
             return
+        if not self._job_can_start():
+            return
 
         python_exe = sys.executable
         install_lightglue = not is_lightglue_available()
@@ -1473,11 +1526,14 @@ class MainWindow(QMainWindow):
         self._install_worker = InstallWorker(python_exe, install_lightglue, install_xfeat)
         self._install_worker.progress.connect(lambda msg: self.log_engine_event("PIP", msg))
         self._install_worker.completed.connect(self._on_install_completed)
+        self._install_worker.finished.connect(self._on_install_finished)
         self._install_worker.start()
 
     def _on_install_completed(self, success: bool, message: str) -> None:
         level = "OK" if success else "ERROR"
         self.log_engine_event(level, message)
+        if self._closing_requested:
+            return
         ready = "Reference image" in self._paths and "Target image" in self._paths
         self.run_button.setEnabled(ready)
         self.compare_button.setEnabled(ready)
@@ -1501,6 +1557,12 @@ class MainWindow(QMainWindow):
         else:
             self.statusBar().showMessage(f"Install failed: {message}")
             self.install_learned_button.setEnabled(True)
+
+    def _on_install_finished(self) -> None:
+        if self._install_worker is not None:
+            self._install_worker.deleteLater()
+            self._install_worker = None
+        self._finish_deferred_close()
 
     def _refresh_engine_selector(self) -> None:
         """Re-evaluate optional engine availability and update the selector items."""
@@ -1546,10 +1608,22 @@ class MainWindow(QMainWindow):
             self.restoreState(state)
 
     def closeEvent(self, event) -> None:
-        if self._cancel_event is not None:
-            self._cancel_event.set()
-        if self._worker is not None and self._worker.isRunning():
-            self._worker.wait()
+        installing = self._install_worker is not None and self._install_worker.isRunning()
+        if self._worker is not None or installing:
+            self._closing_requested = True
+            self._jobs.shutdown()
+            if self._cancel_event is not None:
+                self._cancel_event.set()
+            self.run_button.setEnabled(False)
+            self.compare_button.setEnabled(False)
+            self.benchmark_button.setEnabled(False)
+            self.cancel_button.setEnabled(False)
+            self.statusBar().showMessage(
+                "Closing after dependency installation finishes…" if installing else
+                "Closing after the active operation reaches a cancellation boundary…"
+            )
+            event.ignore()
+            return
         self._window_settings.setValue("window/geometry", self.saveGeometry())
         self._window_settings.setValue("window/state", self.saveState())
         super().closeEvent(event)
@@ -1576,6 +1650,7 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(f"Selected {self._latest_result.engine} target keypoint #{index} at ({point.x:.1f}, {point.y:.1f}) px")
 
     def _on_image_changed(self, role: str, path: object) -> None:
+        self._invalidate_analysis()
         if isinstance(path, Path):
             self._paths[role] = path
             self._clear_result_views()
@@ -1588,11 +1663,15 @@ class MainWindow(QMainWindow):
             self._clear_result_views()
             self.statusBar().showMessage(f"Unable to load {role.lower()} image.")
         self._update_overview_summary()
+        if self._worker is not None:
+            self.statusBar().showMessage("Image inputs changed; cancelling and discarding the previous run.")
         if hasattr(self, "run_button"):
-            ready = "Reference image" in self._paths and "Target image" in self._paths and self._worker is None
+            installing = self._install_worker is not None and self._install_worker.isRunning()
+            idle = self._worker is None and not installing and not self._closing_requested
+            ready = "Reference image" in self._paths and "Target image" in self._paths and idle
             self.run_button.setEnabled(ready)
             self.compare_button.setEnabled(ready)
-            self.benchmark_button.setEnabled("Reference image" in self._paths and self._worker is None)
+            self.benchmark_button.setEnabled("Reference image" in self._paths and idle)
 
     def _save_project(self) -> None:
         if len(self._paths) != 2:

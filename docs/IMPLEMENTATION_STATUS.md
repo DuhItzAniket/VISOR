@@ -1,5 +1,12 @@
 # Implementation Status
 
+## Job ownership and asynchronous shutdown — 2026-10-25
+
+- I10 worker lifecycle implemented: input/algorithm changes cancel and invalidate the active revision; late results and errors are discarded. Main-thread relays deliver at most one terminal event and clean up finished worker objects.
+- Close requests leave the event loop responsive and defer destruction until workers finish. Analysis cancellation is cooperative at stage boundaries; calibration now checks between images and around calibration. Source dependency installation owns its worker lifetime; close waits for installation to finish without blocking the UI or killing pip halfway through setup.
+- Controlled Qt regressions cover current/stale delivery, image/config changes, cancellation, deferred close and install lifetime. Focused job/UI/calibration checks passed; broader source and native verification follows.
+- Independent optional CPU workflow [40212401735](https://github.com/DuhItzAniket/VISOR/actions/runs/40212401735) passed all 17 model-marked tests at source 7214553, including real XFeat/LightGlue inference. This does not verify GPU execution or packaged learned support.
+
 ## XFeat source runtime repair — 2026-10-25
 
 - I05 implemented against fixed upstream revision e92685f57f8318b18725c5c8c0bd28c7fe188d9a, using detectAndCompute and its 64-D descriptors. Setup explicitly caches source/weights and hashes; inference validates the cache and performs no network access. CPU preference is honored during initialization.
