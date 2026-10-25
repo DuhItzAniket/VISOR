@@ -72,3 +72,59 @@ def test_video_rejects_unreadable_file(tmp_path):
     ref = Path(__file__).parent / "data" / "golden_reference.png"
     with pytest.raises(ValueError, match="Could not open video"):
         track_reference_in_video(ref, tmp_path / "missing.avi")
+
+
+def test_video_does_not_silently_use_orb_for_another_engine(tmp_path):
+    with pytest.raises(ValueError, match="no substitute"):
+        track_reference_in_frames(np.zeros((30, 30), np.uint8), [], engine="XFeat")
+    with pytest.raises(ValueError, match="no substitute"):
+        track_reference_in_video(tmp_path / "ref.png", tmp_path / "video.avi", engine="AKAZE")
+
+
+def test_video_frames_are_decoded_lazily_and_capture_is_released(monkeypatch, tmp_path):
+    from visor import video
+
+    class Capture:
+        reads = 0
+        released = False
+
+        def isOpened(self):
+            return True
+
+        def read(self):
+            self.reads += 1
+            return True, np.zeros((32, 32, 3), np.uint8)
+
+        def release(self):
+            self.released = True
+
+    capture = Capture()
+    monkeypatch.setattr(cv2, "VideoCapture", lambda path: capture)
+    monkeypatch.setattr(video, "_read_image", lambda path: np.zeros((32, 32, 3), np.uint8))
+
+    def track(reference, frames, *args, **kwargs):
+        assert capture.reads == 0
+        iterator = iter(frames)
+        next(iterator)
+        assert capture.reads == 1
+        return (video.FrameTrack(0, 0, 0, 0, False, None, (), 1),)
+
+    monkeypatch.setattr(video, "track_reference_in_frames", track)
+    report = video.track_reference_in_video(tmp_path / "ref.png", tmp_path / "clip.avi")
+    assert len(report.frames) == 1
+    assert capture.reads == 1 and capture.released
+    capture.released = False
+
+    def fail(*args, **kwargs):
+        raise AnalysisCancelled("cancelled")
+
+    monkeypatch.setattr(video, "track_reference_in_frames", fail)
+    with pytest.raises(AnalysisCancelled):
+        video.track_reference_in_video(tmp_path / "ref.png", tmp_path / "clip.avi")
+    assert capture.released
+
+
+def test_tracker_accepts_frame_iterators():
+    reference, frames = _frames(count=2)
+    tracks = track_reference_in_frames(reference, iter(frames))
+    assert len(tracks) == 2

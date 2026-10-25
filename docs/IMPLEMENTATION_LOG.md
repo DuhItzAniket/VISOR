@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-25 — Stream video decoding and reject unsupported tracking engines
+
+- Replaced eager decoded-frame accumulation with an iterable pipeline, keeping one decoded frame in processing rather than an entire clip. Preserved feature extraction reuse and per-frame algorithm results.
+- Validate SIFT/ORB scope explicitly before reading, check cancellation before reference work, and release capture on every exit. Total tracking time now includes decoding; UI counts valid fits without implying independent accuracy.
+- Added iterator/lazy-decode/capture-release and unsupported-engine regressions. Twenty focused video/job checks passed; focused video Mypy and Ruff passed. Native/full follow-up evidence is recorded separately.
+
 ## 2026-10-25 — Source verification after replay and review fixes
 
 - Full local suite: 169 passed, 2 skipped in 32.63s. Ruff and focused exporting/matcher Mypy passed. Follow-up core suite also exercised isolated Qt preferences; native refresh follows the commit.

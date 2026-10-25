@@ -9,6 +9,7 @@ reads frames with OpenCV on a worker thread and displays :class:`TrackReport`.
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from threading import Event
@@ -47,7 +48,7 @@ class TrackReport:
 
 def track_reference_in_frames(
     reference_gray: ByteArray,
-    frames: list[ByteArray],
+    frames: Iterable[ByteArray],
     engine: EngineName = "ORB",
     ratio_threshold: float = 0.75,
     ransac_threshold: float = 4.0,
@@ -58,6 +59,9 @@ def track_reference_in_frames(
     """Track a grayscale reference across already-decoded BGR frames."""
     from visor.engines import ORBFeatureEngine, SIFTFeatureEngine
 
+    if engine not in ("SIFT", "ORB"):
+        raise ValueError("Video tracking supports only SIFT and ORB; no substitute engine was run.")
+    _check_cancel(cancel_event)
     extractor = SIFTFeatureEngine(sift_config) if engine == "SIFT" else ORBFeatureEngine(orb_config)
     reference_features = extractor.extract(reference_gray)
     height, width = reference_gray.shape[:2]
@@ -95,28 +99,35 @@ def track_reference_in_video(
     cancel_event: Event | None = None,
 ) -> TrackReport:
     """Open a video file with OpenCV and track the reference image in it."""
+    if engine not in ("SIFT", "ORB"):
+        raise ValueError("Video tracking supports only SIFT and ORB; no substitute engine was run.")
+    if max_frames < 1:
+        raise ValueError("max_frames must be positive.")
+    _check_cancel(cancel_event)
+    start = perf_counter()
     reference = _read_image(reference_path)
     reference_gray = cv2.cvtColor(reference, cv2.COLOR_BGR2GRAY)
     capture = cv2.VideoCapture(str(video_path))
-    if not capture.isOpened():
-        raise ValueError(f"Could not open video: {video_path.name}")
-    frames: list[ByteArray] = []
-    try:
-        while len(frames) < max_frames:
+
+    def frames() -> Iterator[ByteArray]:
+        for _ in range(max_frames):
             _check_cancel(cancel_event)
             ok, frame = capture.read()
             if not ok or frame is None:
                 break
-            frames.append(frame)
+            yield frame
+
+    try:
+        if not capture.isOpened():
+            raise ValueError(f"Could not open video: {video_path.name}")
+        tracks = track_reference_in_frames(
+            reference_gray, frames(), engine, ratio_threshold, ransac_threshold,
+            cancel_event=cancel_event,
+        )
     finally:
         capture.release()
-    if not frames:
+    if not tracks:
         raise ValueError(f"No decodable frames in video: {video_path.name}")
-    start = perf_counter()
-    tracks = track_reference_in_frames(
-        reference_gray, frames, engine, ratio_threshold, ransac_threshold,
-        cancel_event=cancel_event,
-    )
     return TrackReport(reference_path, video_path, engine, tracks, (perf_counter() - start) * 1000)
 
 

@@ -1358,11 +1358,12 @@ class MainWindow(QMainWindow):
         valid = sum(1 for frame in report.frames if frame.geometry_valid)
         note = QLabel(
             f"{report.engine} tracked {report.reference_path.name} in {report.video_path.name}: "
-            f"{valid}/{len(report.frames)} frames localized in {report.duration_ms:.0f} ms."
+            f"{valid}/{len(report.frames)} frames have valid planar fits in {report.duration_ms:.0f} ms, including decoding. "
+            "No ground-truth accuracy was measured."
         )
         note.setWordWrap(True)
         layout.addWidget(note)
-        headers = ["Frame", "Good", "Inliers", "Inlier %", "Localized", "Center px"]
+        headers = ["Frame", "Good", "Inliers", "Inlier %", "Valid fit", "Center px"]
         table = QTableWidget(len(report.frames), len(headers))
         table.setHorizontalHeaderLabels(headers)
         for row_index, frame in enumerate(report.frames):

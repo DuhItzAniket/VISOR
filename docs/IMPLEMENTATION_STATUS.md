@@ -1,5 +1,11 @@
 # Implementation Status
 
+## Video resource handling follow-up — 2026-10-25
+
+- File-based tracking decodes frames lazily into the per-frame tracker instead of retaining the entire decoded clip. Capture release is guaranteed on normal completion and tracking/cancellation failure. Total time includes reference/video decoding.
+- Video APIs explicitly support SIFT/ORB and reject other engine names before work; they cannot silently label ORB as another engine. Result UI says valid planar fits rather than measured localization accuracy.
+- Twenty focused video/job regressions passed; video focused Mypy and Ruff passed. The broader/core suite and final native refresh follow this commit.
+
 ## Current source verification — 2026-10-25
 
 - Full local suite after project format 2 and native-review fixes: **169 passed, 2 skipped in 32.63s**. Ruff and focused exporting/matcher Mypy passed. The subsequent test fixture isolates Qt window preferences so regression runs do not overwrite the developer's real layout.
