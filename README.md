@@ -6,6 +6,8 @@ The distribution target is a standalone desktop app for Windows, macOS, and Linu
 
 Current work: [research review](docs/RESEARCH_REVIEW.md), [improvement plan](docs/IMPROVEMENT_PLAN.md), and [verified implementation status](docs/IMPLEMENTATION_STATUS.md).
 
+VISOR's original source is licensed under [Apache 2.0](LICENSE), with the project [NOTICE](NOTICE). Dependencies, models and datasets retain their [own terms](docs/THIRD_PARTY_INVENTORY.md).
+
 ## Features
 
 - **SIFT and ORB engines** — OpenCV implementations, no model training or weight downloads

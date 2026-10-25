@@ -51,7 +51,7 @@ def run(command: list[str], *, isolate_native_path: bool = False) -> None:
 
 
 def build() -> tuple[Path, str, str]:
-    version = source_version()
+    version = source_version(ROOT)
     system = platform.system()
     architecture = platform.machine().lower()
     assets = ROOT / "src" / "visor" / "assets"
@@ -59,6 +59,8 @@ def build() -> tuple[Path, str, str]:
         sys.executable, "-m", "PyInstaller", "--noconfirm", "--clean", "--windowed",
         "--name", "VISOR", "--paths", str(ROOT / "src"),
         "--add-data", f"{assets}:visor/assets",
+        "--add-data", f"{ROOT / 'LICENSE'}:.",
+        "--add-data", f"{ROOT / 'NOTICE'}:.",
         "--hidden-import", "visor.engines_classical_extra",
         "--hidden-import", "visor.learned_extra",
     ]
@@ -89,6 +91,8 @@ def build() -> tuple[Path, str, str]:
     info = {
         "version": version, "system": system, "architecture": architecture,
         "version_source": "src/visor/__init__.py",
+        "project_license": "Apache-2.0",
+        "project_notice_files": ["LICENSE", "NOTICE"],
         "source_revision": revision,
         "python": platform.python_version(), "learned_engines_bundled": False,
         "dependencies": {

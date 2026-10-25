@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import platform
+import sys
 import tempfile
 import traceback
 from pathlib import Path
@@ -30,6 +31,15 @@ def run_smoke_check(report_path: Path) -> int:
     app = QApplication.instance() or QApplication(["VISOR smoke check"])
     window = None
     try:
+        if getattr(sys, "frozen", False):
+            resource_root = getattr(sys, "_MEIPASS", None)
+            if not resource_root:
+                raise RuntimeError("Frozen application resource directory is unavailable.")
+            resources = Path(resource_root)
+            for name, expected in (("LICENSE", "Apache License"), ("NOTICE", "Apache-2.0")):
+                if expected not in (resources / name).read_text(encoding="utf-8"):
+                    raise RuntimeError(f"Project notice missing or unexpected: {name}")
+            report["checks"].append("VISOR Apache-2.0 LICENSE/NOTICE files (project only)")
         with tempfile.TemporaryDirectory(prefix="visor-smoke-") as temporary:
             folder = Path(temporary)
             rng = np.random.default_rng(2026)

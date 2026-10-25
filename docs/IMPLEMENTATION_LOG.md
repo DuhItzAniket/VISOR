@@ -1,5 +1,13 @@
 # Implementation Log
 
+## 2026-10-26 — Apply owner-selected Apache-2.0 and consolidate current status
+
+- The owner explicitly selected Apache-2.0. Added the official full license and project NOTICE, SPDX package metadata/license files and setuptools>=77 for PEP 639 support. Original VISOR code is covered; dependency/model/dataset terms remain separate.
+- Desktop builder now includes project LICENSE/NOTICE as data and records them in build-info. Frozen workflow validation verifies their presence/content without claiming third-party notice completeness. Added absent/present-notice workflow regressions.
+- Source wheel built in isolation: 0.2.0 metadata declares Apache-2.0 and contains both license files. Eight focused notice/version checks passed; full local suite **210 passed, 2 skipped in 35.96s**; Ruff and focused builder Mypy passed. New native licensing refresh follows.
+- Pre-licensing repair run 40222252759 passed all four targets at 601bee5. Windows core: 191 passed/2 skipped/17 deselected; other targets: 189 passed/4 skipped/17 deselected. Source-based build version is now correctly 0.2.0. This confirms the portable evidence-hash repair, including non-Windows platforms.
+- Replaced the accumulated status chronology with a current verification/delivery/research/gates snapshot; historical evidence remains in this log and Git. License choice is closed; complete third-party artifact notices, signing and manual platform gates remain explicit.
+
 ## 2026-10-26 — Use frozen source version in desktop build provenance
 
 - Local build-info incorrectly used the developer environment's old installed VISOR 0.1.0 metadata while freezing 0.2.0 application source. Builder now parses the source's literal __version__ without importing/executing the app, fails clearly on invalid/missing versions, and records version_source. Packaging uses that same returned version.

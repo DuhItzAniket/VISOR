@@ -1,6 +1,6 @@
 # Dependency and model notice inventory
 
-Reviewed 2026-10-25. This records observed package declarations and upstream notices. It does not establish that a distribution has satisfied every notice/source obligation; release checks remain open under I12/I13.
+Reviewed 2026-10-25; project-license decision updated 2026-10-26. The owner selected Apache-2.0 for VISOR's original source; root LICENSE/NOTICE and package metadata record that choice. This inventory records observed third-party declarations and upstream notices. It does not establish that a distribution has satisfied every dependency notice/source obligation; release checks remain open under I12/I13.
 
 ## Standard desktop components
 
@@ -32,8 +32,8 @@ Primary distinctions are in [LightGlue's pinned license section](https://github.
 
 HPatches image/transform files are downloaded separately for local evaluation and are not copied into this repository's application artifacts. The evidence directory contains measurements and source hashes. Follow the [dataset's original-source/citation guidance](https://github.com/hpatches/hpatches-dataset) when using or publishing research results.
 
-## Owner and release decisions still required
+## Project decision and remaining release work
 
-- The repository has no root VISOR project license file. Its owner must select the intended project license; third-party declarations do not make that decision.
+- VISOR's own source is Apache-2.0 by the owner's 2026-10-26 choice. Source wheels and new desktop builds include LICENSE/NOTICE. This closes the project-license choice; third-party/model distribution review remains separate.
 - Generate and inspect a per-artifact inventory and include complete notices before a public release. The table above does not certify the current unsigned validation artifacts as notice-complete.
 - Review exact model/weight terms before offering learned models inside desktop distributions. Maintain source, revision, weight hashes and required notices together.
