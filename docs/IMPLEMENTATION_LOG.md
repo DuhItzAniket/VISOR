@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-25 — Complete drop build matrix and add independent study analysis
+
+- Native run 40219803747 passed Windows/macOS ARM64/macOS Intel/Linux at 7bf73d6, including copy-only Qt URL event checks, classical full workflows, lint and packaging. Windows: 165 passed/2 skipped/17 deselected; other targets: 163 passed/4 skipped/17 deselected. Refreshed download links. Local Windows build and expanded smoke check passed.
+- Added a pure offline diagnostic study module with fixed 27-candidate selection, explicit 75% retention, least-restrictive exact ties, immutable baseline results, frozen reporting, input-hash/pair/configuration overlap guards and report/code hashes. Reporting retains per-attempt gate decisions. This is research tooling, not an application rejection policy.
+- Twenty-two focused study/evaluation regressions and full local suite passed (193 passed, 2 skipped in 32.02s); Ruff and focused study Mypy passed. Downloaded four development sequences using ~29.6 MB bounded ranges and verified ZIP CRC and SHA256 records. First-image previews show four distinct scenes; all twelve directed cross-scene negatives are retained before evaluation. Reserved reporting images/results have not been used for selection.
+
 ## 2026-10-25 — Preregister I15 reliability study
 
 - Selected i_autannes/i_bologna/v_adam/v_apprentices for development and reserved i_books/v_artisans for reporting using only bounded ZIP directory metadata, alphabetic order and completeness/size rules. Excluded the two original published scenes.

@@ -1,5 +1,11 @@
 # Implementation Status
 
+## Current desktop builds and offline study tool — 2026-10-25
+
+- Copy-only-drop desktop [run 40219803747](https://github.com/DuhItzAniket/VISOR/actions/runs/40219803747) passed all four native targets at **7bf73d6**. Windows: **165 passed/2 skipped/17 deselected**; macOS ARM64/Intel and Linux: **163 passed/4 skipped/17 deselected**. Lint, packaging and every bundled workflow step passed, including Qt URL-drop copy semantics. [Download links](DESKTOP_DISTRIBUTION.md) identify this revision. Local Windows rebuild and the expanded bundled check passed too.
+- Added a separate offline `visor.reliability_study` tool for the preregistered diagnostic grid. It refuses reporting data during selection, freezes per-engine choices, keeps failure denominators and checks reporting input/setting separation. It does not change desktop fitting or acceptance defaults.
+- Twenty-two focused evaluation/study checks passed; full local suite **193 passed, 2 skipped in 32.02s**. Ruff and study-module Mypy passed. Development images were downloaded with bounded ranges (~29.6 MB); their first images show distinct scenes (mountain station, city, Creation of Adam reproduction, apprentice illustration), supporting all twelve planned directed negatives. New performance measurement follows from a clean committed evaluator.
+
 ## Reliability study preregistration — 2026-10-25
 
 - I15 now has a [frozen scene-selection and analysis protocol](RELIABILITY_STUDY.md): four disjoint development scenes, two reserved reporting scenes, fixed classical execution settings, a defined diagnostic-gate grid and selection/retention criteria. Selection used archive metadata only; no new scene performance has been inspected. Original reporting scenes remain excluded from policy development.

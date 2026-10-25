@@ -70,3 +70,14 @@ Forward-project the four reference pixel-coordinate corners `(0,0)`, `(w-1,0)`, 
 Inlier reprojection residual remains separate from corner accuracy. Without a supplied truth mapping, corner accuracy is unavailable. A geometrically valid fit on a pair explicitly marked `expected_match: false` counts as a false acceptance. Unlabeled pairs do not enter negative denominators; no negative pairs means the false-acceptance rate is unavailable, not zero.
 
 The CLI completing successfully means a report was produced. It does not mean every attempted engine succeeded or a release-quality threshold was met. Review error rows, failure denominators, dataset membership and raw outputs before drawing conclusions.
+
+## Independent diagnostic-gate study
+
+The preregistered [reliability protocol](RELIABILITY_STUDY.md) fixes development/reporting scenes, the grid and its selection rule. The separate offline tool consumes existing raw evaluator reports:
+
+```text
+python -m visor.reliability_study select development.json.gz frozen-selection.json
+python -m visor.reliability_study report heldout.json.gz frozen-selection.json reporting-analysis.json
+```
+
+Selection accepts only development rows; reporting accepts only held-out rows, identical execution settings and disjoint pair ids/image hashes. Outputs are created exclusively and cannot overwrite existing inputs/reports. The selection records every candidate and the chosen gate; reporting records each attempt's decision and keeps all truth-backed failures in denominators. Input/code hashes make the derived analysis reviewable. This module never changes fitted transforms, solver masks or desktop defaults. Publish the selection before inspecting reporting performance.
