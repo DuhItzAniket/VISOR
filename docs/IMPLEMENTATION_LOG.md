@@ -1,5 +1,10 @@
 # Implementation Log
 
+## 2026-10-25 — Preregister I15 reliability study
+
+- Selected i_autannes/i_bologna/v_adam/v_apprentices for development and reserved i_books/v_artisans for reporting using only bounded ZIP directory metadata, alphabetic order and completeness/size rules. Excluded the two original published scenes.
+- Recorded the candidate grid, 75% accurate-positive retention requirement, tie-breaking order, independent reporting step and limits before reading new scene performance. No shipping geometry or acceptance policy changed. See RELIABILITY_STUDY.md.
+
 ## 2026-10-25 — Copy-only image drop contracts
 
 - Attempted native Explorer-to-VISOR drag; helper rejected its endpoint outside the Explorer window. Recorded this as incomplete native verification, without treating it as an application failure. A resize attempt did not change dimensions and adds no scaling evidence.

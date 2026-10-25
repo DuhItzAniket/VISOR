@@ -1,5 +1,10 @@
 # Implementation Status
 
+## Reliability study preregistration — 2026-10-25
+
+- I15 now has a [frozen scene-selection and analysis protocol](RELIABILITY_STUDY.md): four disjoint development scenes, two reserved reporting scenes, fixed classical execution settings, a defined diagnostic-gate grid and selection/retention criteria. Selection used archive metadata only; no new scene performance has been inspected. Original reporting scenes remain excluded from policy development.
+- No acceptance threshold or estimator behavior changes in the application. Download preparation, negative-pair inspection, development measurements and frozen-policy reporting follow the recorded protocol.
+
 ## Drag-and-drop contract follow-up — 2026-10-25
 
 - Overlay-fix desktop [run 40219098560](https://github.com/DuhItzAniket/VISOR/actions/runs/40219098560) passed all four targets at d2370af: Windows 158 passed/2 skipped/17 deselected, macOS ARM64/Intel and Linux each 156 passed/4 skipped/17 deselected. Lint, packaging and bundled workflows passed. These are the current downloadable validation artifacts; the subsequent copy-only drop fix has the source evidence below.
