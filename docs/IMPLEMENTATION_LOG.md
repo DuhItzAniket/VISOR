@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Repair checkout metadata exposed by automatic core CI
+
+- First automatic run 40338166624 at 51362ab failed on both runners before tests: checkout's immediate credential cleanup encountered the orphaned 160000 gitlink Sample/Dataset/HPatches with no .gitmodules URL. Repository fetch succeeded; no test failure/pass is inferred from this run.
+- Removed only the orphan gitlink from the Git index using git rm --cached and confirmed the local dataset directory remains present. Ignored the complete external HPatches folder instead of only its sequences child; no dataset file was deleted or modified, no replacement URL/ownership was invented, and no source algorithm/build byte changed. Fresh checkouts obtain no implicit dataset/submodule, consistent with the explicit evaluation preparation workflow.
+- Verified there were no other gitlinks and the existing source checks/wheel audit remain valid; fresh automatic Windows/Linux core verification follows this metadata repair. No GPU work or local interactive app launch.
+
 ## 2026-10-26 — Add automatic model-free checks and verify source wheels
 
 - Added push/main, pull-request and manual core checks on Windows/Linux with read-only checkout, per-ref supersession, pinned desktop dependencies, offscreen Qt and accelerator mask -1. Runs core regressions without model downloads, all-source/script Ruff, focused types and an isolated source-wheel build/byte audit. JUnit evidence is retained. Native installers/four-target packaging and public release gates remain separate; no branch-protection setting is changed.

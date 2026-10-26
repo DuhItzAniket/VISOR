@@ -37,7 +37,7 @@ desktop.ini
 
 # Large data / datasets — keep out of Git
 Sample/Dataset/MegaDepth/
-Sample/Dataset/HPatches/sequences/
+Sample/Dataset/HPatches/
 *.h5
 *.hdf5
 
