@@ -30,10 +30,10 @@ class ImageCanvas(QGraphicsView):
         self._auto_fit = True
         self.set_image(None)
 
-    def set_image(self, bgr: np.ndarray | None) -> None:
-        self._scene.clear()
-        self._item = None
+    def set_image(self, bgr: np.ndarray | None, *, preserve_view: bool = False) -> None:
         if bgr is None:
+            self._scene.clear()
+            self._item = None
             self._scene.setSceneRect(0, 0, 640, 480)
             text = self._scene.addText(self._placeholder)
             text.setDefaultTextColor(Qt.GlobalColor.lightGray)
@@ -43,10 +43,17 @@ class ImageCanvas(QGraphicsView):
             self.resetTransform()
             self._auto_fit = True
             return
-        rgb = np.ascontiguousarray(bgr[:, :, ::-1])
-        height, width, _ = rgb.shape
-        qimage = QImage(rgb.data, width, height, 3 * width, QImage.Format.Format_RGB888).copy()
-        self._item = self._scene.addPixmap(QPixmap.fromImage(qimage))
+        # Qt accepts OpenCV's native byte order. Own the QImage bytes so the
+        # pixmap never depends on a mutable/temporary NumPy input buffer.
+        pixels = np.ascontiguousarray(bgr)
+        height, width, _ = pixels.shape
+        qimage = QImage(pixels.data, width, height, pixels.strides[0], QImage.Format.Format_BGR888).copy()
+        pixmap = QPixmap.fromImage(qimage)
+        if preserve_view and self._item is not None and self._image_size == (width, height):
+            self._item.setPixmap(pixmap)
+            return
+        self._scene.clear()
+        self._item = self._scene.addPixmap(pixmap)
         self._image_size = (width, height)
         self._scene.setSceneRect(self._item.boundingRect())
         self._auto_fit = True

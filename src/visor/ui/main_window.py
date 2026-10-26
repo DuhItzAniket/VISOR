@@ -74,10 +74,10 @@ from visor.models import (
 from visor.pipeline import AnalysisCancelled, _check_cancel, analyze, compare_engines
 from visor.sweeps import run_robustness_sweep
 from visor.ui.job_relay import JobRelay
+from visor.ui.overlay_renderer import OverlayRenderer, OverlayUpdate
 from visor.ui.widgets.details_panel import AnalysisDetailsPanel
 from visor.ui.widgets.image_canvas import ImageCanvas
 from visor.ui.widgets.image_drop import ImageDropWidget
-from visor.visualization import render_localization, render_match_canvas
 
 _ICONS_DIR = Path(__file__).parent.parent / "assets" / "icons"
 
@@ -342,6 +342,11 @@ class MainWindow(QMainWindow):
         self._worker: QThread | None = None
         self._jobs = JobController()
         self._closing_requested = False
+        self._overlay_renderer = OverlayRenderer(self)
+        self._overlay_renderer.completed.connect(self._apply_overlay)
+        self._overlay_renderer.failed.connect(self._overlay_failed)
+        self._overlay_renderer.busy_changed.connect(self._overlay_busy_changed)
+        self._overlay_renderer.idle.connect(self._finish_deferred_close)
         self._cancel_event: Event | None = None
         self._result_arrays: dict[ImageCanvas, np.ndarray] = {}
         self._latest_result: AnalysisResult | None = None
@@ -1017,7 +1022,7 @@ class MainWindow(QMainWindow):
         self.run_button.setEnabled(ready)
         self.compare_button.setEnabled(ready)
         self.benchmark_button.setEnabled("Reference image" in self._paths and not self._closing_requested)
-        self.cancel_button.setEnabled(False)
+        self.cancel_button.setEnabled(self._overlay_renderer.busy and not self._closing_requested)
         self._cancel_event = None
         worker.deleteLater()
         self._finish_deferred_close()
@@ -1052,10 +1057,11 @@ class MainWindow(QMainWindow):
 
     def _finish_deferred_close(self) -> None:
         installing = self._install_worker is not None and self._install_worker.isRunning()
-        if self._closing_requested and self._worker is None and not installing:
+        if self._closing_requested and self._worker is None and not installing and not self._overlay_renderer.busy:
             QTimer.singleShot(0, self.close)
 
     def _clear_result_views(self) -> None:
+        self._overlay_renderer.invalidate()
         self._result_arrays = {}
         self._latest_result = None
         self._latest_comparison = None
@@ -1116,6 +1122,12 @@ class MainWindow(QMainWindow):
         self.log_engine_event("INFO", "Analysis cancelled at a safe processing boundary.")
 
     def _cancel_running(self) -> None:
+        if self._overlay_renderer.busy:
+            self._overlay_renderer.invalidate()
+            if self._latest_result is not None:
+                self._restore_overlay_controls(self._latest_result.settings)
+            self.cancel_button.setEnabled(False)
+            self.statusBar().showMessage("Overlay update cancelled; the previous overlay is retained.")
         if self._cancel_event is not None:
             self._jobs.cancel()
             self._cancel_event.set()
@@ -1148,6 +1160,7 @@ class MainWindow(QMainWindow):
         self.overview_summary.setText("<br>".join(summary_lines))
 
     def _show_result(self, result: AnalysisResult) -> None:
+        self._overlay_renderer.invalidate()
         self._latest_result = result
         self._latest_comparison = None
         self._update_overview_summary()
@@ -1459,21 +1472,47 @@ class MainWindow(QMainWindow):
             rainbow_feature_colors=rainbow_checked,
             feature_line_thickness=float(self.feature_thickness_slider.value() if hasattr(self, "feature_thickness_slider") else self.match_line_thickness.value()),
         )
-        result = replace(
-            result,
-            settings=settings,
-            matches_image=render_match_canvas(
-                result.reference_image, result.target_image, result.reference_features,
-                result.target_features, result.match_set, result.geometry, settings,
-            ),
-            localization_image=render_localization(
-                result.target_image, result.target_features, result.geometry, settings,
-            ),
-        )
-        self._latest_result = result
-        self._result_arrays[self.matches_view] = result.matches_image
-        self._result_arrays[self.localization_view] = result.localization_image
-        self._refresh_result_views()
+        self._overlay_renderer.request(result, settings)
+
+    def _apply_overlay(self, update: OverlayUpdate) -> None:
+        if update.source is not self._latest_result or self._closing_requested:
+            return
+        self._latest_result = update.rendered
+        for view, image in ((self.matches_view, update.rendered.matches_image),
+                            (self.localization_view, update.rendered.localization_image)):
+            self._result_arrays[view] = image
+            view.set_image(image, preserve_view=True)
+        self.statusBar().showMessage("Image overlays updated.")
+
+    def _overlay_busy_changed(self, busy: bool) -> None:
+        if self._worker is None and not self._closing_requested:
+            self.cancel_button.setEnabled(busy)
+            if busy and self._latest_result is not None:
+                self.statusBar().showMessage("Updating image overlays…")
+
+    def _restore_overlay_controls(self, settings: AnalysisSettings) -> None:
+        for name, action in self.view_toggles.items():
+            if hasattr(settings, name):
+                with QSignalBlocker(action):
+                    action.setChecked(getattr(settings, name))
+        for slider in (self.feature_thickness_slider, self.match_line_thickness):
+            with QSignalBlocker(slider):
+                slider.setValue(round(settings.feature_line_thickness))
+        with QSignalBlocker(self.feature_color_button):
+            self.feature_color_button.setChecked(settings.rainbow_feature_colors)
+        self._update_feature_thickness_label()
+
+    def _overlay_failed(self, message: str) -> None:
+        if self._latest_result is not None:
+            self._restore_overlay_controls(self._latest_result.settings)
+        self.statusBar().showMessage("Overlay update failed; the previous overlay is retained.")
+        self.log_engine_event("ERROR", f"Overlay rendering failed: {message}")
+
+    def _overlay_export_ready(self) -> bool:
+        if self._overlay_renderer.busy:
+            self.statusBar().showMessage("Wait for the overlay update or cancel it before exporting.")
+            return False
+        return True
 
     @staticmethod
     def _find_repo_root() -> Path | None:
@@ -1631,9 +1670,10 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event) -> None:
         installing = self._install_worker is not None and self._install_worker.isRunning()
-        if self._worker is not None or installing:
+        if self._worker is not None or installing or self._overlay_renderer.busy:
             self._closing_requested = True
             self._jobs.shutdown()
+            self._overlay_renderer.shutdown()
             if self._cancel_event is not None:
                 self._cancel_event.set()
             self.run_button.setEnabled(False)
@@ -1646,6 +1686,7 @@ class MainWindow(QMainWindow):
             )
             event.ignore()
             return
+        self._overlay_renderer.shutdown()
         self._window_settings.setValue("window/geometry", self.saveGeometry())
         self._window_settings.setValue("window/state", self.saveState())
         super().closeEvent(event)
@@ -1791,6 +1832,8 @@ class MainWindow(QMainWindow):
         if self._latest_result is None:
             self.statusBar().showMessage("Run an analysis before exporting a report.")
             return
+        if not self._overlay_export_ready():
+            return
         filename, _ = QFileDialog.getSaveFileName(self, "Export HTML report", self._suggested_export("analysis_report.html"), "HTML files (*.html)")
         if not filename:
             return
@@ -1857,6 +1900,8 @@ class MainWindow(QMainWindow):
         if self._latest_result is None:
             self.statusBar().showMessage("Run an analysis before exporting results.")
             return
+        if not self._overlay_export_ready():
+            return
         filename, _ = QFileDialog.getSaveFileName(self, "Export analysis", self._suggested_export(default_name), file_filter)
         if not filename:
             return
@@ -1871,6 +1916,8 @@ class MainWindow(QMainWindow):
     def _export_visualization(self) -> None:
         if self._latest_result is None:
             self.statusBar().showMessage("Run an analysis before exporting a visualization.")
+            return
+        if not self._overlay_export_ready():
             return
         views = {
             1: self._latest_result.matches_image,

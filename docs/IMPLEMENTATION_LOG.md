@@ -1,5 +1,12 @@
 # Implementation Log
 
+## 2026-10-26 — Bound overlay work and preserve the inspected viewport
+
+- Local profiling of the scaled classical fixture exposed UI-thread drawing and repeated RGB uploads. Added a reusable maintainer profile with runtime/source/input hashes, raw samples, warmups and explicit scope: scaled existing features, not high-resolution extraction, accuracy or portable native latency. It refuses to overwrite evidence. Final clean-source profiles follow.
+- Added one background overlay worker with one replaceable pending request, 40 ms input coalescing, cooperative drawing checks and ticket-guarded main-thread delivery. New input/result/cancel/close invalidates old work. Failures retain the existing result and restore effective controls; image/JSON/CSV/HTML export waits for a completed consistent snapshot. Close remains event-driven until the worker finishes. No solver, correspondence, accuracy or algorithm timing changes.
+- Canvas upload uses Qt's BGR888 support and owns copied bytes; noncontiguous input/color/lifetime tests passed. Same-size overlay updates replace pixmaps without resetting zoom, and unchanged rectified images are not uploaded again. Added actual background/latest-style/viewport/styled-export checks to the frozen workflow. Native interaction/scaling remains separately unverified.
+- Focused canvas/overlay/pure cancellation/job checks: 21 passed; expanded notice/smoke repair: 2 passed. Isolated core: 243 passed/5 skipped/17 deselected in 24.77s. Ruff and focused rendering/canvas/coordinator Mypy passed. Full source: 260 passed/5 skipped in 67.42s (single-thread OMP/MKL test process). Native refresh follows. Initial smoke fixture required marking simulated zoom as manual, matching actual wheel behavior; no product check was removed.
+
 ## 2026-10-26 — Verify and publish the four-target headless profile evidence
 
 - Run 40292319995 at 8fe7dfa succeeded on Windows x64, Linux x64 and macOS ARM64/Intel. Native core: Windows 235 passed/2 skipped/17 deselected; other targets 233 passed/4 skipped/17 deselected. Every packaged workflow passed actual notice hashes/Qt version, OpenCV backend policy, five image codecs, Qt copy-drop events, SIFT/ORB, exports/project replay, MJPEG encode/decode with three tracked ORB frames and shutdown. Existing classical goldens remain unchanged.

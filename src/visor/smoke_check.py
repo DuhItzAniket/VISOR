@@ -18,7 +18,7 @@ from visor.opencv_runtime import validate_opencv_build
 
 def run_smoke_check(report_path: Path) -> int:
     """Check Qt input/display, classical analysis, serialization and shutdown."""
-    from PySide6.QtCore import QMimeData, QPoint, QPointF, QSettings, Qt, QUrl, qVersion
+    from PySide6.QtCore import QEventLoop, QMimeData, QPoint, QPointF, QSettings, Qt, QTimer, QUrl, qVersion
     from PySide6.QtGui import QDragEnterEvent, QDropEvent
     from PySide6.QtWidgets import QApplication
 
@@ -101,6 +101,32 @@ def run_smoke_check(report_path: Path) -> int:
                 if json.loads((folder / "analysis.json").read_text(encoding="utf-8"))["engine"] != engine:
                     raise RuntimeError("Exported engine does not match selected engine.")
                 report["checks"].append(f"{engine} localization, rendering, JSON/CSV export")
+            previous = window._latest_result
+            window.localization_view.scale(2, 2)
+            window.localization_view._auto_fit = False
+            transform = window.localization_view.transform()
+            for width in (3, 6, 12):
+                window.feature_thickness_slider.setValue(width)
+            window.feature_color_button.setChecked(True)
+            if window._latest_result is not previous:
+                raise RuntimeError("Overlay request synchronously replaced the analysis result.")
+            loop, timeout = QEventLoop(), QTimer()
+            timeout.setSingleShot(True)
+            timeout.timeout.connect(loop.quit)
+            window._overlay_renderer.idle.connect(loop.quit)
+            timeout.start(10000)
+            loop.exec()
+            timeout.stop()
+            window._overlay_renderer.idle.disconnect(loop.quit)
+            styled = window._latest_result
+            if (window._overlay_renderer.busy or styled is previous
+                    or styled.settings.feature_line_thickness != 12 or not styled.settings.rainbow_feature_colors
+                    or window.localization_view.transform() != transform):
+                raise RuntimeError("Background overlay/latest style/viewport check failed.")
+            export_json(styled, folder / "styled.json")
+            if json.loads((folder / "styled.json").read_text(encoding="utf-8"))["configuration"]["feature_line_thickness"] != 12:
+                raise RuntimeError("Styled export does not describe the completed overlay.")
+            report["checks"].append("Background overlay updates, latest style, preserved viewport and matching export")
             session = ProjectSession(str(reference), str(target), "ORB", AnalysisSettings(), SIFTConfiguration(), ORBConfiguration())
             save_project(session, folder / "session.visor")
             if load_project(folder / "session.visor").engine != "ORB":

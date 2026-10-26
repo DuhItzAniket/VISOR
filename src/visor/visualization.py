@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import cv2
 import numpy as np
 
@@ -14,7 +16,7 @@ def _rainbow_color(index: int, total: int) -> tuple[int, int, int]:
     else:
         hue = round((index / max(total - 1, 1)) * 179.0)
     hue = max(0, min(179, hue))
-    hsv = np.uint8([[[hue, 255, 255]]])
+    hsv = np.asarray([[[hue, 255, 255]]], dtype=np.uint8)
     bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)[0, 0]
     return int(bgr[0]), int(bgr[1]), int(bgr[2])
 
@@ -28,7 +30,11 @@ def render_match_canvas(
     geometry: GeometryResult,
     settings: AnalysisSettings,
     maximum_drawn: int = 1500,
+    *,
+    cancel_check: Callable[[], None] | None = None,
 ) -> ByteArray:
+    if cancel_check is not None:
+        cancel_check()
     ref_h, ref_w = reference_image.shape[:2]
     target_h, target_w = target_image.shape[:2]
     canvas = np.zeros((max(ref_h, target_h), ref_w + target_w, 3), dtype=np.uint8)
@@ -36,7 +42,9 @@ def render_match_canvas(
     canvas[:target_h, ref_w:ref_w + target_w] = target_image
     if settings.show_keypoints:
         for feature_set, offset in ((reference_features, 0), (target_features, ref_w)):
-            for point in feature_set.keypoints[:maximum_drawn]:
+            for index, point in enumerate(feature_set.keypoints[:maximum_drawn]):
+                if cancel_check is not None and index % 64 == 0:
+                    cancel_check()
                 cv2.circle(canvas, (round(point.x) + offset, round(point.y)), 2, (175, 135, 70), 1, cv2.LINE_AA)
     selected = list(enumerate(matches.matches))
     if len(selected) > maximum_drawn:
@@ -44,7 +52,9 @@ def render_match_canvas(
             pair[1].distance if pair[1].distance is not None else float("inf"),
             -pair[1].confidence if pair[1].confidence is not None else 0.0,
         ))[:maximum_drawn]
-    for index, match in selected:
+    for drawn_index, (index, match) in enumerate(selected):
+        if cancel_check is not None and drawn_index % 16 == 0:
+            cancel_check()
         is_known = len(geometry.inlier_mask) == len(matches.matches)
         is_inlier = is_known and geometry.inlier_mask[index]
         if is_known and is_inlier and not settings.show_inliers:
@@ -67,6 +77,8 @@ def render_match_canvas(
     if len(matches.matches) > maximum_drawn:
         cv2.putText(canvas, f"Showing {maximum_drawn:,} best of {len(matches.matches):,} good matches",
                     (12, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (235, 240, 245), 1, cv2.LINE_AA)
+    if cancel_check is not None:
+        cancel_check()
     return canvas
 
 
@@ -75,10 +87,16 @@ def render_localization(
     target_features: FeatureSet,
     geometry: GeometryResult,
     settings: AnalysisSettings,
+    *,
+    cancel_check: Callable[[], None] | None = None,
 ) -> ByteArray:
+    if cancel_check is not None:
+        cancel_check()
     canvas = target_image.copy()
     if settings.show_keypoints:
-        for point in target_features.keypoints[:3000]:
+        for index, point in enumerate(target_features.keypoints[:3000]):
+            if cancel_check is not None and index % 64 == 0:
+                cancel_check()
             cv2.circle(canvas, (round(point.x), round(point.y)), 2, (175, 135, 70), 1, cv2.LINE_AA)
     if settings.show_geometry and geometry.valid and geometry.projected_corners:
         polygon = np.round(np.asarray(geometry.projected_corners)).astype(np.int32).reshape(-1, 1, 2)
@@ -95,4 +113,6 @@ def render_localization(
         if geometry.center:
             cv2.circle(canvas, tuple(round(value) for value in geometry.center), max(5, outline_width + 2), (50, 180, 255), -1, cv2.LINE_AA)
             cv2.putText(canvas, "Object", tuple(round(value) for value in geometry.center), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
+    if cancel_check is not None:
+        cancel_check()
     return canvas
