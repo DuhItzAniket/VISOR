@@ -40,7 +40,7 @@ Review method: source inspection and local Qt offscreen renders using the Window
 | Filename text was interpolated into rich-text overview markup | Escape filenames before displaying them |
 | Native review opened file dialogs in the process/application folder | Use Qt's platform Pictures/Documents/Movies locations and remember successful per-category choices; reuse the loaded project filename. Keep native review evidence separate from mocked dialog checks |
 
-Source/offscreen recovery review (2026-10-26): project/history replay stages both decoded images before replacing current settings, inputs or document identity. Controlled reference/target cancellation, invalid image, latest request, manual supersession and close checks preserve the existing workspace. These are automated state/CPU-render checks; physical native interaction, screen-reader announcements and monitor scaling remain separate gates.
+Source/offscreen recovery review (2026-10-26): project/history replay stages both decoded images before replacing current settings, inputs or document identity. Controlled reference/target cancellation, invalid image, latest request, manual supersession and close checks preserve the existing workspace. The [21c1ec8 controlled visual record](reviews/21c1ec8/README.md) includes unedited 1280 × 820 and 1040 × 680 software/offscreen renders with an explicitly loaded Segoe UI font, input/image hashes and actual widget bounds. The initial default-font render had missing glyphs and was excluded after correcting the review harness. These are automated state/CPU-render checks; physical native interaction, screen-reader announcements and monitor scaling remain separate gates.
 
 ## Release review gates
 

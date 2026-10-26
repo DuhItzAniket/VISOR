@@ -1,0 +1,67 @@
+{
+  "source_revision": "21c1ec8d61958e771b84f94d9371686981dfecca",
+  "font": "Segoe UI",
+  "mode": "Qt offscreen with software rendering; not physical desktop/accessibility/DPI evidence",
+  "scenario": "Unreadable new project preserves the existing SIFT result, image pair and document",
+  "status": "Could not load project. Previous workspace retained. Could not decode target image unreadable.png. Could not read this image.",
+  "images": [
+    {
+      "file": "failed-project-1280x820.png",
+      "requested_size": [
+        1280,
+        820
+      ],
+      "actual_size": [
+        1280,
+        820
+      ],
+      "sha256": "5ca082eb0ada87c5144a67205034fc6e450732548f35bc3b66f23e86c287fff2",
+      "preview_size": [
+        226,
+        166
+      ],
+      "preview_pixmap_size": [
+        221,
+        166
+      ],
+      "canvas_viewport": [
+        609,
+        617
+      ],
+      "canvas_auto_fit": true,
+      "canvas_scale": 1.0803571428571428
+    },
+    {
+      "file": "failed-project-1040x680.png",
+      "requested_size": [
+        1040,
+        680
+      ],
+      "actual_size": [
+        1040,
+        680
+      ],
+      "sha256": "5713f9ee1c42389162287c841f6e1fde844be44a17b523190da0a06fd480b859",
+      "preview_size": [
+        226,
+        96
+      ],
+      "preview_pixmap_size": [
+        128,
+        96
+      ],
+      "canvas_viewport": [
+        369,
+        477
+      ],
+      "canvas_auto_fit": true,
+      "canvas_scale": 0.6517857142857143
+    }
+  ],
+  "inputs": {
+    "tests/data/golden_reference.png": "526371673a6626315520bf3458052f2f1d40e6c43d110b8822ad4e2df1cebe3c",
+    "tests/data/golden_target.png": "ccc7202cd2983faaff03d28f08bd78cc63f13a117b9a63dbc8bfc1449e69e8a4"
+  },
+  "review_date": "2026-10-26",
+  "scope": "Controlled offscreen source layout/state review with an explicitly loaded system font; not native-platform font, scaling, keyboard, screen-reader, signing or installation evidence."
+}

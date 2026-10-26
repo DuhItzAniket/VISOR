@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "kind": "independent_downloaded_candidate_verification",
+  "verification_date": "2026-10-26",
+  "validation_run_id": 40349543926,
+  "platforms": {
+    "windows": {
+      "system": "Windows",
+      "architecture": "amd64",
+      "version": "0.2.0",
+      "artifact_id": 12662848401,
+      "artifact_url": "https://github.com/DuhItzAniket/VISOR/actions/runs/40349543926/artifacts/12662848401",
+      "checksum_file": "VISOR-0.2.0-windows-amd64-SHA256SUMS.txt",
+      "checksum_file_sha256": "9f8bcf464f0d83ba4fa402d84c82f33832e1e8b9b93f88f19837faaf4ee41f14",
+      "checked_files": [
+        {
+          "file": "VISOR-0.2.0-windows-amd64.zip",
+          "sha256": "55b37ccb0486ed0a5b03dfee3eae30b545014afbb43fdc90795f6c50b197ac92",
+          "bytes": 95873955
+        },
+        {
+          "file": "VISOR-0.2.0-windows-setup.exe",
+          "sha256": "595de94cc56ff36eb50ba53d7141cd5dd851ef694f5168954aa8f41a030a602a",
+          "bytes": 63055612
+        },
+        {
+          "file": "VISOR-0.2.0-windows-amd64-build-info.json",
+          "sha256": "9b41915601b4d1839cad264911736b8ed7e85c62e996511ffbc425aff684127e",
+          "bytes": 827
+        },
+        {
+          "file": "VISOR-0.2.0-windows-amd64-artifact-inventory.json",
+          "sha256": "284148817e43be32f6774a411abe077c2550bba4e0e4ead52d302c5dc7024e58",
+          "bytes": 154500
+        },
+        {
+          "file": "VISOR-0.2.0-windows-amd64-smoke-report.json",
+          "sha256": "97dc0eb350d037fd90c354dd7e9e9559f4bf46d954375a51926b84f668399e4c",
+          "bytes": 949
+        },
+        {
+          "file": "VISOR-0.2.0-windows-amd64-installer-report.json",
+          "sha256": "f64598ce7655e5b0cf15ec2fb675c44b373ec9dbb4f32aca1115cde78f2a4edb",
+          "bytes": 1779
+        },
+        {
+          "file": "VISOR-0.2.0-windows-amd64-release-manifest.json",
+          "sha256": "a4dfd753a0bce857cc9c8009270109ea05d300bd87880629543685eb4a589784",
+          "bytes": 1718
+        }
+      ],
+      "tested_installer": {
+        "file": "VISOR-0.2.0-windows-setup.exe",
+        "sha256": "595de94cc56ff36eb50ba53d7141cd5dd851ef694f5168954aa8f41a030a602a",
+        "bytes": 63055612
+      },
+      "bundled_smoke_success": true,
+      "installed_smoke_success": true,
+      "atomic_project_checks_success": true,
+      "inventory_sha256": "284148817e43be32f6774a411abe077c2550bba4e0e4ead52d302c5dc7024e58",
+      "unresolved_origin_entries": 0
+    },
+    "linux": {
+      "system": "Linux",
+      "architecture": "x86_64",
+      "version": "0.2.0",
+      "artifact_id": 12662354189,
+      "artifact_url": "https://github.com/DuhItzAniket/VISOR/actions/runs/40349543926/artifacts/12662354189",
+      "checksum_file": "VISOR-0.2.0-linux-x86_64-SHA256SUMS.txt",
+      "checksum_file_sha256": "9043269252fc8235dec29730b42aa17f3a3fcc0ff8b251d9aa42de610c82239d",
+      "checked_files": [
+        {
+          "file": "VISOR-0.2.0-linux-x86_64.deb",
+          "sha256": "411b4e0a6469cd978797085c94565647556fbf42553111445741e7211e03b59e",
+          "bytes": 101781256
+        },
+        {
+          "file": "VISOR-0.2.0-linux-x86_64.tar.gz",
+          "sha256": "123349b6f13f2e333d248a2482bda8a294791d795374e50d353424f9ab83436c",
+          "bytes": 139628559
+        },
+        {
+          "file": "VISOR-0.2.0-linux-x86_64-build-info.json",
+          "sha256": "10d315b7365146a0553cf7be7fbb6ace3a62e4bd743cb5aae8063c0fc979952b",
+          "bytes": 801
+        },
+        {
+          "file": "VISOR-0.2.0-linux-x86_64-artifact-inventory.json",
+          "sha256": "83c5eaa4c0237fe4402d9ed6abb5e6f23f90abd64756221f052ea9f60e465d6f",
+          "bytes": 232859
+        },
+        {
+          "file": "VISOR-0.2.0-linux-x86_64-smoke-report.json",
+          "sha256": "d8ec13d1933d28f9487cbf7a16560f010ba9d284a6e97926215a3030d3e8b913",
+          "bytes": 927
+        },
+        {
+          "file": "VISOR-0.2.0-linux-x86_64-installer-report.json",
+          "sha256": "eedb9dcc1eb28fefab1e6e9d9f6108c32cfc681e317831a6959e6e5243a212da",
+          "bytes": 1766
+        },
+        {
+          "file": "VISOR-0.2.0-linux-x86_64-release-manifest.json",
+          "sha256": "a52d3fbab057646e67a3daaea0039fc27059e644da55dfad986b9a57a3d4c402",
+          "bytes": 1715
+        }
+      ],
+      "tested_installer": {
+        "file": "VISOR-0.2.0-linux-x86_64.deb",
+        "sha256": "411b4e0a6469cd978797085c94565647556fbf42553111445741e7211e03b59e",
+        "bytes": 101781256
+      },
+      "bundled_smoke_success": true,
+      "installed_smoke_success": true,
+      "atomic_project_checks_success": true,
+      "inventory_sha256": "83c5eaa4c0237fe4402d9ed6abb5e6f23f90abd64756221f052ea9f60e465d6f",
+      "unresolved_origin_entries": 116
+    },
+    "macos-arm64": {
+      "system": "Darwin",
+      "architecture": "arm64",
+      "version": "0.2.0",
+      "artifact_id": 12663446561,
+      "artifact_url": "https://github.com/DuhItzAniket/VISOR/actions/runs/40349543926/artifacts/12663446561",
+      "checksum_file": "VISOR-0.2.0-darwin-arm64-SHA256SUMS.txt",
+      "checksum_file_sha256": "1c7d579efb661e7747cd2c5c4b3f174863d24e0fc89077f3a6cd95b37a11d18f",
+      "checked_files": [
+        {
+          "file": "VISOR-0.2.0-darwin-arm64.dmg",
+          "sha256": "7c7f2bff6bc1c2ca84357f69636dc6f539a60482a35c542c12f7f27d14442201",
+          "bytes": 95440493
+        },
+        {
+          "file": "VISOR-0.2.0-darwin-arm64-build-info.json",
+          "sha256": "e45920760a467d36842790af0f604d675bc7cc34e2eb5ff291b991172fefa27f",
+          "bytes": 801
+        },
+        {
+          "file": "VISOR-0.2.0-darwin-arm64-artifact-inventory.json",
+          "sha256": "ecc2316bf268cdd6eb61df6b6f71c538e8c6e14b8053141094d95f4cf6f0a29e",
+          "bytes": 292996
+        },
+        {
+          "file": "VISOR-0.2.0-darwin-arm64-smoke-report.json",
+          "sha256": "ebf082d638cf00d33090fc3ac17d5e778242d919eb735600944757337f10fce9",
+          "bytes": 929
+        },
+        {
+          "file": "VISOR-0.2.0-darwin-arm64-installer-report.json",
+          "sha256": "943c8fbc2cce37e304363aaa29342281498beae4901f2fd8aca20da717e1dfc7",
+          "bytes": 1767
+        },
+        {
+          "file": "VISOR-0.2.0-darwin-arm64-release-manifest.json",
+          "sha256": "17d425648201525ffa1f47c27fdddb29ca017ae695236bde0eb660fd48a5e037",
+          "bytes": 1518
+        }
+      ],
+      "tested_installer": {
+        "file": "VISOR-0.2.0-darwin-arm64.dmg",
+        "sha256": "7c7f2bff6bc1c2ca84357f69636dc6f539a60482a35c542c12f7f27d14442201",
+        "bytes": 95440493
+      },
+      "bundled_smoke_success": true,
+      "installed_smoke_success": true,
+      "atomic_project_checks_success": true,
+      "inventory_sha256": "ecc2316bf268cdd6eb61df6b6f71c538e8c6e14b8053141094d95f4cf6f0a29e",
+      "unresolved_origin_entries": 197
+    },
+    "macos-intel": {
+      "system": "Darwin",
+      "architecture": "x86_64",
+      "version": "0.2.0",
+      "artifact_id": 12662074216,
+      "artifact_url": "https://github.com/DuhItzAniket/VISOR/actions/runs/40349543926/artifacts/12662074216",
+      "checksum_file": "VISOR-0.2.0-darwin-x86_64-SHA256SUMS.txt",
+      "checksum_file_sha256": "932d73527a696ef0000f1b7661cf484e4e03425fb7fcdd0f7d477bb395d5826b",
+      "checked_files": [
+        {
+          "file": "VISOR-0.2.0-darwin-x86_64.dmg",
+          "sha256": "acb5e28be1c8ae0cd97b528ee8bc9d4bba572546af419059e79a2ab941cf167b",
+          "bytes": 128622173
+        },
+        {
+          "file": "VISOR-0.2.0-darwin-x86_64-build-info.json",
+          "sha256": "c178bc734b2ca2210f2124e704e65a52b05bfea1116eb9a5a1e5cc5084e38d5b",
+          "bytes": 802
+        },
+        {
+          "file": "VISOR-0.2.0-darwin-x86_64-artifact-inventory.json",
+          "sha256": "a540e33f449052bf5f6cf76fa9ddef153cad6ad2dbfba41fcb31c76e2a0c8980",
+          "bytes": 294222
+        },
+        {
+          "file": "VISOR-0.2.0-darwin-x86_64-smoke-report.json",
+          "sha256": "ebf082d638cf00d33090fc3ac17d5e778242d919eb735600944757337f10fce9",
+          "bytes": 929
+        },
+        {
+          "file": "VISOR-0.2.0-darwin-x86_64-installer-report.json",
+          "sha256": "9f0272702f73d4d9fa48a34192798566af97d62989e01e25e8dd7b124597dddf",
+          "bytes": 1769
+        },
+        {
+          "file": "VISOR-0.2.0-darwin-x86_64-release-manifest.json",
+          "sha256": "c3c026ffd3cda5ea684e80315acb99095c2f3639ae4a9e471ed51ecf11441b23",
+          "bytes": 1526
+        }
+      ],
+      "tested_installer": {
+        "file": "VISOR-0.2.0-darwin-x86_64.dmg",
+        "sha256": "acb5e28be1c8ae0cd97b528ee8bc9d4bba572546af419059e79a2ab941cf167b",
+        "bytes": 128622173
+      },
+      "bundled_smoke_success": true,
+      "installed_smoke_success": true,
+      "atomic_project_checks_success": true,
+      "inventory_sha256": "a540e33f449052bf5f6cf76fa9ddef153cad6ad2dbfba41fcb31c76e2a0c8980",
+      "unresolved_origin_entries": 199
+    }
+  },
+  "release_signing_verified": false,
+  "scope": "Downloaded assets and tested-installer/source/report identities only. No local installation, physical native/DPI/accessibility review, signing, GPU use or complete licensing certification.",
+  "source_revision": "21c1ec8d61958e771b84f94d9371686981dfecca",
+  "linux_notice_review": {
+    "artifact_id": 12662234847,
+    "manifest_sha256": "fae1f2de42853f9cf95cfaff5cd3ac869e9536b87b9d151812861231a5392352",
+    "notice_files_checked": 91,
+    "summary": {
+      "collected_system_sources": 85,
+      "package_claims": 78,
+      "unclaimed_sources": 0,
+      "copied_notice_files": 91,
+      "missing_notice_references": 6
+    },
+    "recorded_reference_resolutions": 12
+  },
+  "checksummed_files_verified": 26
+}
