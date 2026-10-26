@@ -27,3 +27,13 @@ python scripts/trace_artifact_origins.py --inventory artifact-inventory.json --b
 ```
 
 The input inventory must match build-info's hash. Output must be a new file. No Qt, model runtime, accelerator, network access or live-system package lookup is used. Package lookups on a different host would not prove original build-host ownership; capture that evidence on the actual build host in a future collection step.
+
+## Linux build-host follow-up
+
+The subsequent Linux-only [run 40305950475](https://github.com/DuhItzAniket/VISOR/actions/runs/40305950475), source c080dd5, captured 85 collected system sources with 78 package database claims, zero unclaimed sources and 91 exact notice files. All 78 package copyright files were collected, plus 13 common-license files. Core checks, installed workflow/removal and candidate preparation passed.
+
+The [recorded manifest](system-notice-review-c080dd5-linux.json) anchors this distinct build's inventory, collector/collection hashes, OS/package/source versions and notice bytes. [Complete notice review artifact](https://github.com/DuhItzAniket/VISOR/actions/runs/40305950475/artifacts/12642293302). All 91 downloaded notice hashes were independently checked. This is c080dd5 build-host evidence, not a retroactive ownership assertion for older artifacts.
+
+The first literal reference extractor recorded 18 unresolved common-license tokens: 12 include terminal sentence periods, and six use GPL-2.0/GPL-3.0 filenames absent from the captured common-license set. Standard GPL-2/GPL-3 texts are present, but no legal equivalence or coverage is inferred automatically. A source follow-up handles sentence punctuation only when the exact normalized file exists, records that interpretation and preserves original copyright bytes; unknown names remain explicit.
+
+These review files are outside the frozen app. Installed notice integration, native/subcomponent terms, licensing routes and source-offer obligations remain open. The manifest's package database claims/source-file hashes do not authenticate binary contents or certify compliance.

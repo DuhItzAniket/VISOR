@@ -83,6 +83,7 @@ def collect_system_review(toc: Path, build_info: dict[str, Any], output: Path, *
     output.mkdir(parents=True)
     copied: dict[str, dict[str, Any]] = {}
     missing = []
+    resolutions = []
 
     def copy_notice(source: Path, destination: str, area: str, source_relative: str) -> None:
         if destination in copied:
@@ -100,6 +101,14 @@ def collect_system_review(toc: Path, build_info: dict[str, Any], output: Path, *
         for value in sorted(set(COMMON_LICENSE.findall(data))):
             filename = value.decode("ascii")
             notice = common_root / filename
+            # Windows can treat a trailing period as an alias of the same file;
+            # use the actual directory spelling to keep this rule portable.
+            if filename.endswith(".") and filename not in {path.name for path in common_root.iterdir()}:
+                candidate = filename.rstrip(".")
+                if candidate and (common_root / candidate).is_file():
+                    resolutions.append({"referenced_by": destination, "literal_token": filename,
+                                        "copied_name": candidate, "rule": "existing_file_after_sentence_period_removed"})
+                    filename, notice = candidate, common_root / candidate
             if notice.is_file():
                 copy_notice(notice, f"common-licenses/{filename}", "common_licenses", filename)
             else:
@@ -142,6 +151,7 @@ def collect_system_review(toc: Path, build_info: dict[str, Any], output: Path, *
                 "os_release": {key: release[key] for key in ("ID", "VERSION_ID", "PRETTY_NAME") if key in release},
                 "libraries": libraries, "packages": sorted(packages.values(), key=lambda package: package["name"]),
                 "files": sorted(copied.values(), key=lambda entry: entry["path"]), "missing_notices": missing,
+                "reference_resolutions": resolutions,
                 "summary": {"collected_system_sources": len(libraries), "package_claims": len(packages),
                             "unclaimed_sources": sum(not row["package_claims"] for row in libraries),
                             "copied_notice_files": len(copied), "missing_notice_references": len(missing)},

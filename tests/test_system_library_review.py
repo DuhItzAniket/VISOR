@@ -81,6 +81,18 @@ def test_common_license_missing_reference_is_recorded(tmp_path, inputs):
     assert report["missing_notices"][0]["referenced_by"] == "packages/libexample__amd64/copyright"
 
 
+def test_sentence_period_is_removed_only_when_the_exact_notice_file_exists(tmp_path, inputs):
+    docs = inputs[3]
+    original = b"See /usr/share/common-licenses/MIT.\nUnknown /usr/share/common-licenses/UNKNOWN.\n"
+    (docs / "libexample/copyright").write_bytes(original)
+    report = collect(tmp_path, inputs, [inputs[6]])
+    assert (tmp_path / "output/packages/libexample__amd64/copyright").read_bytes() == original
+    assert report["reference_resolutions"] == [{"referenced_by": "packages/libexample__amd64/copyright",
+                                               "literal_token": "MIT.", "copied_name": "MIT",
+                                               "rule": "existing_file_after_sentence_period_removed"}]
+    assert report["missing_notices"][0]["name"] == "UNKNOWN."
+
+
 def test_notice_symlink_cannot_escape_documentation_roots(tmp_path, inputs):
     docs = inputs[3]
     path = docs / "libexample/copyright"
