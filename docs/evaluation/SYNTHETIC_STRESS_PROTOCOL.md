@@ -1,0 +1,13 @@
+# Synthetic stress development protocol
+
+Frozen before engine measurement on 2026-10-26. This advances the broader-case evidence in I15; it does not replace its reserved reporting scenes, retune the frozen gates or change desktop defaults.
+
+Use the checked-in generator `scripts/create_stress_manifest.py` with seeds 1301, 1302 and 1303, images 480 × 360 pixels and its one fixed projective transform. Per seed generate four truth-backed positives: independently textured scene, exactly repeating tile, smooth low-texture scene and the textured target with its right half overwritten by uniform gray. The transform remains the construction truth even when only part is visible. Generate three labeled negatives against the textured reference: a different independently seeded scene, independent uniform pixel noise and a uniform image. No source image is pasted into a negative target.
+
+Run SIFT and ORB on CPU with budget 1500, ratio 0.75, legacy adaptive RANSAC base 4 px, RNG seed 0, one warmup and three measured repetitions. This fixes 21 pairs, 42 warmup calls and 126 measured attempts. Each engine has 36 truth-backed positive and 27 labeled-negative measured attempts. All input/truth/configuration/source hashes and all failed fits/errors remain in the raw evaluator report. No optional learned runtime, model download or accelerator is needed.
+
+Report counts by engine and condition: valid fits, failed fits, runtime/annotation errors, positives within mean corner error 1/3/5 px, valid positives above 5 px, and labeled-negative acceptance. Inspect raw high-error fits alongside inliers, residuals and hull coverage; do not select a new threshold from these counts. Preserve the report even when all cases fail. Do not replace a case based on performance or add/drop seeds after inspection.
+
+This is a deliberately small synthetic development probe. Repetitions share pixels and seeds share construction rules. They are not independent natural scenes, a general false-acceptance rate, a speed benchmark, or proof of production localization reliability. A repeated tile may support multiple visually equivalent alignments: error measures disagreement with the chosen construction transform, rather than establishing a unique physical object pose. Negative labels express absence of the complete constructed reference scene, not semantic recognition of arbitrary objects. A fitted transform alone cannot establish that an object is present.
+
+Publish this protocol and generator revision before evaluating engines. Generator-only reproducibility/manifest/overwrite tests do not inspect registration performance. Record the raw report's clean evaluator revision; publish findings separately without modifying this frozen protocol.

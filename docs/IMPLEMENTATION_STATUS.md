@@ -63,6 +63,8 @@ The 8fe7dfa executable exposed its native idle window and accessible control nam
 
 ## Research and independent evidence
 
+I23 freezes a [synthetic stress protocol](evaluation/SYNTHETIC_STRESS_PROTOCOL.md) and reproducible 21-pair generator before measurement. Preparation/evaluator checks pass; engine results are pending. The new cases target repeated texture, low texture, occlusion and independent negatives while leaving I15 reporting/defaults unchanged.
+
 - Portable evaluation records manifests/input/truth hashes, runtime/source revision and dirty state, actual settings/results, raw failures, warmups and repetitions. Ground-truth corner error uses the documented pixel-extent convention; unannotated accuracy stays unavailable.
 - Original [published evidence](evaluation/README.md), clean b2c7f0b: 18 synthetic development attempts and 72 attempts on two HPatches reporting scenes. Adverse valid fits are retained, including ORB's approximately 305 px corner-error example. The sample establishes neither engine ranking nor general false-positive rates.
 - I15 [preregistered study](RELIABILITY_STUDY.md): four disjoint development scenes, two reserved reporting scenes, fixed grid/selection rule. Published 192 development and 72 reporting attempts, exact frozen choices and every reporting decision. Selection was pushed before reserved-scene performance was inspected. [Findings and raw evidence](evaluation/RELIABILITY_FINDINGS.md).

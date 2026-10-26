@@ -1,5 +1,10 @@
 # Implementation Log
 
+## 2026-10-26 — Freeze broader synthetic development cases before measurement
+
+- Added a deterministic CPU-only preparation tool for textured, repeated-tile, smooth low-texture and half-occluded positives with known mappings, plus independent-scene/noise/blank negatives. The frozen protocol fixes three seeds, 21 pairs, exact settings, one warmup/three measured repetitions, denominators and reporting rules before engine results are inspected. It does not tune I15's reserved reporting sample or change algorithms/defaults.
+- Generator/protocol hashes and exact truth are in the portable manifest. Existing output is refused. Two generator reproducibility/annotation/overwrite regressions plus the existing evaluator suite passed 13 tests in 2.30s; Ruff and focused generator Mypy passed. No engine performance was measured in preparation tests. Measurement follows only after this protocol/generator commit is pushed; synthetic counts will not support a general localization/false-positive/speed claim. No GPU, model download or local interactive application used.
+
 ## 2026-10-26 — Move image selection decoding off the UI thread
 
 - Picker, drop, history and project replay now queue per-slot workers for path/header access, native decode, orientation and thumbnail scaling. QImage values transfer by guarded signals; QPixmap/widget work stays on the GUI thread. There is at most one active decoder and one replaceable pending request per role. Shared vision algorithms/results are unchanged. The synchronous load_path helper remains for controlled checks; user flows use request_path.

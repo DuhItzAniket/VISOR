@@ -83,3 +83,15 @@ python -m visor.reliability_study report heldout.json.gz frozen-selection.json r
 Selection accepts only development rows; reporting accepts only held-out rows, identical execution settings and disjoint pair ids/image hashes. Outputs are created exclusively and cannot overwrite existing inputs/reports. The selection records every candidate and the chosen gate; reporting records each attempt's decision and keeps all truth-backed failures in denominators. Input/code hashes make the derived analysis reviewable. This module never changes fitted transforms, solver masks or desktop defaults. Publish the selection before inspecting reporting performance.
 
 Reporting records both the original selection-file byte hash and a canonical parsed-JSON content hash (sorted keys, compact separators, UTF-8). Git can normalize CRLF/LF across platforms without changing a choice; verify content with the canonical hash. New study JSON outputs and tracked evidence JSON use LF. Compressed raw reports retain their exact bytes. Provenance repairs must preserve the original input-byte hash and explicitly record that choices/results did not change.
+
+## Frozen synthetic stress cases
+
+The [2026-10-26 protocol](evaluation/SYNTHETIC_STRESS_PROTOCOL.md) fixes 21 development pairs before measurement: known textured/repeated/low-texture/occluded mappings and independent-scene/noise/blank negatives. It makes no real-world reliability or speed claim and never retunes I15's reserved reporting gates. Preparation invokes no engine/model/UI and refuses existing output:
+
+```powershell
+$env:CUDA_VISIBLE_DEVICES='-1'
+python scripts/create_stress_manifest.py build/evaluation-stress-20261026
+python -m visor.evaluate run build/evaluation-stress-20261026/manifest.json build/evaluation-stress-20261026/report.json --engines SIFT ORB --repetitions 3 --warmup 1 --device cpu --feature-budget 1500 --seed 0
+```
+
+Use new output paths and keep raw failures, warmups, source/input/truth hashes and per-condition counts. The generator hash and frozen protocol hash are embedded in the manifest. Three seeds/repetitions share construction rules and are not new independent natural scenes.
