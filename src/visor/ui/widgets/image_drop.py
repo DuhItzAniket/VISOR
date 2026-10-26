@@ -29,7 +29,9 @@ class ImageDropWidget(QFrame):
     """A labeled image slot that accepts local image files by drop or picker."""
 
     image_changed = Signal(str, object)
+    image_load_failed = Signal(str, str)
     loading_changed = Signal(bool)
+    loading_cancelled = Signal(str)
     loading_idle = Signal()
 
     def __init__(self, title: str, parent: QWidget | None = None) -> None:
@@ -180,6 +182,7 @@ class ImageDropWidget(QFrame):
             retained = " Current image retained." if self._image_path is not None else " Choose an image."
             self._set_metadata(f"Image loading cancelled.{retained}")
             self.clear_button.setVisible(self._image_path is not None)
+            self.loading_cancelled.emit(self._title)
         self.loading_idle.emit()
         if self._closing_requested:
             QTimer.singleShot(0, self.close)
@@ -212,6 +215,7 @@ class ImageDropWidget(QFrame):
         self._set_metadata(f"Could not read this image. {recovery}", error=True)
         self.clear_button.setVisible(self._image_path is not None)
         logger.warning("Unable to load image for %s: %s (%s)", self._title, request.path, message)
+        self.image_load_failed.emit(self._title, recovery)
 
     def _apply_preview(self, preview: DecodedPreview) -> None:
         self._image_path = preview.request.path

@@ -132,13 +132,15 @@ def run_smoke_check(report_path: Path) -> int:
             broken.write_bytes(b"not an image")
             if load_preview(window.target_input, broken) or window.target_input.image_path != rotated.resolve():
                 raise RuntimeError("Unreadable replacement lost the selected image.")
+            if not window.statusBar().currentMessage().startswith("Could not load target image."):
+                raise RuntimeError("Unreadable replacement did not reach a visible failed state.")
             unavailable = folder / "temporarily-unavailable.jpg"
             rotated.rename(unavailable)
             window.target_input._update_preview()
             if window.target_input.preview.pixmap().isNull():
                 raise RuntimeError("Cached image preview was lost when the source became unavailable.")
             load_preview(window.target_input, target)
-            report["checks"].append("Background EXIF-oriented input, failed replacement recovery and cached preview")
+            report["checks"].append("Background EXIF-oriented input, failed replacement recovery/status and cached preview")
             for engine in ("SIFT", "ORB"):
                 result = analyze(reference, target, engine)
                 if not result.geometry.valid or result.geometry.inlier_count < 4:

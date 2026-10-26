@@ -589,6 +589,8 @@ class MainWindow(QMainWindow):
         for image_input in (self.reference_input, self.target_input):
             image_input.loading_changed.connect(self._input_loading_changed)
             image_input.loading_idle.connect(self._finish_deferred_close)
+            image_input.image_load_failed.connect(self._on_image_load_failed)
+            image_input.loading_cancelled.connect(self._on_image_loading_cancelled)
 
         image_row = QWidget()
         image_row_layout = QVBoxLayout(image_row)
@@ -1771,7 +1773,7 @@ class MainWindow(QMainWindow):
         else:
             self._paths.pop(role, None)
             self._clear_result_views()
-            self.statusBar().showMessage(f"Unable to load {role.lower()} image.")
+            self.statusBar().showMessage(f"{role} cleared.")
         self._update_overview_summary()
         if self._worker is not None:
             self.statusBar().showMessage("Image inputs changed; cancelling and discarding the previous run.")
@@ -1780,6 +1782,17 @@ class MainWindow(QMainWindow):
 
     def _inputs_loading(self) -> bool:
         return self.reference_input.loading or self.target_input.loading
+
+    def _on_image_load_failed(self, role: str, recovery: str) -> None:
+        if not self._closing_requested:
+            message = f"Could not load {role.lower()}. {recovery}"
+            self.statusBar().showMessage(message)
+            self.log_engine_event("WARNING", message)
+
+    def _on_image_loading_cancelled(self, role: str) -> None:
+        if (not self._closing_requested and not self._inputs_loading()
+                and self._worker is None and not self._overlay_renderer.busy):
+            self.statusBar().showMessage(f"{role} loading cancelled.")
 
     def _update_input_actions(self) -> None:
         installing = self._install_worker is not None and self._install_worker.isRunning()

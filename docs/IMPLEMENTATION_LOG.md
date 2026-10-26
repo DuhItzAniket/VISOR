@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Make image-input terminal states visible in the status bar
+
+- Added assertions before the product fix and reproduced three failures: unreadable replacement left the status bar at Loading, cancelled decoding left its waiting message, and explicit clear reported Unable to load reference image image. Existing per-slot metadata and control readiness were correct; the global message was stale/misleading.
+- Added role-specific failure/cancellation signals from accepted loader callbacks and connected main-thread terminal status delivery. Failed replacement retains the current image/result, cancellation reports completion only when input/analysis/overlay work is idle, and clear reports the actual cleared role. Closing/stale-job guards remain intact. No worker cancellation policy, image arithmetic, matching/geometry, metrics or defaults changed.
+- 33 focused input/project/worker/actual offscreen smoke regressions passed in 3.57s; cold 17-target Mypy, all-source/script Ruff and whitespace passed. Frozen smoke now asserts the visible failed-replacement state. Source and four-target native refresh follow; no physical desktop or GPU review is implied. The ce68a2c downloaded candidates remain the prior validated cohort until refreshed native checks pass.
+
 ## 2026-10-26 — Verify automatic core CI and all downloaded native candidates
 
 - Run 40340933707 at 54e8d51 passed both full core jobs: Windows 316/2 skipped/17 optional deselections in 22.98s; Linux 314/4 skipped/17 deselections in 13.59s. All-source/script Ruff, all 17 declared type targets and isolated source-wheel audits passed on both. Downloaded JUnit reports each contain 318 executed/skipped entries, zero failures/errors. Fresh wheels have 46 modules/57 package files and their exact source/notice/provider checks pass. The earlier checkout/type failures remain documented; no claim is made that fresh CI diagnoses the local native aborts.

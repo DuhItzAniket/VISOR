@@ -120,6 +120,7 @@ def test_cancel_is_observable_keeps_input_and_does_not_block_event_loop(workspac
         assert "cancelled" in widget.metadata_label.text()
         assert widget.image_path == IMAGE.resolve() and changes == []
         assert window.run_button.isEnabled()
+        assert "loading cancelled" in window.statusBar().currentMessage()
     finally:
         heartbeat.stop()
 
@@ -153,6 +154,7 @@ def test_clear_cancels_decode_and_releases_cached_image(workspace, qt_wait):
     release.set()
     qt_wait(lambda: not widget.loading)
     assert widget.image_path is None and "Drop an image" in widget.preview.text()
+    assert window.statusBar().currentMessage() == "Reference image cleared."
 
 
 def test_pre_cancelled_decode_does_not_open_a_codec(monkeypatch):

@@ -122,3 +122,4 @@ def test_failed_replacement_drop_retains_the_pair_after_queued_decode_failure(dr
     assert window.target_input.image_path == previous
     assert window._paths["Target image"] == previous and window.run_button.isEnabled()
     assert "Current image retained" in window.target_input.metadata_label.text()
+    assert window.statusBar().currentMessage().startswith("Could not load target image.")
