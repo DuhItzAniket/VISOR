@@ -35,6 +35,8 @@ The Mac wheel still reports COCOA: upstream build 86 explicitly retains that bac
 
 ## Standard desktop components
 
+The subsequent [derived origin review](distribution/ORIGIN_REVIEW.md) traces original unresolved links without changing inventory claims. Linux has 31 exact file links and 85 remaining regular system files; the Macs have 181/183 exact file links, 14 directory aliases each, and two regular metadata/icon paths each. This narrows the next provenance investigation; it does not close embedded/native licensing or source-offer review.
+
 | Component observed locally | Declaration / notice evidence | Remaining distribution work |
 |---|---|---|
 | Python 3.11 runtime | Python distribution license files | Exact interpreter notice collected and hash-checked on all four targets; native/transitive review remains |

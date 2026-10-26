@@ -1,0 +1,3280 @@
+{
+  "schema_version": 1,
+  "kind": "derived_inventory_origin_review",
+  "inventory_sha256": "94d9fc7da4c0694e9f74ab00f35a2f265c2f818f7a753177dfb17ee70d12bd30",
+  "source_revision": "81e81da65d9d38592f7b038365028f783ad9db68",
+  "system": "Darwin",
+  "architecture": "x86_64",
+  "trace_code_sha256": "42b1c1a1aa33957ed132ce9a111e9a3423a40e7f4a7c1cb1cd7144a6044275a4",
+  "summary": {
+    "frozen_entries": 769,
+    "original_unresolved_entries": 199,
+    "unresolved_regular_files": 2,
+    "unresolved_link_entries": 197,
+    "link_relationships": {
+      "exact_file_target": 183,
+      "directory_layout": 14
+    },
+    "regular_source_areas": {
+      "unspecified": 2
+    }
+  },
+  "link_relationships": [
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtCore.framework/QtCore",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtCore",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtCore.framework/Resources",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "Resources",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtCore.framework/Versions/A/Resources",
+      "inventoried_descendants": 1
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtCore.framework/Versions/Current",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "A",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtCore.framework/Versions/A",
+      "inventoried_descendants": 3
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtDBus.framework/QtDBus",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtDBus",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtDBus.framework/Versions/A/QtDBus",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtDBus.framework/Versions/A/QtDBus",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtDBus.framework/Resources",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "Resources",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtDBus.framework/Versions/A/Resources",
+      "inventoried_descendants": 1
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtDBus.framework/Versions/Current",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "A",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtDBus.framework/Versions/A",
+      "inventoried_descendants": 3
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtGui.framework/QtGui",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtGui",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtGui.framework/Versions/A/QtGui",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtGui.framework/Versions/A/QtGui",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtGui.framework/Resources",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "Resources",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtGui.framework/Versions/A/Resources",
+      "inventoried_descendants": 1
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtGui.framework/Versions/Current",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "A",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtGui.framework/Versions/A",
+      "inventoried_descendants": 3
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtNetwork.framework/QtNetwork",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtNetwork",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtNetwork.framework/Versions/A/QtNetwork",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtNetwork.framework/Versions/A/QtNetwork",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtNetwork.framework/Resources",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "Resources",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtNetwork.framework/Versions/A/Resources",
+      "inventoried_descendants": 1
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtNetwork.framework/Versions/Current",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "A",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtNetwork.framework/Versions/A",
+      "inventoried_descendants": 3
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtSvg.framework/QtSvg",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtSvg",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtSvg.framework/Versions/A/QtSvg",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtSvg.framework/Versions/A/QtSvg",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtSvg.framework/Resources",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "Resources",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtSvg.framework/Versions/A/Resources",
+      "inventoried_descendants": 1
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtSvg.framework/Versions/Current",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "A",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtSvg.framework/Versions/A",
+      "inventoried_descendants": 3
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtWidgets.framework/QtWidgets",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtWidgets",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtWidgets.framework/Versions/A/QtWidgets",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtWidgets.framework/Versions/A/QtWidgets",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtWidgets.framework/Resources",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "Resources",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtWidgets.framework/Versions/A/Resources",
+      "inventoried_descendants": 1
+    },
+    {
+      "path": "Contents/Frameworks/PySide6/Qt/lib/QtWidgets.framework/Versions/Current",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "A",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtWidgets.framework/Versions/A",
+      "inventoried_descendants": 3
+    },
+    {
+      "path": "Contents/Frameworks/Python",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "Python",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/Python.framework/Versions/3.11/Python",
+      "target_origin": {
+        "kind": "python_runtime",
+        "path": "Python",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/Python.framework/Python",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "Python",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/Python.framework/Versions/3.11/Python",
+      "target_origin": {
+        "kind": "python_runtime",
+        "path": "Python",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/Python.framework/Resources",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "Resources",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/Python.framework/Versions/3.11/Resources",
+      "inventoried_descendants": 1
+    },
+    {
+      "path": "Contents/Frameworks/Python.framework/Versions/Current",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "3.11",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "directory_layout",
+      "target_path": "Contents/Frameworks/Python.framework/Versions/3.11",
+      "inventoried_descendants": 3
+    },
+    {
+      "path": "Contents/Frameworks/QtCore",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtCore",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/QtDBus",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtDBus",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtDBus.framework/Versions/A/QtDBus",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtDBus.framework/Versions/A/QtDBus",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/QtGui",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtGui",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtGui.framework/Versions/A/QtGui",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtGui.framework/Versions/A/QtGui",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/QtNetwork",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtNetwork",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtNetwork.framework/Versions/A/QtNetwork",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtNetwork.framework/Versions/A/QtNetwork",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/QtSvg",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtSvg",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtSvg.framework/Versions/A/QtSvg",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtSvg.framework/Versions/A/QtSvg",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/QtWidgets",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtWidgets",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtWidgets.framework/Versions/A/QtWidgets",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtWidgets.framework/Versions/A/QtWidgets",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libSvtAv1Enc.2.3.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libSvtAv1Enc.2.3.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libSvtAv1Enc.2.3.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libSvtAv1Enc.2.3.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libX11.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libX11.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libX11.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libX11.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libXau.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libXau.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libXau.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libXau.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libXdmcp.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libXdmcp.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libXdmcp.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libXdmcp.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libaom.3.11.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libaom.3.11.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libaom.3.11.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libaom.3.11.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libarchive.13.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libarchive.13.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libarchive.13.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libarchive.13.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libaribb24.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libaribb24.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libaribb24.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libaribb24.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libavcodec.61.19.100.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libavcodec.61.19.100.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libavcodec.61.19.100.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libavcodec.61.19.100.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libavformat.61.7.100.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libavformat.61.7.100.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libavformat.61.7.100.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libavformat.61.7.100.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libavif.16.1.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libavif.16.1.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libavif.16.1.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libavif.16.1.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libavutil.59.39.100.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libavutil.59.39.100.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libavutil.59.39.100.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libavutil.59.39.100.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libb2.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libb2.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libb2.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libb2.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libbluray.2.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libbluray.2.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libbluray.2.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libbluray.2.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libbrotlicommon.1.1.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libbrotlicommon.1.1.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libbrotlicommon.1.1.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libbrotlicommon.1.1.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libbrotlidec.1.1.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libbrotlidec.1.1.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libbrotlidec.1.1.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libbrotlidec.1.1.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libbrotlienc.1.1.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libbrotlienc.1.1.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libbrotlienc.1.1.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libbrotlienc.1.1.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libcjson.1.7.18.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libcjson.1.7.18.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libcjson.1.7.18.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libcjson.1.7.18.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libcrypto.3.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libcrypto.3.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libcrypto.3.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libcrypto.3.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libdav1d.7.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libdav1d.7.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libdav1d.7.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libdav1d.7.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libfontconfig.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libfontconfig.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libfontconfig.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libfontconfig.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libfreetype.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libfreetype.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libfreetype.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libfreetype.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libgcc_s.1.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libgcc_s.1.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/numpy/__dot__dylibs/libgcc_s.1.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "numpy",
+        "package_path": "numpy/.dylibs/libgcc_s.1.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libgfortran.5.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libgfortran.5.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/numpy/__dot__dylibs/libgfortran.5.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "numpy",
+        "package_path": "numpy/.dylibs/libgfortran.5.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libgif.7.2.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libgif.7.2.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libgif.7.2.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libgif.7.2.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libgmp.10.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libgmp.10.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libgmp.10.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libgmp.10.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libgnutls.30.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libgnutls.30.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libgnutls.30.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libgnutls.30.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libhogweed.6.10.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libhogweed.6.10.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libhogweed.6.10.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libhogweed.6.10.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libhwy.1.2.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libhwy.1.2.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libhwy.1.2.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libhwy.1.2.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libidn2.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libidn2.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libidn2.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libidn2.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libintl.8.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libintl.8.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libintl.8.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libintl.8.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libjpeg.8.3.2.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libjpeg.8.3.2.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libjpeg.8.3.2.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libjpeg.8.3.2.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libjxl.0.11.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libjxl.0.11.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libjxl.0.11.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libjxl.0.11.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libjxl_cms.0.11.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libjxl_cms.0.11.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libjxl_cms.0.11.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libjxl_cms.0.11.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libjxl_threads.0.11.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libjxl_threads.0.11.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libjxl_threads.0.11.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libjxl_threads.0.11.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/liblcms2.2.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "liblcms2.2.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/liblcms2.2.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/liblcms2.2.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libleptonica.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libleptonica.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libleptonica.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libleptonica.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/liblz4.1.10.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "liblz4.1.10.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/liblz4.1.10.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/liblz4.1.10.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/liblzma.5.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "liblzma.5.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/liblzma.5.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/liblzma.5.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libmbedcrypto.3.6.2.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libmbedcrypto.3.6.2.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libmbedcrypto.3.6.2.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libmbedcrypto.3.6.2.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libmp3lame.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libmp3lame.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libmp3lame.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libmp3lame.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libnettle.8.10.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libnettle.8.10.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libnettle.8.10.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libnettle.8.10.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libogg.0.8.5.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libogg.0.8.5.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libogg.0.8.5.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libogg.0.8.5.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libopenblas64_.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libopenblas64_.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/numpy/__dot__dylibs/libopenblas64_.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "numpy",
+        "package_path": "numpy/.dylibs/libopenblas64_.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libopencore-amrnb.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libopencore-amrnb.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libopencore-amrnb.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libopencore-amrnb.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libopencore-amrwb.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libopencore-amrwb.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libopencore-amrwb.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libopencore-amrwb.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libopenjp2.2.5.3.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libopenjp2.2.5.3.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libopenjp2.2.5.3.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libopenjp2.2.5.3.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libopus.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libopus.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libopus.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libopus.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libp11-kit.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libp11-kit.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libp11-kit.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libp11-kit.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libpng16.16.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libpng16.16.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libpng16.16.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libpng16.16.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libpyside6.abi3.6.11.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libpyside6.abi3.6.11.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/libpyside6.abi3.6.11.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/libpyside6.abi3.6.11.dylib",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libquadmath.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libquadmath.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/numpy/__dot__dylibs/libquadmath.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "numpy",
+        "package_path": "numpy/.dylibs/libquadmath.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/librav1e.0.7.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "librav1e.0.7.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/librav1e.0.7.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/librav1e.0.7.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/librist.4.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "librist.4.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/librist.4.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/librist.4.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libsharpyuv.0.1.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libsharpyuv.0.1.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libsharpyuv.0.1.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libsharpyuv.0.1.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libshiboken6.abi3.6.11.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libshiboken6.abi3.6.11.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/shiboken6/libshiboken6.abi3.6.11.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "shiboken6",
+        "package_path": "shiboken6/libshiboken6.abi3.6.11.dylib",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libsnappy.1.2.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libsnappy.1.2.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libsnappy.1.2.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libsnappy.1.2.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libsodium.26.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libsodium.26.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libsodium.26.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libsodium.26.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libsoxr.0.1.2.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libsoxr.0.1.2.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libsoxr.0.1.2.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libsoxr.0.1.2.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libspeex.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libspeex.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libspeex.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libspeex.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libsrt.1.5.4.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libsrt.1.5.4.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libsrt.1.5.4.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libsrt.1.5.4.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libssh.4.10.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libssh.4.10.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libssh.4.10.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libssh.4.10.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libssl.3.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libssl.3.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libssl.3.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libssl.3.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libswresample.5.3.100.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libswresample.5.3.100.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libswresample.5.3.100.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libswresample.5.3.100.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libswscale.8.3.100.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libswscale.8.3.100.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libswscale.8.3.100.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libswscale.8.3.100.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libtasn1.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libtasn1.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libtasn1.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libtasn1.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libtesseract.5.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libtesseract.5.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libtesseract.5.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libtesseract.5.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libtheoradec.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libtheoradec.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libtheoradec.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libtheoradec.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libtheoraenc.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libtheoraenc.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libtheoraenc.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libtheoraenc.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libtiff.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libtiff.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libtiff.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libtiff.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libunistring.5.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libunistring.5.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libunistring.5.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libunistring.5.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libvmaf.3.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libvmaf.3.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libvmaf.3.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libvmaf.3.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libvorbis.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libvorbis.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libvorbis.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libvorbis.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libvorbisenc.2.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libvorbisenc.2.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libvorbisenc.2.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libvorbisenc.2.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libvpx.9.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libvpx.9.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libvpx.9.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libvpx.9.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libwebp.7.1.10.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libwebp.7.1.10.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libwebp.7.1.10.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libwebp.7.1.10.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libwebpmux.3.1.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libwebpmux.3.1.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libwebpmux.3.1.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libwebpmux.3.1.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libx264.164.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libx264.164.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libx264.164.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libx264.164.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libx265.215.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libx265.215.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libx265.215.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libx265.215.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libxcb.1.1.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libxcb.1.1.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libxcb.1.1.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libxcb.1.1.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libzmq.5.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libzmq.5.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libzmq.5.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libzmq.5.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Frameworks/libzstd.1.5.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libzstd.1.5.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libzstd.1.5.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libzstd.1.5.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/Python",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "Python",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/Python.framework/Versions/3.11/Python",
+      "target_origin": {
+        "kind": "python_runtime",
+        "path": "Python",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Resources/QtCore",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtCore",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Resources/QtDBus",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtDBus",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtDBus.framework/Versions/A/QtDBus",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtDBus.framework/Versions/A/QtDBus",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Resources/QtGui",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtGui",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtGui.framework/Versions/A/QtGui",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtGui.framework/Versions/A/QtGui",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Resources/QtNetwork",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtNetwork",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtNetwork.framework/Versions/A/QtNetwork",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtNetwork.framework/Versions/A/QtNetwork",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Resources/QtSvg",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtSvg",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtSvg.framework/Versions/A/QtSvg",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtSvg.framework/Versions/A/QtSvg",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Resources/QtWidgets",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "QtWidgets",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/Qt/lib/QtWidgets.framework/Versions/A/QtWidgets",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/Qt/lib/QtWidgets.framework/Versions/A/QtWidgets",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Resources/libSvtAv1Enc.2.3.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libSvtAv1Enc.2.3.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libSvtAv1Enc.2.3.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libSvtAv1Enc.2.3.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libX11.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libX11.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libX11.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libX11.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libXau.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libXau.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libXau.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libXau.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libXdmcp.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libXdmcp.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libXdmcp.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libXdmcp.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libaom.3.11.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libaom.3.11.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libaom.3.11.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libaom.3.11.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libarchive.13.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libarchive.13.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libarchive.13.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libarchive.13.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libaribb24.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libaribb24.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libaribb24.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libaribb24.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libavcodec.61.19.100.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libavcodec.61.19.100.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libavcodec.61.19.100.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libavcodec.61.19.100.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libavformat.61.7.100.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libavformat.61.7.100.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libavformat.61.7.100.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libavformat.61.7.100.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libavif.16.1.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libavif.16.1.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libavif.16.1.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libavif.16.1.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libavutil.59.39.100.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libavutil.59.39.100.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libavutil.59.39.100.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libavutil.59.39.100.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libb2.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libb2.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libb2.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libb2.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libbluray.2.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libbluray.2.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libbluray.2.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libbluray.2.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libbrotlicommon.1.1.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libbrotlicommon.1.1.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libbrotlicommon.1.1.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libbrotlicommon.1.1.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libbrotlidec.1.1.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libbrotlidec.1.1.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libbrotlidec.1.1.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libbrotlidec.1.1.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libbrotlienc.1.1.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libbrotlienc.1.1.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libbrotlienc.1.1.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libbrotlienc.1.1.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libcjson.1.7.18.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libcjson.1.7.18.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libcjson.1.7.18.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libcjson.1.7.18.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libcrypto.3.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libcrypto.3.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libcrypto.3.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libcrypto.3.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libdav1d.7.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libdav1d.7.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libdav1d.7.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libdav1d.7.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libfontconfig.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libfontconfig.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libfontconfig.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libfontconfig.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libfreetype.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libfreetype.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libfreetype.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libfreetype.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libgcc_s.1.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libgcc_s.1.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/numpy/__dot__dylibs/libgcc_s.1.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "numpy",
+        "package_path": "numpy/.dylibs/libgcc_s.1.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libgfortran.5.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libgfortran.5.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/numpy/__dot__dylibs/libgfortran.5.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "numpy",
+        "package_path": "numpy/.dylibs/libgfortran.5.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libgif.7.2.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libgif.7.2.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libgif.7.2.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libgif.7.2.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libgmp.10.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libgmp.10.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libgmp.10.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libgmp.10.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libgnutls.30.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libgnutls.30.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libgnutls.30.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libgnutls.30.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libhogweed.6.10.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libhogweed.6.10.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libhogweed.6.10.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libhogweed.6.10.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libhwy.1.2.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libhwy.1.2.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libhwy.1.2.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libhwy.1.2.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libidn2.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libidn2.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libidn2.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libidn2.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libintl.8.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libintl.8.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libintl.8.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libintl.8.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libjpeg.8.3.2.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libjpeg.8.3.2.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libjpeg.8.3.2.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libjpeg.8.3.2.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libjxl.0.11.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libjxl.0.11.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libjxl.0.11.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libjxl.0.11.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libjxl_cms.0.11.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libjxl_cms.0.11.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libjxl_cms.0.11.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libjxl_cms.0.11.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libjxl_threads.0.11.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libjxl_threads.0.11.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libjxl_threads.0.11.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libjxl_threads.0.11.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/liblcms2.2.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "liblcms2.2.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/liblcms2.2.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/liblcms2.2.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libleptonica.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libleptonica.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libleptonica.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libleptonica.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/liblz4.1.10.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "liblz4.1.10.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/liblz4.1.10.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/liblz4.1.10.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/liblzma.5.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "liblzma.5.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/liblzma.5.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/liblzma.5.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libmbedcrypto.3.6.2.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libmbedcrypto.3.6.2.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libmbedcrypto.3.6.2.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libmbedcrypto.3.6.2.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libmp3lame.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libmp3lame.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libmp3lame.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libmp3lame.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libnettle.8.10.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libnettle.8.10.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libnettle.8.10.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libnettle.8.10.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libogg.0.8.5.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libogg.0.8.5.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libogg.0.8.5.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libogg.0.8.5.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libopenblas64_.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libopenblas64_.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/numpy/__dot__dylibs/libopenblas64_.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "numpy",
+        "package_path": "numpy/.dylibs/libopenblas64_.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libopencore-amrnb.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libopencore-amrnb.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libopencore-amrnb.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libopencore-amrnb.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libopencore-amrwb.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libopencore-amrwb.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libopencore-amrwb.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libopencore-amrwb.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libopenjp2.2.5.3.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libopenjp2.2.5.3.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libopenjp2.2.5.3.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libopenjp2.2.5.3.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libopus.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libopus.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libopus.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libopus.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libp11-kit.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libp11-kit.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libp11-kit.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libp11-kit.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libpng16.16.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libpng16.16.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libpng16.16.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libpng16.16.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libpyside6.abi3.6.11.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libpyside6.abi3.6.11.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/PySide6/libpyside6.abi3.6.11.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "PySide6_Essentials",
+        "package_path": "PySide6/libpyside6.abi3.6.11.dylib",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Resources/libquadmath.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libquadmath.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/numpy/__dot__dylibs/libquadmath.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "numpy",
+        "package_path": "numpy/.dylibs/libquadmath.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/librav1e.0.7.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "librav1e.0.7.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/librav1e.0.7.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/librav1e.0.7.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/librist.4.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "librist.4.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/librist.4.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/librist.4.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libsharpyuv.0.1.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libsharpyuv.0.1.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libsharpyuv.0.1.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libsharpyuv.0.1.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libshiboken6.abi3.6.11.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libshiboken6.abi3.6.11.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/shiboken6/libshiboken6.abi3.6.11.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "shiboken6",
+        "package_path": "shiboken6/libshiboken6.abi3.6.11.dylib",
+        "collection_type": "BINARY"
+      }
+    },
+    {
+      "path": "Contents/Resources/libsnappy.1.2.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libsnappy.1.2.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libsnappy.1.2.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libsnappy.1.2.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libsodium.26.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libsodium.26.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libsodium.26.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libsodium.26.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libsoxr.0.1.2.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libsoxr.0.1.2.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libsoxr.0.1.2.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libsoxr.0.1.2.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libspeex.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libspeex.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libspeex.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libspeex.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libsrt.1.5.4.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libsrt.1.5.4.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libsrt.1.5.4.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libsrt.1.5.4.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libssh.4.10.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libssh.4.10.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libssh.4.10.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libssh.4.10.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libssl.3.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libssl.3.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libssl.3.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libssl.3.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libswresample.5.3.100.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libswresample.5.3.100.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libswresample.5.3.100.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libswresample.5.3.100.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libswscale.8.3.100.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libswscale.8.3.100.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libswscale.8.3.100.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libswscale.8.3.100.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libtasn1.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libtasn1.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libtasn1.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libtasn1.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libtesseract.5.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libtesseract.5.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libtesseract.5.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libtesseract.5.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libtheoradec.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libtheoradec.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libtheoradec.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libtheoradec.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libtheoraenc.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libtheoraenc.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libtheoraenc.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libtheoraenc.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libtiff.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libtiff.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libtiff.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libtiff.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libunistring.5.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libunistring.5.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libunistring.5.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libunistring.5.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libvmaf.3.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libvmaf.3.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libvmaf.3.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libvmaf.3.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libvorbis.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libvorbis.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libvorbis.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libvorbis.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libvorbisenc.2.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libvorbisenc.2.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libvorbisenc.2.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libvorbisenc.2.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libvpx.9.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libvpx.9.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libvpx.9.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libvpx.9.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libwebp.7.1.10.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libwebp.7.1.10.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libwebp.7.1.10.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libwebp.7.1.10.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libwebpmux.3.1.1.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libwebpmux.3.1.1.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libwebpmux.3.1.1.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libwebpmux.3.1.1.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libx264.164.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libx264.164.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libx264.164.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libx264.164.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libx265.215.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libx265.215.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libx265.215.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libx265.215.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libxcb.1.1.0.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libxcb.1.1.0.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libxcb.1.1.0.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libxcb.1.1.0.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libzmq.5.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libzmq.5.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libzmq.5.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libzmq.5.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    },
+    {
+      "path": "Contents/Resources/libzstd.1.5.6.dylib",
+      "original_origin": {
+        "kind": "unresolved",
+        "name": "libzstd.1.5.6.dylib",
+        "collection_type": "SYMLINK"
+      },
+      "relationship": "exact_file_target",
+      "target_path": "Contents/Frameworks/cv2/__dot__dylibs/libzstd.1.5.6.dylib",
+      "target_origin": {
+        "kind": "installed_distribution",
+        "component": "opencv-contrib-python-headless",
+        "package_path": "cv2/.dylibs/libzstd.1.5.6.dylib",
+        "collection_type": "BINARY",
+        "mapping": "unique_collection_filename"
+      }
+    }
+  ],
+  "unresolved_regular_files": [
+    {
+      "path": "Contents/Info.plist",
+      "origin": {
+        "kind": "unresolved"
+      },
+      "sha256": "06ae1e718ec5e7a9f083507c2a4cb1317724a315bec23f6923a40df479fc76ab",
+      "bytes": 700
+    },
+    {
+      "path": "Contents/Resources/visor.icns",
+      "origin": {
+        "kind": "unresolved"
+      },
+      "sha256": "662e0d2b142adbd37ec20902454ad963c3c92149c0e1bde721f7fe5cc02df2dc",
+      "bytes": 289974
+    }
+  ],
+  "scope": "Exact lexical link targets within hashed inventory metadata. Original origins are unchanged. Target package ownership is not subcomponent licensing; native/embedded internals remain opaque. Directory links do not establish library ownership. Not a complete SBOM or compliance conclusion."
+}

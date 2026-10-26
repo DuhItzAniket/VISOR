@@ -12,6 +12,8 @@ Downloaded and inspected all four audit artifacts; each inventory hash matches b
 
 ## Current verification
 
+I19 adds an offline [derived origin review](distribution/ORIGIN_REVIEW.md), preserving original inventories. It separates exact internal links/directory aliases from regular unresolved files: Linux 85 regular system files, Macs two regular metadata/icon paths each. It makes no new license/ownership claim from filenames and does not inspect native internals. Focused hash/path/link/overlap regressions and the relevant core suite verify the maintainer tool; it does not change the packaged application.
+
 I17 is verified on all four native targets at 9085c12. Overlays draw in one bounded background worker with only the latest pending style; obsolete work is cancelled/discarded, exports wait for a consistent snapshot, failures retain the previous result, and overlay updates preserve zoom. Owned BGR canvas uploads avoid a separate RGB channel-reversal copy. [Recorded clean-source profile and scope](performance/README.md). Native packages passed the expanded background-overlay/latest-style/viewport/styled-export check. Test wait helpers use the real Qt event loop; the failed first native run and repair remain in the log.
 
 I18 is verified on all four targets at 81e81da: actual Windows setup/uninstall, Debian install/purge, both DMG mount/copy/removal paths, and each installed app workflow with no Python executable on PATH. Downloaded all four small audits and checked source identity, inventory hash, successful bundled/installed reports and package hashes recorded by CI. Flat candidate assets include version/platform-prefixed evidence, a validation manifest and checksums; All four downloaded candidates were independently checked locally against all 26 package/evidence/manifest checksums. [Preparation details and limits](RELEASE_PREPARATION.md). Network-disabled clean-desktop, trusted signing and native interaction gates remain open.
@@ -22,15 +24,15 @@ LightGlue's pinned metadata requests opencv-python, so source setup now installs
 
 | Scope | Verified result |
 |---|---|
-| Full local source suite, including installed optional models | **276 passed, 5 skipped in 78.69s** with accelerators masked in the existing developer environment; three skips are the host's unprivileged symlink restriction. This is regression evidence, not a speed benchmark |
-| Isolated headless Windows core suite | **259 passed, 5 skipped, 17 optional-model tests deselected in 15.36s**; original Windows/OpenCV goldens retained |
+| Full local source suite, including installed optional models | **276 passed, 5 skipped in 78.69s** before the subsequent maintainer-only trace tool; with accelerators masked in the existing developer environment; three skips are the host's unprivileged symlink restriction. This is regression evidence, not a speed benchmark |
+| Isolated headless Windows core suite | **267 passed, 5 skipped, 17 optional-model tests deselected in 14.78s**; original Windows/OpenCV goldens retained |
 | Final explicit CPU optional checks | **17 passed, 264 deselected in 62.12s** after pipeline tests explicitly requested CPU and asserted actual device; CUDA visibility mask -1 |
 | Lint | Ruff passed for src, tests and shared desktop builder; whitespace check passed |
 | Type checking | Focused modules passed, including result contracts, matching/geometry, runtime/setup, registry/pipeline, jobs, evaluation/study, video, image input and builder. No whole-UI Mypy pass is claimed |
 | Source wheel | 0.2.0 wheel built in isolation; Apache-2.0 SPDX metadata and full project LICENSE/NOTICE plus the headless OpenCV dependency identity verified inside the wheel |
 | Latest completed native matrix | [40299138359](https://github.com/DuhItzAniket/VISOR/actions/runs/40299138359), source **81e81da**: Windows x64, macOS ARM64, macOS Intel and Linux x64 passed core tests, lint, packaging and bundled workflows, including project/dependency notices, actual GUI backend, five image formats, MJPEG video tracking, asynchronous overlays, installed workflows/removal and candidate preparation |
 | Native core test counts at 81e81da | Windows **262 passed, 2 skipped, 17 model tests deselected**; macOS/Linux each **260 passed, 4 skipped, 17 deselected** |
-| Separate optional CPU lane | [40291591958](https://github.com/DuhItzAniket/VISOR/actions/runs/40291591958), c17e855: **17 real-model tests passed** with headless contrib and a one-provider check. Later 8fe7dfa only refines the Mac GUI guard; CUDA remains unverified |
+| Separate optional CPU lane | [40302703042](https://github.com/DuhItzAniket/VISOR/actions/runs/40302703042), 87551fc: **17 optional-model tests passed** with explicit CPU pipeline configs, accelerator mask -1 and one headless provider; CUDA remains unverified |
 
 The owner selected Apache-2.0. Source wheel and all four native bundles verified project notice inclusion. Local Windows build-info reports 0.2.0 from the frozen source and Apache-2.0; its expanded bundled check passed. See [desktop distribution](DESKTOP_DISTRIBUTION.md) for downloads, exact revisions and remaining release limits. Later documentation/test-only commits do not change the packaged application code. GPU use is currently deferred at the owner's request while another project trains; no local GPU testing or app launches follow that instruction.
 

@@ -1,3 +1,4 @@
 /docs/evaluation/*.json text eol=lf
 /docs/performance/*.json text eol=lf
+/docs/distribution/*.json text eol=lf
 /third_party/qt-notices-*/** -text

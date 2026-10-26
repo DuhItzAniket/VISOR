@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "kind": "derived_inventory_origin_review",
+  "inventory_sha256": "7ac603319fbbd427a160c9ce12cc3103e9d7c0198f296cae4a6ea83e69d14c27",
+  "source_revision": "81e81da65d9d38592f7b038365028f783ad9db68",
+  "system": "Windows",
+  "architecture": "amd64",
+  "trace_code_sha256": "42b1c1a1aa33957ed132ce9a111e9a3423a40e7f4a7c1cb1cd7144a6044275a4",
+  "summary": {
+    "frozen_entries": 423,
+    "original_unresolved_entries": 0,
+    "unresolved_regular_files": 0,
+    "unresolved_link_entries": 0,
+    "link_relationships": {},
+    "regular_source_areas": {}
+  },
+  "link_relationships": [],
+  "unresolved_regular_files": [],
+  "scope": "Exact lexical link targets within hashed inventory metadata. Original origins are unchanged. Target package ownership is not subcomponent licensing; native/embedded internals remain opaque. Directory links do not establish library ownership. Not a complete SBOM or compliance conclusion."
+}

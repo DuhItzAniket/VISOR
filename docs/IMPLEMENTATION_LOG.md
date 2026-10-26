@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Trace actual internal aliases without replacing inventory claims
+
+- Added a CPU-only/offline derived origin tool. It verifies input inventory SHA256 against build-info, follows exact internal leaf and directory links, retains overlapping claims, and preserves cycles/missing/unknown targets. Escaping paths and missing origin kinds fail. Original inventories are unchanged; no filename-based ownership or license is invented.
+- Published all four derived reports with inventory/source/platform/code hashes. Linux's 116 original unresolved entries comprise 31 exact file links and 85 regular system files. ARM/Intel Macs have 181/183 exact file links, 14 directory aliases each, and two regular paths each (Info.plist/visor.icns). This is structural evidence, not complete native-component/license/source-offer compliance. Next OS-package evidence must come from the actual build host.
+- Eight focused regressions, Ruff and focused three-module Mypy passed; current isolated core 267 passed/5 skipped/17 deselected in 14.78s. This maintainer-only module/CLI does not change the packaged application's rendering or vision algorithms and requires no native bundle refresh. No GPU or local app launch used. The refreshed explicit CPU workflow 40302703042 at 87551fc also passed 17 optional tests/264 deselected in 52.26s with accelerator mask -1.
+
 ## 2026-10-26 — Verify all installed candidates and downloaded checksum sets
 
 - Run 40299138359 at 81e81da passed source checks, packaging, frozen workflows, actual hosted-runner installer/app-copy/workflow/removal and candidate preparation on Windows x64, Linux x64 and both Mac architectures. Core: Windows 262 passed/2 skipped/17 deselected; other targets 260 passed/4 skipped/17 deselected. Installed apps ran with an empty PATH directory and removed Python path variables. Network-disabled clean-desktop use, native interaction and trusted signing remain separate.
