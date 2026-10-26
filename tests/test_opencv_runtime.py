@@ -33,7 +33,21 @@ def test_gui_backend_cannot_silently_return(information):
 
 
 def test_none_backend_is_accepted():
-    validate_opencv_build("Build information\n  GUI:                           NONE\n  Media I/O:")
+    assert validate_opencv_build("Build information\n  GUI:                           NONE\n  Media I/O:") == "NONE"
+
+
+@pytest.mark.parametrize("system,version,backend,accepted", [
+    ("Darwin", "4.11.0", "COCOA", True), ("Darwin", "4.12.0", "COCOA", False),
+    ("Linux", "4.11.0", "COCOA", False), ("Windows", "4.11.0", "COCOA", False),
+    ("Darwin", "4.11.0", "QT5", False), ("Darwin", "4.11.0", "NONE", True),
+])
+def test_only_the_observed_pinned_mac_cocoa_exception_is_allowed(system, version, backend, accepted):
+    information = f"  GUI: {backend}\n"
+    if accepted:
+        assert validate_opencv_build(information, system=system, opencv_version=version) == backend
+    else:
+        with pytest.raises(RuntimeError, match="backend NONE"):
+            validate_opencv_build(information, system=system, opencv_version=version)
 
 
 def test_evaluation_records_the_actual_opencv_distribution(monkeypatch):

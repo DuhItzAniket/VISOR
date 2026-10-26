@@ -2,7 +2,7 @@
 
 ## 2026-10-26: One OpenCV provider with Qt as the desktop interface
 
-Actual Linux artifact inventory showed OpenCV's Qt5 runtime alongside PySide's Qt6. Use the same OpenCV 4.11.0.86 contrib APIs through the headless wheel, following upstream guidance for apps whose interface is supplied by another toolkit. No application HighGUI calls exist. Reject overlapping cv2 distributions during packaging and require compiled GUI backend NONE. Retain the classical golden fixtures and test actual image/video functionality in isolated source and native frozen builds. This minimizes unnecessary GUI dependencies; it does not remove all native codec dependencies or certify their licensing.
+Actual Linux artifact inventory showed OpenCV's Qt5 runtime alongside PySide's Qt6. Use the same OpenCV 4.11.0.86 contrib APIs through the headless wheel, following upstream guidance for apps whose interface is supplied by another toolkit. No application HighGUI calls exist. Reject overlapping cv2 distributions during packaging and require compiled GUI backend (NONE, with the upstream 4.11 Mac Cocoa exception). Retain the classical golden fixtures and test actual image/video functionality in isolated source and native frozen builds. This minimizes unnecessary GUI dependencies; it does not remove all native codec dependencies or certify their licensing.
 
 ## 2026-10-26: Audit actual artifacts without inventing ownership
 

@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Record the pinned Mac wheel's Cocoa backend honestly
+
+- Run 40291588173 at c17e855 exposed an over-strict NONE-only assumption on both Macs: the correctly selected headless OpenCV 4.11 wheel reports COCOA. Upstream build tag 86 (commit 255564a37c4a23275485e827abbe19031347d458) explicitly documents retaining Cocoa in headless Mac wheels while disabling Qt/GTK/Win32UI. Windows local frozen image/video workflow passed. Failed Mac jobs are not promoted.
+- Narrowed the exception to Darwin/OpenCV 4.11.0/COCOA; other versions, platforms and Qt backends still fail. Build-info and frozen reports retain the actual backend rather than calling Cocoa NONE. Added six cross-platform/version cases: focused checks 37 passed/3 host-symlink skips; isolated full core 232 passed/5 skipped/17 deselected in 18.01s; Ruff/focused Mypy passed. Final native refresh follows. The native Qt5 artifact exclusion remains mandatory.
+- Optional CPU run 40291591958 at c17e855 passed all 17 real-model tests and the one-provider check using headless contrib. Windows/Linux jobs of 40291588173 passed packaged image/video workflows; both Macs failed the original over-strict guard. Preliminary Linux inventory dropped from 664 to 608 entries and contains zero Qt5 files, retaining explicit unresolved-origin review.
+
 ## 2026-10-26 — Isolate OpenCV from the desktop GUI runtime
 
 - Actual Linux audit showed regular OpenCV's Qt5 libraries alongside PySide6. Changed source/desktop dependency to opencv-contrib-python-headless at the unchanged desktop pin 4.11.0.86, following upstream guidance for applications using another GUI toolkit. No VISOR HighGUI calls exist. Builder rejects missing/wrong/multiple cv2 providers, checks compiled GUI backend NONE and forbids bundled Qt5 libraries. Evaluation records all four possible distribution names without relabeling historical evidence.

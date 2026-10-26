@@ -1,5 +1,6 @@
 """Identify the cv2 provider and enforce the desktop packaging profile."""
 
+import platform
 from importlib import metadata
 
 OPENCV_DISTRIBUTIONS = (
@@ -25,9 +26,16 @@ def desktop_opencv_version(*, version=metadata.version) -> str:
     return installed[DESKTOP_OPENCV]
 
 
-def validate_opencv_build(build_information: str) -> None:
-    """Qt supplies VISOR's UI; OpenCV's separate HighGUI backend is excluded."""
+def validate_opencv_build(build_information: str, *, system: str | None = None,
+                          opencv_version: str | None = None) -> str:
+    """Reject additional GUI toolkits, recording the pinned Mac wheel exception."""
     backend = next((line.split(":", 1)[1].strip() for line in build_information.splitlines()
                     if line.strip().startswith("GUI:")), None)
-    if backend != "NONE":
+    # Upstream wheel build 86 explicitly retains Cocoa on macOS even when
+    # build_headless is selected. Do not relabel that backend as NONE.
+    # https://github.com/opencv/opencv-python/blob/255564a37c4a23275485e827abbe19031347d458/setup.py
+    cocoa_exception = (system or platform.system()) == "Darwin" and opencv_version == "4.11.0" and backend == "COCOA"
+    if backend != "NONE" and not cocoa_exception:
         raise RuntimeError(f"Expected OpenCV GUI backend NONE; found {backend!r}.")
+    assert backend is not None
+    return backend

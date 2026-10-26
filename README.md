@@ -53,7 +53,7 @@ python -m pip install -e .
 python -m visor
 ```
 
-PySide6 supplies the desktop UI. Source/build requirements use `opencv-contrib-python-headless`, which retains the vision and video APIs without OpenCV's separate GUI toolkit. Install only one OpenCV package in an environment: all four wheel variants share `cv2`. Recreate older developer/build environments containing regular OpenCV rather than installing the headless package alongside it. [Upstream package guidance](https://github.com/opencv/opencv-python#installation-and-usage).
+PySide6 supplies the desktop UI. Source/build requirements use `opencv-contrib-python-headless`, which retains the vision and video APIs and avoids OpenCV's bundled Qt5 runtime. The pinned Mac wheel retains Apple's Cocoa backend, recorded explicitly in build reports. Install only one OpenCV package in an environment: all four wheel variants share `cv2`. Recreate older developer/build environments containing regular OpenCV rather than installing the headless package alongside it. [Upstream package guidance](https://github.com/opencv/opencv-python#installation-and-usage).
 
 ## Optional engines for source developers
 

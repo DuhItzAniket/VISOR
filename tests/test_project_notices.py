@@ -36,7 +36,7 @@ def test_frozen_project_notices_and_classical_workflow_pass(tmp_path, monkeypatc
     monkeypatch.setattr(sys, "_MEIPASS", str(tmp_path), raising=False)
     # Simulate only the frozen profile guard; this source test also runs in the
     # existing regular-OpenCV developer environment. Native CI checks real bytes.
-    monkeypatch.setattr("visor.smoke_check.validate_opencv_build", lambda information: None)
+    monkeypatch.setattr("visor.smoke_check.validate_opencv_build", lambda information, **kwargs: "NONE")
     report = tmp_path / "report.json"
     assert run_smoke_check(report) == 0
     data = json.loads(report.read_text())

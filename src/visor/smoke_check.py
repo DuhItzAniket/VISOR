@@ -45,8 +45,8 @@ def run_smoke_check(report_path: Path) -> int:
 
             count = verify_notice_index(resources / "third-party" / "notices.json", qt_version=qVersion())
             report["checks"].append(f"Third-party notice index and {count} file hashes (not compliance certification)")
-            validate_opencv_build(cv2.getBuildInformation())
-            report["checks"].append("OpenCV HighGUI backend NONE; PySide6 supplies the desktop UI")
+            backend = validate_opencv_build(cv2.getBuildInformation(), opencv_version=cv2.__version__)
+            report["checks"].append(f"OpenCV GUI backend {backend}; PySide6 supplies the desktop UI")
         with tempfile.TemporaryDirectory(prefix="visor-smoke-") as temporary:
             folder = Path(temporary)
             rng = np.random.default_rng(2026)

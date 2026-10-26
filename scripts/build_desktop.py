@@ -63,7 +63,7 @@ def build() -> tuple[Path, str, str]:
     desktop_opencv_version()
     import cv2
 
-    validate_opencv_build(cv2.getBuildInformation())
+    opencv_gui_backend = validate_opencv_build(cv2.getBuildInformation(), opencv_version=cv2.__version__)
 
     version = source_version(ROOT)
     system = platform.system()
@@ -120,6 +120,7 @@ def build() -> tuple[Path, str, str]:
         "project_notice_files": ["LICENSE", "NOTICE"],
         "third_party_notice_count": len(notices["files"]),
         "qt_runtime_version": qVersion(),
+        "opencv_gui_backend": opencv_gui_backend,
         "artifact_inventory": {"file": inventory_path.name, "sha256": digest(inventory_path),
                                "file_count": inventory["file_count"],
                                "unresolved_origin_count": inventory["unresolved_origin_count"]},
