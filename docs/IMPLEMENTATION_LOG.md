@@ -1,5 +1,17 @@
 # Implementation Log
 
+## 2026-10-26 — Verify and publish the four-target headless profile evidence
+
+- Run 40292319995 at 8fe7dfa succeeded on Windows x64, Linux x64 and macOS ARM64/Intel. Native core: Windows 235 passed/2 skipped/17 deselected; other targets 233 passed/4 skipped/17 deselected. Every packaged workflow passed actual notice hashes/Qt version, OpenCV backend policy, five image codecs, Qt copy-drop events, SIFT/ORB, exports/project replay, MJPEG encode/decode with three tracked ORB frames and shutdown. Existing classical goldens remain unchanged.
+- Downloaded all four small audit artifacts and independently checked inventory SHA256 against build-info, source revision, successful smoke reports and absence of Qt5 files. Notice/files/unresolved counts: Windows 218/423/0, Linux 214/608/116, ARM Mac 214/766/197, Intel Mac 214/769/199. Actual backend NONE on Windows/Linux and COCOA on both Macs is retained. Linux fell from 664 to 608 entries; unresolved origins and native/source-offer obligations remain explicit.
+- Separate optional CPU lane 40291591958 at c17e855 passed 17 real-model tests with one headless provider. 8fe7dfa subsequently changes only the Mac backend validation/provenance and its tests/docs. Updated current status, ledger, inventory and all four validation download links. I16 GUI dependency reduction is verified; I12/I13 complete transitive notices/source offers, signing and manual desktop gates remain open. No new visual/native interaction gate is inferred from the offscreen checks or failed helper activation.
+
+## 2026-10-26 — Final source/profile checks and native helper limitation
+
+- Final full existing developer suite: 249 passed/5 skipped in 66.39s (OMP/MKL threads limited to one in this test process; not a performance benchmark). Isolated headless core: 232 passed/5 skipped/17 deselected in 18.01s. Source wheel built in isolation and verified headless provider requirement, Apache-2.0 SPDX metadata and both project notices. No environment/model/build files committed.
+- Rebuilt clean 8fe7dfa Windows executable in the isolated headless environment; actual frozen notice/image/video/classical/export/project/shutdown workflow passed. Inventory: 423 entries, zero unresolved origins and no Qt5; actual GUI backend NONE is recorded.
+- Computer Use captured the native idle window/control tree but could not activate it, including after fresh selection. Stopped input after the failed recovery. Record this helper boundary separately in WINDOWS_REVIEW.md; no new keyboard/picker, scaling, clean-install or screen-reader gate is closed. Final native CI refresh is tracked separately.
+
 ## 2026-10-26 — Record the pinned Mac wheel's Cocoa backend honestly
 
 - Run 40291588173 at c17e855 exposed an over-strict NONE-only assumption on both Macs: the correctly selected headless OpenCV 4.11 wheel reports COCOA. Upstream build tag 86 (commit 255564a37c4a23275485e827abbe19031347d458) explicitly documents retaining Cocoa in headless Mac wheels while disabling Qt/GTK/Win32UI. Windows local frozen image/video workflow passed. Failed Mac jobs are not promoted.

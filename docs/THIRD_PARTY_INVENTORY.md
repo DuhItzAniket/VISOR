@@ -18,18 +18,20 @@ Qt documents module-specific alternatives and third-party terms: [Qt licensing](
 
 ## Inspected native audit results
 
-Run [40227340916](https://github.com/DuhItzAniket/VISOR/actions/runs/40227340916), source a6fc4fd, passed all four targets. Downloaded each small audit artifact and independently checked inventory SHA256 against build-info, source identity and successful frozen reports.
+Run [40292319995](https://github.com/DuhItzAniket/VISOR/actions/runs/40292319995), source 8fe7dfa, passed all four targets. Downloaded each small audit artifact and independently checked inventory SHA256 against build-info, source identity and successful frozen reports.
 
 | Target | Notice files verified | Frozen filesystem entries | Unresolved origin entries |
 |---|---:|---:|---:|
 | Windows x64 | 218 | 423 | 0 |
-| Linux x64 | 214 | 664 | 140 |
+| Linux x64 | 214 | 608 | 116 |
 | macOS ARM64 | 214 | 766 | 197 |
 | macOS Intel | 214 | 769 | 199 |
 
-Counts include layout links; unresolved origins are not a count of missing licenses. Linux has 87 records traced to system source areas and 53 without a resolved origin, including library layout links. Mac unresolved entries also include framework links. Do not infer native ownership or licensing from a basename. Even Windows' zero unresolved filesystem origins does not inspect embedded/native internals or certify compliance.
+Counts include layout links; unresolved origins are not a count of missing licenses. Linux has 85 records traced to system source areas and 31 without a resolved origin, including library layout links. Mac unresolved entries also include framework links. Do not infer native ownership or licensing from a basename. Even Windows' zero unresolved filesystem origins does not inspect embedded/native internals or certify compliance.
 
-Linux additionally carries OpenCV's Qt5 libraries alongside PySide's Qt6. I16 will evaluate the same-version headless contrib wheel in an isolated environment. Upstream recommends headless when another toolkit supplies the GUI and warns against installing multiple cv2 providers together. [OpenCV wheel guidance](https://github.com/opencv/opencv-python#installation-and-usage).
+I16 switched to the same-version headless contrib wheel and removed OpenCV's Qt5 libraries: Linux entries fell from 664 to 608, with zero Qt5 files in every final target inventory. Native codecs and unresolved origins remain subject to review. Upstream recommends headless when another toolkit supplies the GUI and warns against installing multiple cv2 providers together. [OpenCV wheel guidance](https://github.com/opencv/opencv-python#installation-and-usage).
+
+The Mac wheel still reports COCOA: upstream build 86 explicitly retains that backend in headless mode while disabling Qt/GTK/Win32UI. Only the observed Darwin/OpenCV 4.11.0 exception is allowed; build-info records actual backends and no report relabels Cocoa as NONE. [Pinned upstream build](https://github.com/opencv/opencv-python/blob/255564a37c4a23275485e827abbe19031347d458/setup.py).
 
 ## Standard desktop components
 
@@ -37,8 +39,8 @@ Linux additionally carries OpenCV's Qt5 libraries alongside PySide's Qt6. I16 wi
 |---|---|---|
 | Python 3.11 runtime | Python distribution license files | Exact interpreter notice collected and hash-checked on all four targets; native/transitive review remains |
 | NumPy 1.26.4 | Installed distribution LICENSE.txt and additional component licenses | Retain notices for the libraries actually bundled, including third-party numerical components |
-| OpenCV contrib 4.11.0.86 | Package metadata declares Apache 2.0; LICENSE.txt and LICENSE-3RD-PARTY.txt present | Both package notice files collected and hash-checked; inspect actual native codec/numerical components separately |
-| PySide6, Essentials, Addons, Shiboken6 6.11.2 | Package metadata declares LGPL/GPL alternatives; commercial license reference file is also present | Review the selected licensing route, actual Qt modules/native dependencies and their complete notices for each artifact |
+| OpenCV contrib headless 4.11.0.86 | Package metadata declares Apache 2.0; LICENSE.txt and LICENSE-3RD-PARTY.txt present | Both package notice files collected and hash-checked; inspect actual native codec/numerical components separately |
+| PySide6, Essentials, Addons, Shiboken6 6.11.2 | Package metadata declares LGPL/GPL alternatives; a commercial license reference file was present locally, while fresh wheels use the explicitly recorded pinned-source fallback | Review the selected licensing route, actual Qt modules/native dependencies and their complete notices for each artifact |
 | PyInstaller 6.22.3 / bootloader | Package declares GPL with its distribution exception; COPYING.txt present | COPYING.txt collected and hash-checked; do not infer VISOR's own project license from its build tool |
 
 Qt documents separate third-party contributions and points to Qt's component-level license information: [Qt for Python license notices](https://doc.qt.io/qtforpython-6/licenses.html). A package's headline declaration alone is not a complete inventory of a frozen application's native libraries.
