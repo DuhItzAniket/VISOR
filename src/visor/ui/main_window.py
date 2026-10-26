@@ -1816,8 +1816,8 @@ class MainWindow(QMainWindow):
         self.orb_score.setCurrentText(session.orb.score_type)
         self.orb_patch.setValue(session.orb.patch_size)
         self.orb_fast.setValue(session.orb.fast_threshold)
-        self.reference_input.load_path(Path(session.reference_path))
-        self.target_input.load_path(Path(session.target_path))
+        self.reference_input.load_path(Path(session.reference_path), preserve_previous=False)
+        self.target_input.load_path(Path(session.target_path), preserve_previous=False)
         self._project_path = Path(filename).resolve()
         self._remember_file_location("projects", filename)
         if self.reference_input.image_path is None or self.target_input.image_path is None:

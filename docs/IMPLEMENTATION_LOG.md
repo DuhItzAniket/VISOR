@@ -1,5 +1,12 @@
 # Implementation Log
 
+## 2026-10-26 — Correct image orientation and preserve recoverable input state
+
+- Reproduced three failures before changing product code: EXIF-rotated preview metadata disagreed with OpenCV analysis, an unreadable replacement cleared a good input, and resizing reopened the original file. Explicit Qt auto-transform now matches analysis; retained thumbnails are bounded to 1024 pixels per side and resize uses that cache. Original dimensions are reported independently of thumbnail size. Analysis decoding/geometry/goldens are unchanged.
+- Failed picker/drop replacements retain the selected image and emit no input-change event; a rejected drop stays rejected. Recovery text explicitly identifies the retained image. Project replay explicitly clears an unreadable project image rather than silently substituting an old workspace input. Clear releases the cached thumbnail. Initial loading still performs decoding synchronously; moving initial decode off the UI thread remains an explicit responsiveness follow-up, especially for formats without scaled decoding.
+- 32 focused checks passed in 1.34s, including all eight JPEG EXIF values on both roles, corner colors/dimensions against the real analysis decoder, bounded retained memory, resize after source rename, failed-drop acceptance/state and unreadable project replay. Complete headless CPU core passed 294 tests/6 skips/17 optional deselections in 16.55s. The two earlier native OpenCV crashes did not recur in this run; no root-cause resolution is claimed. Ruff and focused widget/smoke Mypy passed.
+- Extended the frozen smoke check for oriented JPEG, replacement failure and source-independent preview; native matrix evidence follows. No local interactive app launch, physical desktop/scaling/screen-reader review or GPU verification is claimed. CUDA mask -1 retained throughout local tests; no model downloads used.
+
 ## 2026-10-26 — Validate build-host notice evidence and review literal references
 
 - Linux-only run 40305950475 at c080dd5 passed core 274 tests/4 skips/17 deselected, bundle checks, actual Debian install/run/purge and candidate preparation. The original host supplied 85 collected system sources, 78 package database claims, zero unclaimed sources and 91 copied notices (78 package copyright files/13 common-license files). Downloaded the review/audit and checked every notice hash plus source/run/inventory identity. Published its manifest; this does not retroactively assign ownership to older builds or change installed notices.

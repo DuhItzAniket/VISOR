@@ -5,8 +5,8 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from PySide6.QtCore import QStandardPaths, Qt, QUrl, Signal
-from PySide6.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QPixmap
+from PySide6.QtCore import QSize, QStandardPaths, Qt, QUrl, Signal
+from PySide6.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QImageIOHandler, QImageReader, QPixmap
 from PySide6.QtWidgets import (
     QFileDialog,
     QFrame,
@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (
 
 logger = logging.getLogger(__name__)
 IMAGE_FILTER = "Images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff *.webp);;All files (*.*)"
+PREVIEW_LIMIT = QSize(1024, 1024)
 
 
 class ImageDropWidget(QFrame):
@@ -36,6 +37,7 @@ class ImageDropWidget(QFrame):
         self.setMinimumWidth(260)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self._image_path: Path | None = None
+        self._thumbnail = QPixmap()
         self._browse_directory: Path | None = None
         self._title = title
 
@@ -87,6 +89,7 @@ class ImageDropWidget(QFrame):
     def clear_image(self) -> None:
         """Remove the current image and emit a clear notification to the app."""
         self._image_path = None
+        self._thumbnail = QPixmap()
         self.preview.clear()
         self.preview.setText("Drop an image here\nor choose a file")
         self.metadata_label.setObjectName("mutedText")
@@ -127,8 +130,7 @@ class ImageDropWidget(QFrame):
     def dropEvent(self, event: QDropEvent) -> None:
         if not self._accept_image_drag(event):
             return
-        self.load_path(self._dropped_image(event.mimeData().urls())[0])
-        if self.image_path is None:
+        if not self.load_path(self._dropped_image(event.mimeData().urls())[0]):
             event.ignore()
 
     @staticmethod
@@ -136,42 +138,62 @@ class ImageDropWidget(QFrame):
         accepted = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff", ".webp"}
         return [Path(url.toLocalFile()) for url in urls if url.isLocalFile() and Path(url.toLocalFile()).suffix.lower() in accepted]
 
-    def load_path(self, path: str | Path) -> None:
-        """Load and preview an image, reporting a useful error for invalid files."""
+    def load_path(self, path: str | Path, *, preserve_previous: bool = True) -> bool:
+        """Load an upright, bounded preview; a bad replacement retains the input.
+
+        Project replay can explicitly clear missing project images rather than
+        silently using an unrelated image from the previous workspace.
+        """
         normalized = Path(path)
-        pixmap = QPixmap(str(normalized))
-        if pixmap.isNull():
-            self.clear_image()
-            self.metadata_label.setText("Could not read this image. Choose a supported image file.")
+        reader = QImageReader(str(normalized))
+        reader.setAutoTransform(True)
+        original_size = reader.size()
+        oriented_size = QSize(original_size)
+        if reader.transformation() & QImageIOHandler.Transformation.TransformationRotate90:
+            oriented_size.transpose()
+        if original_size.isValid() and (original_size.width() > PREVIEW_LIMIT.width()
+                                        or original_size.height() > PREVIEW_LIMIT.height()):
+            reader.setScaledSize(original_size.scaled(PREVIEW_LIMIT, Qt.AspectRatioMode.KeepAspectRatio))
+        image = reader.read()
+        if image.isNull():
+            if not preserve_previous or self._image_path is None:
+                self.clear_image()
+            recovery = ("Current image retained. Choose another file." if self._image_path is not None
+                        else "Choose a supported image file.")
+            self.metadata_label.setText(f"Could not read this image. {recovery}")
             self.metadata_label.setObjectName("errorText")
             self.metadata_label.style().unpolish(self.metadata_label)
             self.metadata_label.style().polish(self.metadata_label)
             logger.warning("Unable to load image for %s: %s", self._title, normalized)
-            return
+            return False
 
         self._image_path = normalized.resolve()
+        if not oriented_size.isValid():
+            oriented_size = image.size()
+        # Some handlers cannot decode at the requested size. Bound retained
+        # memory independently of their scaled-decoding support.
+        self._thumbnail = QPixmap.fromImage(image.scaled(
+            PREVIEW_LIMIT, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation,
+        )) if image.width() > PREVIEW_LIMIT.width() or image.height() > PREVIEW_LIMIT.height() else QPixmap.fromImage(image)
+        self._update_preview()
+        self.metadata_label.setObjectName("mutedText")
+        self.metadata_label.setText(f"{self._image_path.name}  ·  {oriented_size.width()} × {oriented_size.height()} px")
+        self.metadata_label.style().unpolish(self.metadata_label)
+        self.metadata_label.style().polish(self.metadata_label)
+        self.clear_button.setVisible(True)
+        self.image_changed.emit(self._title, self._image_path)
+        return True
+
+    def _update_preview(self) -> None:
+        if self._thumbnail.isNull():
+            return
         self.preview.setPixmap(
-            pixmap.scaled(
+            self._thumbnail.scaled(
                 self.preview.size(),
                 Qt.AspectRatioMode.KeepAspectRatio,
                 Qt.TransformationMode.SmoothTransformation,
             )
         )
-        self.metadata_label.setObjectName("mutedText")
-        self.metadata_label.setText(f"{self._image_path.name}  ·  {pixmap.width()} × {pixmap.height()} px")
-        self.metadata_label.style().unpolish(self.metadata_label)
-        self.metadata_label.style().polish(self.metadata_label)
-        self.clear_button.setVisible(True)
-        self.image_changed.emit(self._title, self._image_path)
-
     def resizeEvent(self, event) -> None:
         super().resizeEvent(event)
-        if self._image_path:
-            pixmap = QPixmap(str(self._image_path))
-            self.preview.setPixmap(
-                pixmap.scaled(
-                    self.preview.size(),
-                    Qt.AspectRatioMode.KeepAspectRatio,
-                    Qt.TransformationMode.SmoothTransformation,
-                )
-            )
+        self._update_preview()

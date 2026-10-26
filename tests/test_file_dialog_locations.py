@@ -88,6 +88,27 @@ def test_project_save_and_load_reuse_selected_filename(dialog_workspace, tmp_pat
     assert window._dialog_directory("projects") == project.parent
 
 
+def test_unreadable_project_image_does_not_reuse_a_previous_workspace_input(dialog_workspace, tmp_path, monkeypatch):
+    import json
+
+    _, window, _ = dialog_workspace
+    previous = _inputs(window)
+    project = tmp_path / "missing-image.visor"
+    monkeypatch.setattr(QFileDialog, "getSaveFileName", lambda *args: (str(project), ""))
+    window._save_project()
+    session = json.loads(project.read_text(encoding="utf-8"))
+    broken = tmp_path / "broken.png"
+    broken.write_bytes(b"not an image")
+    session["target_path"] = str(broken)
+    project.write_text(json.dumps(session), encoding="utf-8")
+    monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args: (str(project), ""))
+    window._load_project()
+    assert window.reference_input.image_path == previous.resolve()
+    assert window.target_input.image_path is None
+    assert not window.run_button.isEnabled()
+    assert "could not be decoded" in window.statusBar().currentMessage()
+
+
 def test_exports_remember_only_successful_destinations(dialog_workspace, tmp_path, monkeypatch):
     _, window, _ = dialog_workspace
     image = _inputs(window)

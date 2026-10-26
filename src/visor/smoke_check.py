@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import json
 import platform
+import struct
 import sys
 import tempfile
 import traceback
 from pathlib import Path
+from typing import Any, cast
 
 import cv2
 import numpy as np
@@ -90,6 +92,30 @@ def run_smoke_check(report_path: Path) -> int:
                     raise RuntimeError(f"Bundled Qt image format failed: {extension}")
             window.target_input.load_path(target)
             report["checks"].append("Qt PNG/JPEG/BMP/TIFF/WebP input decoding")
+            # Hand-built EXIF avoids another runtime dependency for this check.
+            success, encoded = cv2.imencode(".jpg", image)
+            if not success:
+                raise RuntimeError("Cannot encode orientation fixture.")
+            tiff = (b"II" + struct.pack("<HIH", 42, 8, 1) + struct.pack("<HHI", 0x112, 3, 1)
+                    + struct.pack("<H", 6) + b"\0\0" + struct.pack("<I", 0))
+            app1 = b"Exif\0\0" + tiff
+            raw = encoded.tobytes()
+            rotated = folder / "orientation-6.jpg"
+            rotated.write_bytes(raw[:2] + b"\xff\xe1" + struct.pack(">H", len(app1) + 2) + app1 + raw[2:])
+            window.target_input.load_path(rotated)
+            if "280 × 360 px" not in window.target_input.metadata_label.text():
+                raise RuntimeError("Bundled input preview ignored EXIF orientation.")
+            broken = folder / "unreadable.jpg"
+            broken.write_bytes(b"not an image")
+            if window.target_input.load_path(broken) or window.target_input.image_path != rotated.resolve():
+                raise RuntimeError("Unreadable replacement lost the selected image.")
+            unavailable = folder / "temporarily-unavailable.jpg"
+            rotated.rename(unavailable)
+            window.target_input._update_preview()
+            if window.target_input.preview.pixmap().isNull():
+                raise RuntimeError("Cached image preview was lost when the source became unavailable.")
+            window.target_input.load_path(target)
+            report["checks"].append("EXIF-oriented input, failed replacement recovery and cached preview")
             for engine in ("SIFT", "ORB"):
                 result = analyze(reference, target, engine)
                 if not result.geometry.valid or result.geometry.inlier_count < 4:
@@ -119,7 +145,7 @@ def run_smoke_check(report_path: Path) -> int:
             timeout.stop()
             window._overlay_renderer.idle.disconnect(loop.quit)
             styled = window._latest_result
-            if (window._overlay_renderer.busy or styled is previous
+            if (window._overlay_renderer.busy or styled is None or styled is previous
                     or styled.settings.feature_line_thickness != 12 or not styled.settings.rainbow_feature_colors
                     or window.localization_view.transform() != transform):
                 raise RuntimeError("Background overlay/latest style/viewport check failed.")
@@ -135,7 +161,7 @@ def run_smoke_check(report_path: Path) -> int:
             from visor.video import track_reference_in_video
 
             video_path = folder / "clip.avi"
-            writer = cv2.VideoWriter(str(video_path), cv2.VideoWriter_fourcc(*"MJPG"), 10.0, (360, 280))
+            writer = cv2.VideoWriter(str(video_path), cast(Any, cv2).VideoWriter_fourcc(*"MJPG"), 10.0, (360, 280))
             try:
                 if not writer.isOpened():
                     raise RuntimeError("Cannot create the MJPEG video fixture.")

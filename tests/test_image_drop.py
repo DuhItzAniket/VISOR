@@ -100,3 +100,21 @@ def test_unreadable_drop_reports_recovery_and_does_not_claim_acceptance(drop_wor
     assert "Could not read" in window.target_input.metadata_label.text()
     assert not window.run_button.isEnabled()
     assert image.read_bytes() == b"not an image"
+
+
+def test_failed_replacement_drop_retains_the_pair_but_is_not_accepted(drop_workspace, tmp_path):
+    _, window = drop_workspace
+    previous = (Path(__file__).parent / "data/reference.png").resolve()
+    window.reference_input.load_path(previous)
+    window.target_input.load_path(previous)
+    image = tmp_path / "broken.jpg"
+    image.write_bytes(b"not an image")
+    mime = _mime([QUrl.fromLocalFile(str(image))])
+    assert _enter(window.target_input, mime, Qt.DropAction.CopyAction).isAccepted()
+    drop = QDropEvent(QPointF(50, 50), Qt.DropAction.CopyAction, mime,
+                      Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
+    QApplication.sendEvent(window.target_input, drop)
+    assert not drop.isAccepted()
+    assert window.target_input.image_path == previous
+    assert window._paths["Target image"] == previous and window.run_button.isEnabled()
+    assert "Current image retained" in window.target_input.metadata_label.text()
