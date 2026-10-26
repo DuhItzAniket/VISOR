@@ -12,6 +12,8 @@ Downloaded and inspected all four audit artifacts; each inventory hash matches b
 
 ## Current verification
 
+I20 build-host follow-up captures Linux package database claims, package/source versions, source-file hashes and exact notice/common-license files. It runs only on the original Linux build host, reports missing/unclaimed data and uploads separate review evidence; it does not mutate the frozen app or certify installed notice/source-offer completeness. Core and native Linux verification follow before the collection is advertised as verified.
+
 I19 adds an offline [derived origin review](distribution/ORIGIN_REVIEW.md), preserving original inventories. It separates exact internal links/directory aliases from regular unresolved files: Linux 85 regular system files, Macs two regular metadata/icon paths each. It makes no new license/ownership claim from filenames and does not inspect native internals. Focused hash/path/link/overlap regressions and the relevant core suite verify the maintainer tool; it does not change the packaged application.
 
 I17 is verified on all four native targets at 9085c12. Overlays draw in one bounded background worker with only the latest pending style; obsolete work is cancelled/discarded, exports wait for a consistent snapshot, failures retain the previous result, and overlay updates preserve zoom. Owned BGR canvas uploads avoid a separate RGB channel-reversal copy. [Recorded clean-source profile and scope](performance/README.md). Native packages passed the expanded background-overlay/latest-style/viewport/styled-export check. Test wait helpers use the real Qt event loop; the failed first native run and repair remain in the log.

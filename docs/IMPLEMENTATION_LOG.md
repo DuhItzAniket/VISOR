@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Capture Linux system notice evidence on the original build host
+
+- Added exact canonical-equivalent dpkg file queries, preserving multiple/unclaimed package database claims and actual package/source versions/status. Source hashes are recorded at lookup time; these claims are not binary authenticity or native licensing conclusions. No basename package guessing or legal-term selection occurs.
+- The collector copies exact package copyright bytes and literal common-license references, with contained paths, hashes, missing-reference records and source/code/collection identities. It refuses to overwrite evidence. Review output stays outside the frozen application; installed notices/inventory are unchanged. Linux CI uploads the review texts separately and its manifest in the small audit artifact.
+- Added a Linux-only workflow target for this platform-specific review. Five focused copy/provenance/overlap/missing/path checks passed; one local Windows symlink test skipped because the host does not allow it. Ruff and focused three-module Mypy passed. Current isolated core: 272 passed/6 skipped/17 deselected in 15.11s. Native Linux refresh follows. All work remains CPU-only, with no local app launch or GPU inspection.
+
 ## 2026-10-26 — Trace actual internal aliases without replacing inventory claims
 
 - Added a CPU-only/offline derived origin tool. It verifies input inventory SHA256 against build-info, follows exact internal leaf and directory links, retains overlapping claims, and preserves cycles/missing/unknown targets. Escaping paths and missing origin kinds fail. Original inventories are unchanged; no filename-based ownership or license is invented.

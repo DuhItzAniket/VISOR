@@ -7,7 +7,7 @@ on:
       target:
         description: Native build targets
         type: choice
-        options: [all, macos-intel]
+        options: [all, macos-intel, linux]
         default: all
 
 permissions:
@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ${{ fromJSON(inputs.target == 'macos-intel' && '["macos-15-intel"]' || '["windows-2022","macos-14","macos-15-intel","ubuntu-22.04"]') }}
+        os: ${{ fromJSON(inputs.target == 'macos-intel' && '["macos-15-intel"]' || inputs.target == 'linux' && '["ubuntu-22.04"]' || '["windows-2022","macos-14","macos-15-intel","ubuntu-22.04"]') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 25
     env:
@@ -45,11 +45,15 @@ jobs:
           python -m ruff check src tests scripts/build_desktop.py
           python -m ruff check scripts/refresh_qt_notices.py scripts/pyinstaller_hooks
           python -m ruff check scripts/profile_rendering.py scripts/verify_installer.py scripts/prepare_release.py
+          python -m ruff check scripts/collect_system_notices.py scripts/trace_artifact_origins.py
       - name: Install Windows installer compiler
         if: runner.os == 'Windows'
         run: choco install innosetup --no-progress -y
       - name: Build bundle and host installer
         run: python scripts/build_desktop.py --package
+      - name: Capture Linux build-host system notice evidence
+        if: runner.os == 'Linux'
+        run: python scripts/collect_system_notices.py
       - name: Windows bundled workflow smoke check
         if: runner.os == 'Windows'
         shell: pwsh
@@ -78,6 +82,13 @@ jobs:
             dist/artifact-inventory.json
             dist/smoke-report.json
             dist/installer-report.json
+            dist/system-notice-review/manifest.json
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        if: runner.os == 'Linux' && always()
+        with:
+          name: VISOR-Linux-${{ runner.arch }}-system-notices
+          path: dist/system-notice-review/*
           if-no-files-found: warn
       - uses: actions/upload-artifact@v4
         if: success()
