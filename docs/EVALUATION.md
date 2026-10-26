@@ -95,3 +95,7 @@ python -m visor.evaluate run build/evaluation-stress-20261026/manifest.json buil
 ```
 
 Use new output paths and keep raw failures, warmups, source/input/truth hashes and per-condition counts. The generator hash and frozen protocol hash are embedded in the manifest. Three seeds/repetitions share construction rules and are not new independent natural scenes.
+
+## Former machine-specific evaluator
+
+`scripts/evaluate_pair_manifest.py` now forwards the same explicit subcommands/arguments to the canonical evaluator above. It no longer assumes a developer's Windows folder, silently skips missing CSV image rows, chooses learned engines or inherits accelerator selection. Its default device is CPU, and engine/data/output choices are explicit. The former private CSV summary is retired; use the documented version-1 JSON manifest so failures, optional truth and provenance remain visible. This is a maintainer CLI, separate from normal desktop use.

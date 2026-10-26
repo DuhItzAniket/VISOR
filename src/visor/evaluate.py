@@ -27,6 +27,7 @@ from visor.evaluation_data import (
     prepare_synthetic,
 )
 from visor.exporting import analysis_document
+from visor.geometry_robust import RobustMethod
 from visor.learned_engines import SuperPointConfiguration, XFeatConfiguration
 from visor.models import VALID_ENGINE_NAMES, AnalysisSettings, EngineName
 from visor.opencv_runtime import OPENCV_DISTRIBUTIONS
@@ -111,7 +112,7 @@ def runtime_versions() -> dict[str, Any]:
 
 def evaluate(manifest: Path, engines: tuple[EngineName, ...] = ("SIFT", "ORB"), *,
              repetitions: int = 3, warmup: int = 1, seed: int = 0,
-             settings: AnalysisSettings | None = None, robust_method="RANSAC",
+             settings: AnalysisSettings | None = None, robust_method: RobustMethod = "RANSAC",
              feature_budget: int | None = None, device: str = "cpu") -> dict[str, Any]:
     if repetitions < 1 or warmup < 0 or not engines or len(set(engines)) != len(engines):
         raise ValueError("Choose distinct engines, positive repetitions and nonnegative warmup.")
@@ -162,7 +163,7 @@ def evaluate(manifest: Path, engines: tuple[EngineName, ...] = ("SIFT", "ORB"), 
     return report
 
 
-def _attempt(pair: EvaluationPair, engine: EngineName, settings: AnalysisSettings, method: str,
+def _attempt(pair: EvaluationPair, engine: EngineName, settings: AnalysisSettings, method: RobustMethod,
              budget: int | None, use_cuda: bool, base: Path) -> dict[str, Any]:
     row: dict[str, Any] = {
         "pair": pair.name, "split": pair.split, "condition": pair.condition,

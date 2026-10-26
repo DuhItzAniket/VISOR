@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Retire the private-folder evaluator path
+
+- Replaced the old script's hardcoded developer Windows path, implicit learned engines, accelerator preference and silently skipped CSV inputs with a compatibility entry point for the canonical portable evaluator. Dataset/output/engine choices are explicit, CPU is the default and raw failure/truth/provenance semantics are shared. The old private CSV summary is intentionally retired and migration is documented.
+- Both help paths and an actual generated three-pair ORB report passed through the compatibility script with no explicit device flag; requested/actual device was CPU and no learned engine ran. The 13 generator/evaluator regressions passed in 3.23s, Ruff passed and focused four-module Mypy passed after aligning the estimator annotation with the existing validated RobustMethod contract. No estimator/algorithm/default changed; older raw reports retain their exact recorded source/code hashes.
+- Initial full candidate downloads were interrupted across the turn boundary before extraction. No local checksum pass was claimed. Retrying into owned, resumable partial ZIP files with CRC/path checks; credentials and signed URLs are never logged. All four ce68a2c native jobs and their small audit hashes/reports already passed independently. GPU work remains deferred; no local interactive application launch.
+
 ## 2026-10-26 — Publish the frozen CPU stress probe, including the adverse negative
 
 - Evaluated the unchanged preregistered construction/settings at clean c79b950 on CPU, with no installed Torch/LightGlue. Retained every 126 measured attempt and 42 warmups, no runtime/annotation errors. Verified every actual device is CPU and published exact compressed raw report bytes, their SHA256, per-condition denominators and limitations. Protocol/generator hashes and all input/truth hashes are embedded.
