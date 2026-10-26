@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import pytest
 
+from visor.learned_engines import SuperPointConfiguration
 from visor.learned_extra import (
     DISKLightGlueEngine,
     GenericLightGlueConfiguration,
@@ -54,8 +55,9 @@ def test_sift_lightglue_matches_identical_images():
 def test_disk_pipeline_integration(textured_pair):
     from visor.pipeline import analyze
     reference, target, _, _, _ = textured_pair
-    result = analyze(reference, target, "DISK+LightGlue")  # type: ignore[arg-type]
+    result = analyze(reference, target, "DISK+LightGlue", sp_config=SuperPointConfiguration(use_cuda=False))
     assert result.engine == "DISK+LightGlue"
+    assert result.runtime.device == "cpu"
     assert result.match_set.matcher == "LightGlue"
 
 

@@ -34,6 +34,7 @@ LightGlue may download extractor/matcher weights on first construction using its
 - Local CPU XFeat check with 512 requested features: 512 identity matches; 348 mutual matches/328 inliers on one controlled mild warp; maximum corner error 2.29 px. This is a fixture check, not a real-world accuracy ranking.
 - Cache integrity, missing revision, reuse without network, namespace collision and mutual-neighbor contracts have offline regressions.
 - Optional CPU inference has a separate manually triggered GitHub workflow. Standard desktop jobs exclude the `optional_model` marker, so core validation does not download model weights.
+- Real optional pipeline tests explicitly request CPU and assert the reported device. The optional CI lane also masks accelerators with CUDA_VISIBLE_DEVICES=-1; local CPU validation uses the same process-scoped mask. GPU behavior is outside this CPU lane and needs dedicated device-specific validation.
 - CUDA, other devices, model redistribution notices and learned models in native bundles require separate evidence. The pinned source path does not imply those gates are complete.
 
 ## Primary sources reviewed

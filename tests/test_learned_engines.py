@@ -55,8 +55,9 @@ def test_superpoint_lightglue_pipeline_integration(textured_pair):
     """Full pipeline with SuperPoint+LightGlue on a synthetic transformed pair."""
     from visor.pipeline import analyze
     reference, target, _, _, _ = textured_pair
-    result = analyze(reference, target, "SuperPoint+LightGlue")
+    result = analyze(reference, target, "SuperPoint+LightGlue", sp_config=SuperPointConfiguration(use_cuda=False))
     assert result.engine == "SuperPoint+LightGlue"
+    assert result.runtime.device == "cpu"
     assert result.match_set.matcher == "LightGlue"
     assert result.match_set.good_count >= 0
     assert result.performance.total_ms > 0
@@ -105,8 +106,9 @@ def test_aliked_lightglue_matches_identical_images():
 def test_aliked_pipeline_integration(textured_pair):
     from visor.pipeline import analyze
     reference, target, _, _, _ = textured_pair
-    result = analyze(reference, target, "ALIKED+LightGlue")
+    result = analyze(reference, target, "ALIKED+LightGlue", sp_config=SuperPointConfiguration(use_cuda=False))
     assert result.engine == "ALIKED+LightGlue"
+    assert result.runtime.device == "cpu"
     assert result.match_set.matcher == "LightGlue"
     assert result.performance.total_ms > 0
 

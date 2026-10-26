@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 30
     env:
       QT_QPA_PLATFORM: offscreen
-      CUDA_VISIBLE_DEVICES: ''
+      CUDA_VISIBLE_DEVICES: '-1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

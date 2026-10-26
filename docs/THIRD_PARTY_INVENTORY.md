@@ -18,7 +18,7 @@ Qt documents module-specific alternatives and third-party terms: [Qt licensing](
 
 ## Inspected native audit results
 
-Run [40292319995](https://github.com/DuhItzAniket/VISOR/actions/runs/40292319995), source 8fe7dfa, passed all four targets. Downloaded each small audit artifact and independently checked inventory SHA256 against build-info, source identity and successful frozen reports.
+Run [40299138359](https://github.com/DuhItzAniket/VISOR/actions/runs/40299138359), source 81e81da, passed all four targets. Downloaded each small audit artifact and independently checked inventory SHA256 against build-info, source identity and successful frozen reports.
 
 | Target | Notice files verified | Frozen filesystem entries | Unresolved origin entries |
 |---|---:|---:|---:|

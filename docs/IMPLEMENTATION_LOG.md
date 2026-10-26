@@ -1,5 +1,16 @@
 # Implementation Log
 
+## 2026-10-26 — Verify all installed candidates and downloaded checksum sets
+
+- Run 40299138359 at 81e81da passed source checks, packaging, frozen workflows, actual hosted-runner installer/app-copy/workflow/removal and candidate preparation on Windows x64, Linux x64 and both Mac architectures. Core: Windows 262 passed/2 skipped/17 deselected; other targets 260 passed/4 skipped/17 deselected. Installed apps ran with an empty PATH directory and removed Python path variables. Network-disabled clean-desktop use, native interaction and trusted signing remain separate.
+- Downloaded all four small audits: source identity and inventory SHA256 match, bundled/installed smoke reports succeed, exact installers and their byte hashes are recorded. Also downloaded all four complete candidates and independently rechecked all 26 package/evidence/manifest SHA256 values, including setup/ZIP, deb/tar and both DMGs. Metadata remains explicitly signing-unverified. Updated all four validation download links.
+- Current isolated core: 259 passed/5 skipped/17 deselected in 15.36s; masked full source 276 passed/5 skipped in 78.69s; final explicit-CPU optional tests 17 passed/264 deselected. Rebuilt source wheel and verified exact current overlay/candidate/canvas module bytes, headless dependency identity and full project license notices. A separate isolated Windows source build at 81e81da completed; it was not launched after the owner requested avoiding GPU work. No local user installation or OS setting was changed.
+
+## 2026-10-26 — Keep optional test inference on CPU
+
+- An unrestricted local optional-model run stalled and was stopped without recording a pass. The subsequent masked full run passed 276 tests/5 skips in 78.69s. No CUDA result is inferred from it.
+- The owner then requested no GPU use while another project trains. Found three pipeline tests inheriting the application's accelerator preference; changed them to explicit CPU configuration and asserted actual result device. Application defaults are unchanged. Optional CI/local CPU commands use the nonempty CUDA visibility mask -1. Focused optional CPU suite: 17 passed/264 deselected in 62.12s with that mask; Ruff passed. No further local GPU tests or interactive app launches were performed.
+
 ## 2026-10-26 — Verify I17 native delivery and prepare installed-artifact release checks
 
 - Run 40296839880 at 9085c12 passed Windows x64, Linux x64 and both Mac architectures after the test event-loop repair. Core: Windows 246 passed/2 skipped/17 deselected; other targets 244 passed/4 skipped/17 deselected. Downloaded all four audits and checked source identity, inventory SHA256, successful frozen reports and the new background/latest-style/viewport/styled-export check. Notice/files/unresolved counts are unchanged from the verified headless profile. Updated validation download links. The first failed run remains recorded; no assertion/deadline was removed.

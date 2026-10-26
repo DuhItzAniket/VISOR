@@ -17,16 +17,16 @@ PyInstaller's documented model supports self-contained bundles but requires buil
 
 Native build evidence (2026-10-19): [run 39300439636](https://github.com/DuhItzAniket/VISOR/actions/runs/39300439636), source `303ba33`, completed successfully on Windows x64, macOS ARM64, and Ubuntu x64. All three jobs produced packages and passed the bundled workflow check. Artifacts are named `VISOR-Windows-X64`, `VISOR-macOS-ARM64`, and `VISOR-Linux-X64`. These are unsigned validation builds, not a public production release or proof of install/uninstall behavior on every desktop.
 
-Current validation (recorded 2026-10-26): [run 40296839880](https://github.com/DuhItzAniket/VISOR/actions/runs/40296839880) at `9085c12` passed Windows x64, macOS ARM64/Intel and Linux x64 core suites, lint, packaging and bundled workflow checks. Each target verified VISOR's Apache-2.0 LICENSE/NOTICE files, dependency notice hashes and Qt runtime version, PNG/JPEG/BMP/TIFF/WebP decoding, copy-only Qt URL drop events, classical image workflows, exports, project replay, MJPEG encode/decode with three-frame ORB tracking, actual OpenCV GUI backend, asynchronous overlay/style/viewport/export consistency and shutdown. Windows: 246 passed/2 skipped/17 model tests deselected; macOS/Linux: 244 passed/4 skipped/17 deselected. Extra skips off Windows are platform-specific exact snapshots. Version 0.2.0 comes from the frozen source. See [current status](IMPLEMENTATION_STATUS.md) for remaining release gates; project notice inclusion is not complete third-party notice compliance.
+Current validation (recorded 2026-10-26): [run 40299138359](https://github.com/DuhItzAniket/VISOR/actions/runs/40299138359) at `81e81da` passed Windows x64, macOS ARM64/Intel and Linux x64 core suites, lint, packaging and bundled workflow checks. Each target verified VISOR's Apache-2.0 LICENSE/NOTICE files, dependency notice hashes and Qt runtime version, PNG/JPEG/BMP/TIFF/WebP decoding, copy-only Qt URL drop events, classical image workflows, exports, project replay, MJPEG encode/decode with three-frame ORB tracking, actual OpenCV GUI backend, asynchronous overlay/style/viewport/export consistency and shutdown. Each target also passed its actual installer/app-copy, installed workflow and removal checks on the disposable runner, followed by candidate preparation. Windows: 262 passed/2 skipped/17 model tests deselected; macOS/Linux: 260 passed/4 skipped/17 deselected. Extra skips off Windows are platform-specific exact snapshots. Version 0.2.0 comes from the frozen source. See [current status](IMPLEMENTATION_STATUS.md) for remaining release gates; project notice inclusion is not complete third-party notice compliance.
 
 Artifacts from the latest run:
 
-- [Windows x64 setup and portable ZIP](https://github.com/DuhItzAniket/VISOR/actions/runs/40296839880/artifacts/12639340309)
-- [macOS Apple Silicon DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40296839880/artifacts/12638113203)
-- [macOS Intel DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40296839880/artifacts/12639431149)
-- [Linux x64 Debian and portable packages](https://github.com/DuhItzAniket/VISOR/actions/runs/40296839880/artifacts/12638692511)
+- [Windows x64 setup and portable ZIP](https://github.com/DuhItzAniket/VISOR/actions/runs/40299138359/artifacts/12640081018)
+- [macOS Apple Silicon DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40299138359/artifacts/12638953678)
+- [macOS Intel DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/40299138359/artifacts/12639263597)
+- [Linux x64 Debian and portable packages](https://github.com/DuhItzAniket/VISOR/actions/runs/40299138359/artifacts/12640280762)
 
-GitHub may require sign-in to download Actions artifacts; artifacts also have a retention period. These links are validation downloads, not permanent public release URLs.
+GitHub may require sign-in to download Actions artifacts; artifacts also have a retention period. These links are validation downloads, not permanent public release URLs. The ZIP contents are flat: packages plus platform-prefixed evidence, a manifest and SHA256SUMS. Keep the files together when checking checksums.
 
 The runner architecture and dependency versions are recorded in `dist/build-info.json`. Linux artifacts are not guaranteed across every distribution/glibc version. macOS and Windows signing are not configured by the scripts. No package is called production-ready until install/uninstall and desktop behavior have been checked on its intended target system.
 
@@ -66,9 +66,11 @@ The Actions artifact also supplies `artifact-inventory.json`, containing actual 
 
 New workflow runs also upload small `VISOR-<OS>-<ARCH>-audit` artifacts with only build-info, inventory and smoke results, so maintainers can inspect evidence without downloading every installer.
 
-## Optional engines
+## Candidate preparation
 
-The I18 [candidate preparation and installed-artifact workflow](RELEASE_PREPARATION.md) is being validated separately. It adds actual disposable-runner installer/copy/workflow/removal evidence and flat checksum-linked assets; current downloads above remain tied to their recorded completed run until that refresh passes.
+The I18 [candidate preparation and installed-artifact workflow](RELEASE_PREPARATION.md) passed on all four targets at 81e81da. It supplies actual disposable-runner installer/copy/workflow/removal evidence and flat checksum-linked assets. This does not close clean-user-desktop/offline-network, signing or native-interaction gates.
+
+## Optional engines
 
 The standard desktop bundles validate SIFT/ORB and explicitly exclude Torch/LightGlue/XFeat to avoid packaging developer-installed GPU dependencies accidentally. Registry-supported additional classical engines are enabled when the bundled OpenCV API provides them. Packaged UI hides pip installation controls and reports unavailable learned engines. Source learned adapters are repaired, but a complete packaged learned runtime and its model notices remain I12/I13 work; users should not be told to install Python to complete an advertised packaged feature.
 

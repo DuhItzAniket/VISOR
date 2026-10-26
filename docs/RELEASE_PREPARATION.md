@@ -1,6 +1,6 @@
 # Validation candidates and installed-artifact checks
 
-I18 adds a reproducible preparation path; its native execution evidence is tracked in IMPLEMENTATION_STATUS.md. It does not publish a GitHub Release, sign software or establish complete dependency compliance.
+I18 passed on Windows x64, Linux x64 and both Mac architectures at 81e81da in [run 40299138359](https://github.com/DuhItzAniket/VISOR/actions/runs/40299138359). Its native execution evidence is tracked in IMPLEMENTATION_STATUS.md. It does not publish a GitHub Release, sign software or establish complete dependency compliance.
 
 The Desktop bundles workflow first runs source checks, freezes/packages the application and checks the frozen workflow. It then runs `scripts/verify_installer.py` on the disposable GitHub-hosted runner. The script refuses local/self-hosted environments and refuses to replace an existing VISOR installation or known Linux application files.
 
