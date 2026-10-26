@@ -40,6 +40,8 @@ Review method: source inspection and local Qt offscreen renders using the Window
 | Filename text was interpolated into rich-text overview markup | Escape filenames before displaying them |
 | Native review opened file dialogs in the process/application folder | Use Qt's platform Pictures/Documents/Movies locations and remember successful per-category choices; reuse the loaded project filename. Keep native review evidence separate from mocked dialog checks |
 
+Source/offscreen recovery review (2026-10-26): project/history replay stages both decoded images before replacing current settings, inputs or document identity. Controlled reference/target cancellation, invalid image, latest request, manual supersession and close checks preserve the existing workspace. These are automated state/CPU-render checks; physical native interaction, screen-reader announcements and monitor scaling remain separate gates.
+
 ## Release review gates
 
 Track evidence for each target OS and architecture. Do not mark these complete based only on an offscreen render or an automated bundle check.

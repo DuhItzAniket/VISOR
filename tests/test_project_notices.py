@@ -43,3 +43,4 @@ def test_frozen_project_notices_and_classical_workflow_pass(tmp_path, monkeypatc
     assert data["success"] is True
     assert "VISOR Apache-2.0 LICENSE/NOTICE files (project only)" in data["checks"]
     assert "project round trip" in data["checks"]
+    assert "Atomic project replay and failed-open workspace preservation" in data["checks"]

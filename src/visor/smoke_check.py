@@ -29,6 +29,7 @@ def run_smoke_check(report_path: Path) -> int:
     from visor.models import AnalysisSettings
     from visor.pipeline import analyze
     from visor.ui.main_window import MainWindow
+    from visor.ui.project_loader import ProjectRequest
 
     report: dict = {"version": __version__, "system": platform.system(), "checks": [], "success": False}
     app = QApplication.instance() or QApplication(["VISOR smoke check"])
@@ -183,6 +184,22 @@ def run_smoke_check(report_path: Path) -> int:
             if load_project(folder / "session.visor").engine != "ORB":
                 raise RuntimeError("Project round trip failed.")
             report["checks"].append("project round trip")
+            from dataclasses import replace
+
+            before_result, before_config, before_document = window._latest_result, window._read_configurations(), window._project_path
+            bad_project = folder / "unreadable.visor"
+            save_project(replace(session, target_path=str(broken)), bad_project)
+            window._request_project(ProjectRequest(load_project(bad_project), bad_project))
+            wait_for(lambda: not window._inputs_loading())
+            if (window._project_path != before_document or window._latest_result is not before_result
+                    or window._read_configurations() != before_config or window.target_input.image_path != target.resolve()):
+                raise RuntimeError("Rejected project changed the existing workspace.")
+            window._request_project(ProjectRequest(load_project(folder / "session.visor"), folder / "session.visor"))
+            wait_for(lambda: not window._inputs_loading())
+            if (window._project_path != folder / "session.visor" or window.engine_selector.currentText() != "ORB"
+                    or window.reference_input.image_path != reference.resolve() or window.target_input.image_path != target.resolve()):
+                raise RuntimeError("Atomic project replay did not commit the decoded pair and settings.")
+            report["checks"].append("Atomic project replay and failed-open workspace preservation")
             from visor.video import track_reference_in_video
 
             video_path = folder / "clip.avi"

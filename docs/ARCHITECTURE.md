@@ -44,6 +44,7 @@ Current implementation note (2026-10-19): all RANSAC/MAGSAC/LMEDS outputs share 
 | `visor.ui.widgets.image_canvas` | Zoomable `QGraphicsView` with scroll-hand drag, wheel zoom, cursor coordinate signal, and click-to-inspect signal. |
 | `visor.ui.widgets.image_drop` | Picker/drop image slot, cached upright bounded preview and recovery text. Queues background requests; emits `image_changed(role, path)` only after accepted decode/explicit clear. Copy acknowledgment means a request was queued. Synchronous `load_path` is retained only as a controlled-check helper. |
 | `visor.ui.image_loader` | Reentrant reader/QImage decode and scaling off the GUI thread, one active/latest pending request per slot, revision-guarded main-thread delivery, cooperative cancellation around codec calls and nonblocking shutdown. QPixmap/widget updates remain on the UI thread. |
+| `visor.ui.project_loader` | Stages project/history reference and target sequentially through one bounded preview decoder; delivers an accepted pair before the main thread commits configurations, images and document identity. Cancellation/failure never partially replaces the workspace. |
 | `visor.ui.widgets.details_panel` | `AnalysisDetailsPanel` renders structured engine-specific results in tab or tree view mode. Sections: Overview, Engine (SIFT/ORB), Geometry, Performance, Selected Keypoints. |
 
 ## Data flow

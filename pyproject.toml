@@ -51,6 +51,7 @@ src = ["src"]
 [tool.mypy]
 files = [
     "src/visor/ui/image_loader.py",
+    "src/visor/ui/project_loader.py",
     "src/visor/ui/widgets/image_drop.py",
     "src/visor/smoke_check.py",
     "src/visor/evaluate.py",

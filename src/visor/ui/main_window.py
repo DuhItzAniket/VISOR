@@ -85,6 +85,7 @@ from visor.pipeline import AnalysisCancelled, _check_cancel, analyze, compare_en
 from visor.sweeps import run_robustness_sweep
 from visor.ui.job_relay import JobRelay
 from visor.ui.overlay_renderer import OverlayRenderer, OverlayUpdate
+from visor.ui.project_loader import LoadedProject, ProjectLoader, ProjectRequest
 from visor.ui.widgets.details_panel import AnalysisDetailsPanel
 from visor.ui.widgets.image_canvas import ImageCanvas
 from visor.ui.widgets.image_drop import ImageDropWidget
@@ -357,7 +358,13 @@ class MainWindow(QMainWindow):
         self.resize(1280, 820)
         self._paths: dict[str, Path] = {}
         self._project_path: Path | None = None
-        self._loading_project: tuple[Path, Path] | None = None
+        self._applying_project = False
+        self._project_cancel_message: str | None = None
+        self._project_loader = ProjectLoader(self)
+        self._project_loader.completed.connect(self._apply_project)
+        self._project_loader.failed.connect(self._project_load_failed)
+        self._project_loader.busy_changed.connect(self._project_loading_changed)
+        self._project_loader.idle.connect(self._finish_deferred_close)
         self._worker: QThread | None = None
         self._jobs = JobController()
         self._closing_requested = False
@@ -590,6 +597,7 @@ class MainWindow(QMainWindow):
             image_input.loading_changed.connect(self._input_loading_changed)
             image_input.loading_idle.connect(self._finish_deferred_close)
             image_input.image_load_failed.connect(self._on_image_load_failed)
+            image_input.image_load_started.connect(self._manual_image_request)
             image_input.loading_cancelled.connect(self._on_image_loading_cancelled)
 
         image_row = QWidget()
@@ -1066,6 +1074,8 @@ class MainWindow(QMainWindow):
             selection_control.currentIndexChanged.connect(self._invalidate_analysis)
 
     def _invalidate_analysis(self, *_args) -> None:
+        if not self._applying_project:
+            self._cancel_project_loading()
         self._jobs.invalidate()
         self._clear_result_views()
         self._latest_benchmark = None
@@ -1091,7 +1101,7 @@ class MainWindow(QMainWindow):
         for view in (self.matches_view, self.localization_view, self.warped_view):
             view.set_placeholder("No analysis loaded for this viewport yet.")
 
-    def _add_current_pair_to_history(self) -> None:
+    def _add_current_pair_to_history(self, *, announce: bool = True) -> None:
         if "Reference image" not in self._paths or "Target image" not in self._paths:
             return
         reference = self._paths["Reference image"]
@@ -1102,7 +1112,8 @@ class MainWindow(QMainWindow):
             return
         self._pair_history.append(pair)
         self._sync_pair_list()
-        self.statusBar().showMessage(f"Saved pair: {reference.name} ↔ {target.name}")
+        if announce:
+            self.statusBar().showMessage(f"Saved pair: {reference.name} ↔ {target.name}")
 
     def _sync_pair_list(self) -> None:
         self.pair_list.clear()
@@ -1122,9 +1133,10 @@ class MainWindow(QMainWindow):
         if not 0 <= index < len(self._pair_history):
             return
         reference, target = self._pair_history[index]
-        self.reference_input.request_path(reference, preserve_previous=False)
-        self.target_input.request_path(target, preserve_previous=False)
-        self.statusBar().showMessage(f"Loading pair from history: {reference.name} ↔ {target.name}")
+        settings, sift, orb, matching, method = self._read_configurations()
+        session = ProjectSession(str(reference), str(target), cast(EngineName, self.engine_selector.currentText()),
+                                 settings, sift, orb, matching, method)
+        self._request_project(ProjectRequest(session))
 
     def _show_error(self, message: str) -> None:
         self.statusBar().showMessage(f"Analysis failed: {message}")
@@ -1143,8 +1155,8 @@ class MainWindow(QMainWindow):
         self.log_engine_event("INFO", "Analysis cancelled at a safe processing boundary.")
 
     def _cancel_running(self) -> None:
-        if self._inputs_loading():
-            self._loading_project = None
+        self._cancel_project_loading(explicit=True)
+        if self.reference_input.loading or self.target_input.loading:
             self.reference_input.cancel_loading()
             self.target_input.cancel_loading()
             self.cancel_button.setEnabled(False)
@@ -1485,6 +1497,8 @@ class MainWindow(QMainWindow):
             self._refresh_one_view(label)
 
     def _refresh_visualization(self) -> None:
+        if not self._applying_project:
+            self._cancel_project_loading()
         result = self._latest_result
         if result is None or not hasattr(self, "view_toggles"):
             return
@@ -1702,6 +1716,7 @@ class MainWindow(QMainWindow):
             self._closing_requested = True
             self._jobs.shutdown()
             self._overlay_renderer.shutdown()
+            self._project_loader.shutdown()
             self.reference_input.shutdown()
             self.target_input.shutdown()
             if self._cancel_event is not None:
@@ -1717,6 +1732,7 @@ class MainWindow(QMainWindow):
             event.ignore()
             return
         self._overlay_renderer.shutdown()
+        self._project_loader.shutdown()
         self.reference_input.shutdown()
         self.target_input.shutdown()
         self._window_settings.setValue("window/geometry", self.saveGeometry())
@@ -1769,7 +1785,7 @@ class MainWindow(QMainWindow):
             self._latest_benchmark = None
             self.statusBar().showMessage(f"Loaded {role.lower()}: {path.name}")
             if "Reference image" in self._paths and "Target image" in self._paths and not self._inputs_loading():
-                self._add_current_pair_to_history()
+                self._add_current_pair_to_history(announce=False)
         else:
             self._paths.pop(role, None)
             self._clear_result_views()
@@ -1781,7 +1797,7 @@ class MainWindow(QMainWindow):
             self._update_input_actions()
 
     def _inputs_loading(self) -> bool:
-        return self.reference_input.loading or self.target_input.loading
+        return self.reference_input.loading or self.target_input.loading or self._project_loader.busy
 
     def _on_image_load_failed(self, role: str, recovery: str) -> None:
         if not self._closing_requested:
@@ -1802,26 +1818,20 @@ class MainWindow(QMainWindow):
         self.compare_button.setEnabled(pair and idle)
         self.benchmark_button.setEnabled("Reference image" in self._paths and idle)
         self.cancel_button.setEnabled(not self._closing_requested and not installing and (
-            self._worker is not None or self._overlay_renderer.busy or self._inputs_loading()))
+            self._worker is not None or self._overlay_renderer.busy or self.reference_input.loading
+            or self.target_input.loading or self._project_loader.cancellable))
 
     def _input_loading_changed(self, _busy: bool) -> None:
         self._update_input_actions()
         if self._closing_requested:
             return
-        if self._inputs_loading():
+        if self._project_loader.busy:
+            return
+        if self.reference_input.loading or self.target_input.loading:
             self.statusBar().showMessage("Loading image previews…")
             return
-        if self._loading_project is not None:
-            expected, self._loading_project = self._loading_project, None
-            actual = (self.reference_input.image_path, self.target_input.image_path)
-            if None in actual:
-                self.statusBar().showMessage("Project settings loaded, but an image could not be decoded. Choose a replacement image.")
-            elif actual != expected:
-                self.statusBar().showMessage("Project settings loaded; image selections were changed during loading.")
-            else:
-                self.statusBar().showMessage(f"Project loaded: {self._project_path.name if self._project_path else ''}")
         if self.reference_input.image_path is not None and self.target_input.image_path is not None:
-            self._add_current_pair_to_history()
+            self._add_current_pair_to_history(announce=False)
 
     def _save_project(self) -> None:
         if self._inputs_loading():
@@ -1862,6 +1872,71 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Project engine unavailable",
                                 f"{session.engine} is unavailable in this runtime. The project was not loaded with a substitute engine.")
             return
+        self._request_project(ProjectRequest(session, Path(filename).resolve()))
+
+    def _request_project(self, request: ProjectRequest) -> None:
+        if self._closing_requested:
+            return
+        self._project_cancel_message = None
+        self.reference_input.cancel_loading()
+        self.target_input.cancel_loading()
+        if self._project_loader.request(request):
+            label = "project images" if request.document is not None else "image pair from history"
+            self.statusBar().showMessage(f"Loading {label}…")
+
+    def _manual_image_request(self, _role: str) -> None:
+        self._cancel_project_loading()
+
+    def _cancel_project_loading(self, *, explicit: bool = False) -> None:
+        if not self._project_loader.cancellable:
+            return
+        self._project_cancel_message = "Loading cancelled. Previous workspace retained." if explicit else "Loading cancelled."
+        self._project_loader.cancel()
+        if explicit:
+            self.cancel_button.setEnabled(False)
+            self.statusBar().showMessage("Cancellation requested; waiting for the image decoder…")
+
+    def _project_loading_changed(self, busy: bool) -> None:
+        self._update_input_actions()
+        if self._closing_requested:
+            return
+        if not busy and self._project_cancel_message is not None:
+            self.statusBar().showMessage(self._project_cancel_message)
+            self._project_cancel_message = None
+
+    def _project_load_failed(self, request: ProjectRequest, error: str) -> None:
+        if self._closing_requested:
+            return
+        self._project_cancel_message = None
+        label = "project" if request.document is not None else "image pair"
+        message = f"Could not load {label}. Previous workspace retained. {error}"
+        self.statusBar().showMessage(message)
+        self.log_engine_event("WARNING", message)
+
+    def _apply_project(self, loaded: LoadedProject) -> None:
+        if self._closing_requested:
+            return
+        session = loaded.request.session
+        engine_index = self.engine_selector.findText(session.engine)
+        if engine_index < 0 or not cast(QStandardItemModel, self.engine_selector.model()).item(engine_index).isEnabled():
+            self._project_load_failed(loaded.request, f"{session.engine} is no longer available; no substitute was used.")
+            return
+        self._applying_project = True
+        try:
+            self._apply_project_settings(session, engine_index)
+            self.reference_input._apply_preview(loaded.reference)
+            self.target_input._apply_preview(loaded.target)
+            self._add_current_pair_to_history(announce=False)
+            if loaded.request.document is not None:
+                self._project_path = loaded.request.document
+                self._remember_file_location("projects", str(loaded.request.document))
+                self.statusBar().showMessage(f"Project loaded: {loaded.request.document.name}")
+            else:
+                self.statusBar().showMessage("Image pair loaded from history.")
+        finally:
+            self._applying_project = False
+
+    def _apply_project_settings(self, session: ProjectSession, engine_index: int) -> None:
         self.engine_selector.setCurrentIndex(engine_index)
         self.ratio_control.setValue(session.settings.ratio_threshold)
         self.ransac_control.setValue(session.settings.ransac_threshold)
@@ -1889,12 +1964,6 @@ class MainWindow(QMainWindow):
         self.orb_score.setCurrentText(session.orb.score_type)
         self.orb_patch.setValue(session.orb.patch_size)
         self.orb_fast.setValue(session.orb.fast_threshold)
-        self._loading_project = (Path(session.reference_path).resolve(), Path(session.target_path).resolve())
-        self._project_path = Path(filename).resolve()
-        self._remember_file_location("projects", filename)
-        self.reference_input.request_path(self._loading_project[0], preserve_previous=False)
-        self.target_input.request_path(self._loading_project[1], preserve_previous=False)
-        self.statusBar().showMessage("Loading project images…")
 
     def _export_json(self) -> None:
         self._export_analysis(export_json, "JSON files (*.json)", "analysis.json")

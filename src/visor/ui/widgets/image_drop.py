@@ -30,6 +30,7 @@ class ImageDropWidget(QFrame):
 
     image_changed = Signal(str, object)
     image_load_failed = Signal(str, str)
+    image_load_started = Signal(str)
     loading_changed = Signal(bool)
     loading_cancelled = Signal(str)
     loading_idle = Signal()
@@ -163,6 +164,7 @@ class ImageDropWidget(QFrame):
         request = PreviewRequest(Path(path), preserve_previous)
         if not self._loader.request(request):
             return False
+        self.image_load_started.emit(self._title)
         self._cancel_requested = False
         self._set_metadata(f"Loading {request.path.name}…")
         self.clear_button.setVisible(True)
