@@ -165,7 +165,7 @@ class XFeatEngine:
         ref = self.extract(ref_gray)
         tgt = self.extract(tgt_gray)
         start = perf_counter()
-        pairs = ()
+        pairs: tuple[MatchInfo, ...] = ()
         if ref.descriptors is not None and tgt.descriptors is not None and len(ref.keypoints) and len(tgt.keypoints):
             raw = cv2.BFMatcher(cv2.NORM_L2, crossCheck=True).match(ref.descriptors, tgt.descriptors)
             pairs = tuple(MatchInfo(m.queryIdx, m.trainIdx, float(m.distance), None)

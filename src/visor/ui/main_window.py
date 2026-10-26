@@ -8,11 +8,21 @@ from dataclasses import replace
 from html import escape
 from pathlib import Path
 from threading import Event
-from typing import cast
+from typing import Protocol, cast
 
 import numpy as np
-from PySide6.QtCore import QByteArray, QSettings, QSignalBlocker, QStandardPaths, Qt, QThread, QTimer, Signal
-from PySide6.QtGui import QAction, QIcon, QTextCursor
+from PySide6.QtCore import (
+    QByteArray,
+    QSettings,
+    QSignalBlocker,
+    QStandardPaths,
+    Qt,
+    QThread,
+    QTimer,
+    Signal,
+    SignalInstance,
+)
+from PySide6.QtGui import QAction, QIcon, QStandardItemModel, QTextCursor
 from PySide6.QtWidgets import (
     QComboBox,
     QDialog,
@@ -80,6 +90,14 @@ from visor.ui.widgets.image_canvas import ImageCanvas
 from visor.ui.widgets.image_drop import ImageDropWidget
 
 _ICONS_DIR = Path(__file__).parent.parent / "assets" / "icons"
+
+
+class _WorkerSignals(Protocol):
+    """Signals shared by the application's processing QThread subclasses."""
+
+    completed: SignalInstance
+    failed: SignalInstance
+    cancelled: SignalInstance
 
 
 def _icon(name: str) -> QIcon:
@@ -710,7 +728,7 @@ class MainWindow(QMainWindow):
         """Keep engine names compact; put dependency guidance in the tooltip."""
         self.engine_selector.addItem(name if available else f"{name} (unavailable)")
         index = self.engine_selector.count() - 1
-        item = self.engine_selector.model().item(index)  # type: ignore[union-attr]
+        item = cast(QStandardItemModel, self.engine_selector.model()).item(index)
         item.setEnabled(available)
         reason = "Not included in this desktop distribution." if not available and getattr(sys, "frozen", False) else hint
         self.engine_selector.setItemData(index, reason, Qt.ItemDataRole.ToolTipRole)
@@ -949,7 +967,7 @@ class MainWindow(QMainWindow):
             use_flann=strategy == "FLANN" and self.matcher_strategy.isEnabled(),
         )
         robust_text = self.robust_estimator.currentText() if hasattr(self, "robust_estimator") else "RANSAC"
-        robust_method: RobustMethod = robust_text if robust_text in ("RANSAC", "MAGSAC", "LMEDS") else "RANSAC"
+        robust_method: RobustMethod = cast(RobustMethod, robust_text) if robust_text in ("RANSAC", "MAGSAC", "LMEDS") else "RANSAC"
         return settings, sift, orb, matching_options, robust_method
 
     def _start_analysis(self) -> None:
@@ -1012,9 +1030,10 @@ class MainWindow(QMainWindow):
         ticket = self._jobs.begin(self._cancel_event)
         relay = JobRelay(self._jobs, ticket, callback, self._show_error, self._show_cancelled,
                          lambda: self._worker_finished(worker, ticket), self)
-        worker.completed.connect(relay.success)
-        worker.failed.connect(relay.failure)
-        worker.cancelled.connect(relay.cancelled)
+        signals = cast(_WorkerSignals, worker)
+        signals.completed.connect(relay.success)
+        signals.failed.connect(relay.failure)
+        signals.cancelled.connect(relay.cancelled)
         worker.finished.connect(relay.finished)
 
     def _worker_finished(self, worker: QThread, ticket: JobTicket) -> None:
@@ -1035,14 +1054,14 @@ class MainWindow(QMainWindow):
         return True
 
     def _connect_configuration_changes(self) -> None:
-        for control in (self.ratio_control, self.ransac_control, self.sift_features, self.sift_layers,
+        for numeric_control in (self.ratio_control, self.ransac_control, self.sift_features, self.sift_layers,
                         self.sift_contrast, self.sift_edge, self.sift_sigma, self.orb_features,
                         self.orb_scale, self.orb_levels, self.orb_edge, self.orb_first_level,
                         self.orb_patch, self.orb_fast):
-            control.valueChanged.connect(self._invalidate_analysis)
-        for control in (self.engine_selector, self.orb_wta, self.orb_score,
+            numeric_control.valueChanged.connect(self._invalidate_analysis)
+        for selection_control in (self.engine_selector, self.orb_wta, self.orb_score,
                         self.matcher_strategy, self.robust_estimator):
-            control.currentIndexChanged.connect(self._invalidate_analysis)
+            selection_control.currentIndexChanged.connect(self._invalidate_analysis)
 
     def _invalidate_analysis(self, *_args) -> None:
         self._jobs.invalidate()
@@ -1826,7 +1845,7 @@ class MainWindow(QMainWindow):
             QMessageBox.critical(self, "Could not open project", str(exc))
             return
         engine_index = self.engine_selector.findText(session.engine)
-        if engine_index < 0 or not self.engine_selector.model().item(engine_index).isEnabled():
+        if engine_index < 0 or not cast(QStandardItemModel, self.engine_selector.model()).item(engine_index).isEnabled():
             QMessageBox.warning(self, "Project engine unavailable",
                                 f"{session.engine} is unavailable in this runtime. The project was not loaded with a substitute engine.")
             return

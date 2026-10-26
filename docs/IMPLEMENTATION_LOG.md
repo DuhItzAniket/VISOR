@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Repair the type contracts found on fresh hosted runners
+
+- Run 40338832093 at 506a4c9 passed full core and lint on both hosts (Windows 316 passed/2 skipped/17 deselected; Linux 314 passed/4 skipped/17 deselected), then failed the new type step on 30 pre-existing errors in nine imported modules. It is not recorded as a successful overall workflow. Local explicit-eight-file checking had not reported those imported-module errors; the fresh runner exposed the gap.
+- The repository now lists 17 explicit type-check targets so local/CI scope is consistent, including those nine modules. Fixed accurate float32/float64 calibration input annotations, byte-preserving OpenCV result casts, FLANN parameter dictionary invariance, the learned match tuple's element type, actual combo-model/signal interfaces, validated estimator narrowing and distinct numeric/selection control loop variables. Optional Torch/torchvision/LightGlue imports may be absent in core checks; only missing external imports receive that override, not VISOR errors. No check is skipped and no matching norm, pixel arithmetic, solver, threshold, fit membership, metric or golden fixture changed.
+- Cold Mypy passed all 17 selected files, all-source/script Ruff passed and 44 focused calibration/video/sweep/matching/classical/UI lifecycle/loader checks passed in 5.51s. Fresh automatic full-core/type/wheel verification follows this commit. Current native installers remain the ce68a2c validation cohort; no new physical desktop/signing/GPU claim follows from annotation repairs.
+
 ## 2026-10-26 — Repair checkout metadata exposed by automatic core CI
 
 - First automatic run 40338166624 at 51362ab failed on both runners before tests: checkout's immediate credential cleanup encountered the orphaned 160000 gitlink Sample/Dataset/HPatches with no .gitmodules URL. Repository fetch succeeded; no test failure/pass is inferred from this run.

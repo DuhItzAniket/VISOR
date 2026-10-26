@@ -38,7 +38,7 @@ Primary references: [Inno setup flags](https://jrsoftware.org/ishelp/topic_setup
 
 ## Automatic source checks
 
-The Core checks workflow runs on main pushes and pull requests, with an optional manual trigger. Windows/Linux use the pinned desktop dependency profile, offscreen Qt and CUDA visibility -1, run model-free regressions, lint all maintained scripts, check focused type contracts, build a source wheel in isolation and verify package/source bytes, project notices, identity/version and the headless OpenCV dependency. JUnit results are retained even on failure. This lane never builds/installs native packages or publishes a release; the separate four-target Desktop bundles workflow remains the native distribution check.
+The Core checks workflow runs on main pushes and pull requests, with an optional manual trigger. Windows/Linux use the pinned desktop dependency profile, offscreen Qt and CUDA visibility -1, run model-free regressions, lint all maintained scripts, check the 17 type targets listed in pyproject.toml, build a source wheel in isolation and verify package/source bytes, project notices, identity/version and the headless OpenCV dependency. JUnit results are retained even on failure. This lane never builds/installs native packages or publishes a release; the separate four-target Desktop bundles workflow remains the native distribution check.
 
 The wheel verifier reads the archive without importing it and accepts a wheel path or a directory containing exactly one wheel. It rejects duplicate/unsafe members, another package/version, ambiguous identity/license metadata, missing/tampered source/icons/notices and an unexpected OpenCV provider. A wheel directory with multiple versions fails instead of selecting an arbitrary file. Its report is source/project-metadata evidence, not a transitive native/model licensing certificate.
 
@@ -48,3 +48,5 @@ python scripts/verify_source_wheel.py build/source-wheel
 ```
 
 The workflow uses read-only repository access and cancels superseded core runs on the same ref. GitHub documents [push/pull-request triggers](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows) and [per-ref concurrency](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency). It does not configure branch protection or make a check mandatory without an owner decision.
+
+Run `python -m mypy --no-incremental` to reproduce the explicit type scope locally. It includes the main window plus calibration, video, matching and optional-adapter result contracts. Missing optional third-party model packages are allowed by module-specific overrides; VISOR's own errors are not suppressed. This does not assert typed internals for an absent model dependency or an entire-repository type pass.

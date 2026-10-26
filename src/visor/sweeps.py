@@ -10,6 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 from threading import Event
 from time import perf_counter
+from typing import cast
 
 import cv2
 import numpy as np
@@ -31,11 +32,11 @@ def sweep_scenarios(image: ByteArray) -> list[tuple[str, ByteArray, np.ndarray]]
     for angle in ROTATION_DEGREES:
         affine = cv2.getRotationMatrix2D((width / 2, height / 2), angle, 1.0)
         affine_h = np.vstack([affine, [0.0, 0.0, 1.0]])
-        out.append((f"Rotation {angle:g}deg", cv2.warpAffine(image, affine, (width, height)), affine_h))
+        out.append((f"Rotation {angle:g}deg", cast(ByteArray, cv2.warpAffine(image, affine, (width, height))), affine_h))
     for factor in SCALE_FACTORS:
         affine = cv2.getRotationMatrix2D((width / 2, height / 2), 0.0, factor)
         affine_h = np.vstack([affine, [0.0, 0.0, 1.0]])
-        out.append((f"Scale {factor:g}x", cv2.warpAffine(image, affine, (width, height)), affine_h))
+        out.append((f"Scale {factor:g}x", cast(ByteArray, cv2.warpAffine(image, affine, (width, height))), affine_h))
     return out
 
 

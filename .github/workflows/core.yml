@@ -48,10 +48,7 @@ jobs:
       - name: Lint all maintained source and scripts
         run: python -m ruff check src tests scripts
       - name: Focused type contracts
-        run: >-
-          python -m mypy src/visor/ui/image_loader.py src/visor/ui/widgets/image_drop.py
-          src/visor/smoke_check.py src/visor/evaluate.py src/visor/evaluation_data.py
-          scripts/create_stress_manifest.py scripts/evaluate_pair_manifest.py scripts/verify_source_wheel.py
+        run: python -m mypy
       - name: Build a source wheel
         run: python -m pip wheel --no-deps --wheel-dir dist/source-wheel .
       - name: Verify source wheel bytes and project notices

@@ -14,6 +14,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from threading import Event
 from time import perf_counter
+from typing import cast
 
 import cv2
 import numpy as np
@@ -69,7 +70,7 @@ def track_reference_in_frames(
     for index, frame in enumerate(frames):
         _check_cancel(cancel_event)
         start = perf_counter()
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cast(ByteArray, cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY))
         target_features = extractor.extract(gray)
         match_set = match_features(reference_features, target_features, engine, ratio_threshold)
         geometry, _ = estimate_homography(
@@ -106,7 +107,7 @@ def track_reference_in_video(
     _check_cancel(cancel_event)
     start = perf_counter()
     reference = _read_image(reference_path)
-    reference_gray = cv2.cvtColor(reference, cv2.COLOR_BGR2GRAY)
+    reference_gray = cast(ByteArray, cv2.cvtColor(reference, cv2.COLOR_BGR2GRAY))
     capture = cv2.VideoCapture(str(video_path))
 
     def frames() -> Iterator[ByteArray]:
@@ -115,7 +116,7 @@ def track_reference_in_video(
             ok, frame = capture.read()
             if not ok or frame is None:
                 break
-            yield frame
+            yield cast(ByteArray, frame)
 
     try:
         if not capture.isOpened():

@@ -4,15 +4,18 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from pathlib import Path
+from typing import cast
 
 import cv2
 import numpy as np
 from numpy.typing import NDArray
 
+PointArray = NDArray[np.float32] | NDArray[np.float64]
+
 
 def calibrate_camera(
-    object_points: Sequence[NDArray[np.float64]] | NDArray[np.float64],
-    image_points: Sequence[NDArray[np.float64]] | NDArray[np.float64],
+    object_points: Sequence[PointArray] | PointArray,
+    image_points: Sequence[PointArray] | PointArray,
     image_size: tuple[int, int],
     flags: int = cv2.CALIB_ZERO_TANGENT_DIST,
 ) -> tuple[NDArray[np.float64], NDArray[np.float64], float]:
@@ -37,7 +40,7 @@ def calibrate_camera(
 
     camera_matrix = np.eye(3, dtype=np.float64)
     dist_coeffs = np.zeros(5, dtype=np.float64)
-    rms, camera_matrix, dist_coeffs, _, _ = cv2.calibrateCamera(
+    rms, fitted_camera, fitted_distortion, _, _ = cv2.calibrateCamera(
         object_list,
         image_list,
         image_size,
@@ -45,7 +48,7 @@ def calibrate_camera(
         dist_coeffs,
         flags=flags,
     )
-    return camera_matrix, dist_coeffs, float(rms)
+    return cast(NDArray[np.float64], fitted_camera), cast(NDArray[np.float64], fitted_distortion), float(rms)
 
 
 def calibrate_from_chessboard_images(
@@ -84,7 +87,7 @@ def calibrate_from_chessboard_images(
             (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001),
         )
         object_samples.append(grid)
-        image_samples.append(refined.reshape(-1, 2))
+        image_samples.append(cast(NDArray[np.float32], refined.reshape(-1, 2)))
     if not object_samples or image_size is None:
         raise ValueError("No usable chessboard views found in the given images.")
     if cancel_check is not None:
@@ -121,4 +124,4 @@ def solve_pnp_pose(
     )
     if not success:
         return None
-    return rvec, tvec
+    return cast(NDArray[np.float64], rvec), cast(NDArray[np.float64], tvec)

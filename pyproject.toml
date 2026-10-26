@@ -47,3 +47,30 @@ markers = ["optional_model: requires installed optional inference runtime and mo
 [tool.ruff]
 line-length = 120
 src = ["src"]
+
+[tool.mypy]
+files = [
+    "src/visor/ui/image_loader.py",
+    "src/visor/ui/widgets/image_drop.py",
+    "src/visor/smoke_check.py",
+    "src/visor/evaluate.py",
+    "src/visor/evaluation_data.py",
+    "src/visor/model_runtime.py",
+    "src/visor/calibration.py",
+    "src/visor/learned_pair.py",
+    "src/visor/matching_strategies.py",
+    "src/visor/learned_engines.py",
+    "src/visor/learned_extra.py",
+    "src/visor/video.py",
+    "src/visor/sweeps.py",
+    "src/visor/ui/main_window.py",
+    "scripts/create_stress_manifest.py",
+    "scripts/evaluate_pair_manifest.py",
+    "scripts/verify_source_wheel.py",
+]
+
+# Core checks must not install model runtimes just to resolve optional imports.
+# Our adapter/result contracts still run through the normal type checker.
+[[tool.mypy.overrides]]
+module = ["torch", "torch.*", "torchvision", "torchvision.*", "lightglue", "lightglue.*"]
+ignore_missing_imports = true

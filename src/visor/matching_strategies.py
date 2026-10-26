@@ -71,6 +71,7 @@ def match_with_flann(
     if reference.descriptors is None or target.descriptors is None:
         return MatchSet((), 0, 0, "FLANN", "Lowe ratio", ratio_threshold, 0.0)
     try:
+        params: dict[str, bool | int | float | str]
         if _is_binary(reference):
             params = {"algorithm": 6, "table_number": 6, "key_size": 12, "multi_probe_level": 1}
         else:
