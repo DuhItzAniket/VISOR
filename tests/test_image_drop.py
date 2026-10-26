@@ -38,7 +38,7 @@ def _enter(widget, mime, actions):
 
 
 @pytest.mark.parametrize("role", ["reference_input", "target_input"])
-def test_image_drop_overrides_move_with_copy_and_preserves_source(drop_workspace, tmp_path, role):
+def test_image_drop_overrides_move_with_copy_and_preserves_source(drop_workspace, tmp_path, role, qt_wait):
     _, window = drop_workspace
     image = tmp_path / "reference with spaces — 图像.PNG"
     shutil.copyfile(Path(__file__).parent / "data/reference.png", image)
@@ -59,6 +59,7 @@ def test_image_drop_overrides_move_with_copy_and_preserves_source(drop_workspace
                       Qt.MouseButton.LeftButton, Qt.KeyboardModifier.ShiftModifier)
     QApplication.sendEvent(widget, drop)
     assert drop.isAccepted() and drop.dropAction() == Qt.DropAction.CopyAction
+    qt_wait(lambda: not widget.loading)
     assert widget.image_path == image.resolve()
     assert len(changes) == 1 and changes[0][1] == image.resolve()
     assert window._paths[widget.accessibleName()] == image.resolve()
@@ -86,7 +87,7 @@ def test_move_only_source_is_rejected_without_reading_or_changing_input(drop_wor
     assert not window._paths
 
 
-def test_unreadable_drop_reports_recovery_and_does_not_claim_acceptance(drop_workspace, tmp_path):
+def test_unreadable_drop_queues_open_then_reports_decode_failure(drop_workspace, tmp_path, qt_wait):
     _, window = drop_workspace
     image = tmp_path / "broken.png"
     image.write_bytes(b"not an image")
@@ -95,14 +96,15 @@ def test_unreadable_drop_reports_recovery_and_does_not_claim_acceptance(drop_wor
     drop = QDropEvent(QPointF(50, 50), Qt.DropAction.CopyAction, mime,
                       Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
     QApplication.sendEvent(window.target_input, drop)
-    assert not drop.isAccepted()
+    assert drop.isAccepted() and drop.dropAction() == Qt.DropAction.CopyAction
+    qt_wait(lambda: not window.target_input.loading)
     assert window.target_input.image_path is None
     assert "Could not read" in window.target_input.metadata_label.text()
     assert not window.run_button.isEnabled()
     assert image.read_bytes() == b"not an image"
 
 
-def test_failed_replacement_drop_retains_the_pair_but_is_not_accepted(drop_workspace, tmp_path):
+def test_failed_replacement_drop_retains_the_pair_after_queued_decode_failure(drop_workspace, tmp_path, qt_wait):
     _, window = drop_workspace
     previous = (Path(__file__).parent / "data/reference.png").resolve()
     window.reference_input.load_path(previous)
@@ -114,7 +116,9 @@ def test_failed_replacement_drop_retains_the_pair_but_is_not_accepted(drop_works
     drop = QDropEvent(QPointF(50, 50), Qt.DropAction.CopyAction, mime,
                       Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
     QApplication.sendEvent(window.target_input, drop)
-    assert not drop.isAccepted()
+    assert drop.isAccepted() and drop.dropAction() == Qt.DropAction.CopyAction
+    assert not window.run_button.isEnabled()
+    qt_wait(lambda: not window.target_input.loading)
     assert window.target_input.image_path == previous
     assert window._paths["Target image"] == previous and window.run_button.isEnabled()
     assert "Current image retained" in window.target_input.metadata_label.text()

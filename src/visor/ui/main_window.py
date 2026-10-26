@@ -339,6 +339,7 @@ class MainWindow(QMainWindow):
         self.resize(1280, 820)
         self._paths: dict[str, Path] = {}
         self._project_path: Path | None = None
+        self._loading_project: tuple[Path, Path] | None = None
         self._worker: QThread | None = None
         self._jobs = JobController()
         self._closing_requested = False
@@ -567,6 +568,9 @@ class MainWindow(QMainWindow):
         self.target_input = ImageDropWidget("Target image")
         self.reference_input.image_changed.connect(self._on_image_changed)
         self.target_input.image_changed.connect(self._on_image_changed)
+        for image_input in (self.reference_input, self.target_input):
+            image_input.loading_changed.connect(self._input_loading_changed)
+            image_input.loading_idle.connect(self._finish_deferred_close)
 
         image_row = QWidget()
         image_row_layout = QVBoxLayout(image_row)
@@ -1018,18 +1022,14 @@ class MainWindow(QMainWindow):
             worker.deleteLater()
             return
         self._worker = None
-        ready = "Reference image" in self._paths and "Target image" in self._paths and not self._closing_requested
-        self.run_button.setEnabled(ready)
-        self.compare_button.setEnabled(ready)
-        self.benchmark_button.setEnabled("Reference image" in self._paths and not self._closing_requested)
-        self.cancel_button.setEnabled(self._overlay_renderer.busy and not self._closing_requested)
         self._cancel_event = None
+        self._update_input_actions()
         worker.deleteLater()
         self._finish_deferred_close()
 
     def _job_can_start(self) -> bool:
         installing = self._install_worker is not None and self._install_worker.isRunning()
-        if self._worker is not None or installing or self._closing_requested:
+        if self._worker is not None or installing or self._closing_requested or self._inputs_loading():
             self.statusBar().showMessage("Wait for the current operation to finish.")
             return False
         return True
@@ -1057,7 +1057,7 @@ class MainWindow(QMainWindow):
 
     def _finish_deferred_close(self) -> None:
         installing = self._install_worker is not None and self._install_worker.isRunning()
-        if self._closing_requested and self._worker is None and not installing and not self._overlay_renderer.busy:
+        if self._closing_requested and self._worker is None and not installing and not self._overlay_renderer.busy and not self._inputs_loading():
             QTimer.singleShot(0, self.close)
 
     def _clear_result_views(self) -> None:
@@ -1101,9 +1101,9 @@ class MainWindow(QMainWindow):
         if not 0 <= index < len(self._pair_history):
             return
         reference, target = self._pair_history[index]
-        self.reference_input.load_path(reference)
-        self.target_input.load_path(target)
-        self.statusBar().showMessage(f"Loaded pair from history: {reference.name} ↔ {target.name}")
+        self.reference_input.request_path(reference, preserve_previous=False)
+        self.target_input.request_path(target, preserve_previous=False)
+        self.statusBar().showMessage(f"Loading pair from history: {reference.name} ↔ {target.name}")
 
     def _show_error(self, message: str) -> None:
         self.statusBar().showMessage(f"Analysis failed: {message}")
@@ -1122,6 +1122,12 @@ class MainWindow(QMainWindow):
         self.log_engine_event("INFO", "Analysis cancelled at a safe processing boundary.")
 
     def _cancel_running(self) -> None:
+        if self._inputs_loading():
+            self._loading_project = None
+            self.reference_input.cancel_loading()
+            self.target_input.cancel_loading()
+            self.cancel_button.setEnabled(False)
+            self.statusBar().showMessage("Image loading cancellation requested; waiting for the native decoder…")
         if self._overlay_renderer.busy:
             self._overlay_renderer.invalidate()
             if self._latest_result is not None:
@@ -1486,7 +1492,7 @@ class MainWindow(QMainWindow):
 
     def _overlay_busy_changed(self, busy: bool) -> None:
         if self._worker is None and not self._closing_requested:
-            self.cancel_button.setEnabled(busy)
+            self.cancel_button.setEnabled(busy or self._inputs_loading())
             if busy and self._latest_result is not None:
                 self.statusBar().showMessage("Updating image overlays…")
 
@@ -1509,6 +1515,9 @@ class MainWindow(QMainWindow):
         self.log_engine_event("ERROR", f"Overlay rendering failed: {message}")
 
     def _overlay_export_ready(self) -> bool:
+        if self._inputs_loading():
+            self.statusBar().showMessage("Wait for image loading or cancel it before exporting.")
+            return False
         if self._overlay_renderer.busy:
             self.statusBar().showMessage("Wait for the overlay update or cancel it before exporting.")
             return False
@@ -1590,10 +1599,6 @@ class MainWindow(QMainWindow):
         self.log_engine_event(level, message)
         if self._closing_requested:
             return
-        ready = "Reference image" in self._paths and "Target image" in self._paths
-        self.run_button.setEnabled(ready)
-        self.compare_button.setEnabled(ready)
-        self.benchmark_button.setEnabled("Reference image" in self._paths)
         if success:
             self.statusBar().showMessage(
                 "Learned engines installed. Restart the app (python -m visor) to activate them in the engine selector."
@@ -1613,11 +1618,13 @@ class MainWindow(QMainWindow):
         else:
             self.statusBar().showMessage(f"Install failed: {message}")
             self.install_learned_button.setEnabled(True)
+        self._update_input_actions()
 
     def _on_install_finished(self) -> None:
         if self._install_worker is not None:
             self._install_worker.deleteLater()
             self._install_worker = None
+        self._update_input_actions()
         self._finish_deferred_close()
 
     def _refresh_engine_selector(self) -> None:
@@ -1670,10 +1677,12 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event) -> None:
         installing = self._install_worker is not None and self._install_worker.isRunning()
-        if self._worker is not None or installing or self._overlay_renderer.busy:
+        if self._worker is not None or installing or self._overlay_renderer.busy or self._inputs_loading():
             self._closing_requested = True
             self._jobs.shutdown()
             self._overlay_renderer.shutdown()
+            self.reference_input.shutdown()
+            self.target_input.shutdown()
             if self._cancel_event is not None:
                 self._cancel_event.set()
             self.run_button.setEnabled(False)
@@ -1687,6 +1696,8 @@ class MainWindow(QMainWindow):
             event.ignore()
             return
         self._overlay_renderer.shutdown()
+        self.reference_input.shutdown()
+        self.target_input.shutdown()
         self._window_settings.setValue("window/geometry", self.saveGeometry())
         self._window_settings.setValue("window/state", self.saveState())
         super().closeEvent(event)
@@ -1736,7 +1747,7 @@ class MainWindow(QMainWindow):
             self._clear_result_views()
             self._latest_benchmark = None
             self.statusBar().showMessage(f"Loaded {role.lower()}: {path.name}")
-            if "Reference image" in self._paths and "Target image" in self._paths:
+            if "Reference image" in self._paths and "Target image" in self._paths and not self._inputs_loading():
                 self._add_current_pair_to_history()
         else:
             self._paths.pop(role, None)
@@ -1746,14 +1757,44 @@ class MainWindow(QMainWindow):
         if self._worker is not None:
             self.statusBar().showMessage("Image inputs changed; cancelling and discarding the previous run.")
         if hasattr(self, "run_button"):
-            installing = self._install_worker is not None and self._install_worker.isRunning()
-            idle = self._worker is None and not installing and not self._closing_requested
-            ready = "Reference image" in self._paths and "Target image" in self._paths and idle
-            self.run_button.setEnabled(ready)
-            self.compare_button.setEnabled(ready)
-            self.benchmark_button.setEnabled("Reference image" in self._paths and idle)
+            self._update_input_actions()
+
+    def _inputs_loading(self) -> bool:
+        return self.reference_input.loading or self.target_input.loading
+
+    def _update_input_actions(self) -> None:
+        installing = self._install_worker is not None and self._install_worker.isRunning()
+        idle = self._worker is None and not installing and not self._closing_requested and not self._inputs_loading()
+        pair = "Reference image" in self._paths and "Target image" in self._paths
+        self.run_button.setEnabled(pair and idle)
+        self.compare_button.setEnabled(pair and idle)
+        self.benchmark_button.setEnabled("Reference image" in self._paths and idle)
+        self.cancel_button.setEnabled(not self._closing_requested and not installing and (
+            self._worker is not None or self._overlay_renderer.busy or self._inputs_loading()))
+
+    def _input_loading_changed(self, _busy: bool) -> None:
+        self._update_input_actions()
+        if self._closing_requested:
+            return
+        if self._inputs_loading():
+            self.statusBar().showMessage("Loading image previews…")
+            return
+        if self._loading_project is not None:
+            expected, self._loading_project = self._loading_project, None
+            actual = (self.reference_input.image_path, self.target_input.image_path)
+            if None in actual:
+                self.statusBar().showMessage("Project settings loaded, but an image could not be decoded. Choose a replacement image.")
+            elif actual != expected:
+                self.statusBar().showMessage("Project settings loaded; image selections were changed during loading.")
+            else:
+                self.statusBar().showMessage(f"Project loaded: {self._project_path.name if self._project_path else ''}")
+        if self.reference_input.image_path is not None and self.target_input.image_path is not None:
+            self._add_current_pair_to_history()
 
     def _save_project(self) -> None:
+        if self._inputs_loading():
+            self.statusBar().showMessage("Wait for image loading or cancel it before saving a project.")
+            return
         if len(self._paths) != 2:
             self.statusBar().showMessage("Add both images before saving a project.")
             return
@@ -1816,14 +1857,12 @@ class MainWindow(QMainWindow):
         self.orb_score.setCurrentText(session.orb.score_type)
         self.orb_patch.setValue(session.orb.patch_size)
         self.orb_fast.setValue(session.orb.fast_threshold)
-        self.reference_input.load_path(Path(session.reference_path), preserve_previous=False)
-        self.target_input.load_path(Path(session.target_path), preserve_previous=False)
+        self._loading_project = (Path(session.reference_path).resolve(), Path(session.target_path).resolve())
         self._project_path = Path(filename).resolve()
         self._remember_file_location("projects", filename)
-        if self.reference_input.image_path is None or self.target_input.image_path is None:
-            self.statusBar().showMessage("Project settings loaded, but an image could not be decoded. Choose a replacement image.")
-        else:
-            self.statusBar().showMessage(f"Project loaded: {Path(filename).name}")
+        self.reference_input.request_path(self._loading_project[0], preserve_previous=False)
+        self.target_input.request_path(self._loading_project[1], preserve_previous=False)
+        self.statusBar().showMessage("Loading project images…")
 
     def _export_json(self) -> None:
         self._export_analysis(export_json, "JSON files (*.json)", "analysis.json")

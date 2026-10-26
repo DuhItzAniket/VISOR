@@ -52,7 +52,7 @@ def test_v1_migrates_matching_ratio_and_estimator(tmp_path):
     assert loaded.robust_method == "RANSAC"
 
 
-def test_ui_load_restores_strategy_estimator_and_overlay(tmp_path, monkeypatch):
+def test_ui_load_restores_strategy_estimator_and_overlay(tmp_path, monkeypatch, qt_wait):
     app = QApplication.instance() or QApplication([])
     settings = QSettings(str(tmp_path / "window.ini"), QSettings.Format.IniFormat)
     monkeypatch.setattr(main_window, "QSettings", lambda *args: settings)
@@ -63,6 +63,7 @@ def test_ui_load_restores_strategy_estimator_and_overlay(tmp_path, monkeypatch):
     window = main_window.MainWindow()
     try:
         window._load_project()
+        qt_wait(lambda: not window._inputs_loading())
         assert window.matcher_strategy.currentText() == "Symmetric ratio"
         assert window.robust_estimator.currentText() == "MAGSAC"
         assert window.feature_thickness_slider.value() == 3

@@ -73,6 +73,7 @@ def test_width_edit_updates_both_controls_render_and_project(overlay_workspace, 
     window._reset_configuration()
     monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args: (str(project), ""))
     window._load_project()
+    pump(QApplication.instance(), lambda: not window._inputs_loading())
     assert window.feature_thickness_slider.value() == window.match_line_thickness.value() == 12
 
 

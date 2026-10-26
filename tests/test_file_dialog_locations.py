@@ -70,7 +70,7 @@ def test_loaded_image_directory_is_shared_and_persists_between_windows(dialog_wo
         app.processEvents()
 
 
-def test_project_save_and_load_reuse_selected_filename(dialog_workspace, tmp_path, monkeypatch):
+def test_project_save_and_load_reuse_selected_filename(dialog_workspace, tmp_path, monkeypatch, qt_wait):
     _, window, _ = dialog_workspace
     _inputs(window)
     project = tmp_path / "selected-name.visor"
@@ -84,11 +84,12 @@ def test_project_save_and_load_reuse_selected_filename(dialog_workspace, tmp_pat
     window._project_path = None
     monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args: (str(project), ""))
     window._load_project()
+    qt_wait(lambda: not window._inputs_loading())
     assert window._project_path == project
     assert window._dialog_directory("projects") == project.parent
 
 
-def test_unreadable_project_image_does_not_reuse_a_previous_workspace_input(dialog_workspace, tmp_path, monkeypatch):
+def test_unreadable_project_image_does_not_reuse_a_previous_workspace_input(dialog_workspace, tmp_path, monkeypatch, qt_wait):
     import json
 
     _, window, _ = dialog_workspace
@@ -103,6 +104,7 @@ def test_unreadable_project_image_does_not_reuse_a_previous_workspace_input(dial
     project.write_text(json.dumps(session), encoding="utf-8")
     monkeypatch.setattr(QFileDialog, "getOpenFileName", lambda *args: (str(project), ""))
     window._load_project()
+    qt_wait(lambda: not window._inputs_loading())
     assert window.reference_input.image_path == previous.resolve()
     assert window.target_input.image_path is None
     assert not window.run_button.isEnabled()

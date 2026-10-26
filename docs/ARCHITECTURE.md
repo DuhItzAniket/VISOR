@@ -42,7 +42,8 @@ Current implementation note (2026-10-19): all RANSAC/MAGSAC/LMEDS outputs share 
 | `visor.app` | Application entry point, logging configuration, `QApplication` setup, and window icon. |
 | `visor.ui.main_window` | `QMainWindow` with menu bar, toolbar, input/config panel, tabbed result workspace, and Analysis Details dock. Owns all Qt workers and result state. |
 | `visor.ui.widgets.image_canvas` | Zoomable `QGraphicsView` with scroll-hand drag, wheel zoom, cursor coordinate signal, and click-to-inspect signal. |
-| `visor.ui.widgets.image_drop` | `QFrame` accepting drag-and-drop and native file picker for image files; emits `image_changed(role, path)`. |
+| `visor.ui.widgets.image_drop` | Picker/drop image slot, cached upright bounded preview and recovery text. Queues background requests; emits `image_changed(role, path)` only after accepted decode/explicit clear. Copy acknowledgment means a request was queued. Synchronous `load_path` is retained only as a controlled-check helper. |
+| `visor.ui.image_loader` | Reentrant reader/QImage decode and scaling off the GUI thread, one active/latest pending request per slot, revision-guarded main-thread delivery, cooperative cancellation around codec calls and nonblocking shutdown. QPixmap/widget updates remain on the UI thread. |
 | `visor.ui.widgets.details_panel` | `AnalysisDetailsPanel` renders structured engine-specific results in tab or tree view mode. Sections: Overview, Engine (SIFT/ORB), Geometry, Performance, Selected Keypoints. |
 
 ## Data flow

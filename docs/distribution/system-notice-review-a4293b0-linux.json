@@ -1,0 +1,2241 @@
+{
+  "schema_version": 1,
+  "kind": "build_host_system_notice_review",
+  "source_revision": "a4293b0c7e415c0b1feac949be919656cbe728ed",
+  "system": "Linux",
+  "architecture": "x86_64",
+  "collection_toc_sha256": "fa4acea50cada03d41f6f8e7039ea810a42f7944755d2f05202550774750b003",
+  "collector_code_sha256": "0c5315dcda22be1c2341de350e7c259c7b6c167c4481d237dc31913440be2907",
+  "artifact_inventory_sha256": "d1ced4e2e8300743629a425a34a33844d47543f94ef9b502de6b5b305094b362",
+  "build_info_content_sha256": "a225465b37954c398baa685d76ac85777e7a93d7159d5bbf85dfd1e4bcfb412f",
+  "github_run_id": "40309675591",
+  "os_release": {
+    "ID": "ubuntu",
+    "VERSION_ID": "22.04",
+    "PRETTY_NAME": "Ubuntu 22.04.5 LTS"
+  },
+  "libraries": [
+    {
+      "collection_path": "libX11-xcb.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libX11-xcb.so.1.0.0",
+      "source_sha256_at_lookup": "d7f9e86161421311a1023c44295a88b4a00b6ecbd20c416fc71895f43e358a0a",
+      "package_claims": [
+        "libx11-xcb1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libX11.so.6",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libX11.so.6.4.0",
+      "source_sha256_at_lookup": "e23ed094eaf0a74a822a6d9d14eee628ab9f7ec08aecbf20ffd803f019ff6e98",
+      "package_claims": [
+        "libx11-6:amd64"
+      ]
+    },
+    {
+      "collection_path": "libXau.so.6",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libXau.so.6.0.0",
+      "source_sha256_at_lookup": "98343a8324ea62ed75a13c923ed5dea96b7a8ad41aeba9f18126c4cbf7178064",
+      "package_claims": [
+        "libxau6:amd64"
+      ]
+    },
+    {
+      "collection_path": "libXcomposite.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libXcomposite.so.1.0.0",
+      "source_sha256_at_lookup": "4eea309674b05930c58bb4c8d2588c049ebae4fc0ce27fd06abe3a5fed9e6f91",
+      "package_claims": [
+        "libxcomposite1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libXcursor.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libXcursor.so.1.0.2",
+      "source_sha256_at_lookup": "a66dc7552a800690b9ff1e7e5026b2ec3f0c359603fe0267f82cc4a6f984f5ac",
+      "package_claims": [
+        "libxcursor1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libXdamage.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libXdamage.so.1.1.0",
+      "source_sha256_at_lookup": "2e059ebfa3ed4d37e85c7924529d4c2cf7f3890786acd806b308c2b56571bc20",
+      "package_claims": [
+        "libxdamage1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libXdmcp.so.6",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libXdmcp.so.6.0.0",
+      "source_sha256_at_lookup": "1dc3ff1269a5ede69ef9a8ec2436d73fccbcd10531055b359292e0bde4e29b46",
+      "package_claims": [
+        "libxdmcp6:amd64"
+      ]
+    },
+    {
+      "collection_path": "libXext.so.6",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libXext.so.6.4.0",
+      "source_sha256_at_lookup": "d61399986f565c00c090a1f222019db7b40f42eaf2d93834136d6234c16ec465",
+      "package_claims": [
+        "libxext6:amd64"
+      ]
+    },
+    {
+      "collection_path": "libXfixes.so.3",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libXfixes.so.3.1.0",
+      "source_sha256_at_lookup": "3e03576f262820fe27a8cfbcf4d8a2f3bbb5f1df55290e91643794a8147dffb7",
+      "package_claims": [
+        "libxfixes3:amd64"
+      ]
+    },
+    {
+      "collection_path": "libXi.so.6",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libXi.so.6.1.0",
+      "source_sha256_at_lookup": "dc46e4ed45e94b521486438d902b2c360e50bd162849448b53adc7143fa1cb84",
+      "package_claims": [
+        "libxi6:amd64"
+      ]
+    },
+    {
+      "collection_path": "libXinerama.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libXinerama.so.1.0.0",
+      "source_sha256_at_lookup": "2db9101cec47fe2f00fe27dedf3325ad47e9e8d8f4a552c8ca5f04d6271bd172",
+      "package_claims": [
+        "libxinerama1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libXrandr.so.2",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libXrandr.so.2.2.0",
+      "source_sha256_at_lookup": "237b8560e61e4c2d244ea21b4d2e0cd9614de26ce284f7258646897940d8e796",
+      "package_claims": [
+        "libxrandr2:amd64"
+      ]
+    },
+    {
+      "collection_path": "libXrender.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libXrender.so.1.3.0",
+      "source_sha256_at_lookup": "2415c0b512d332522625bc65bcc5e05dba93c2e3418329ded2855111fb0cf723",
+      "package_claims": [
+        "libxrender1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libatk-1.0.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libatk-1.0.so.0.23609.1",
+      "source_sha256_at_lookup": "65831ad344b15dae860a3c73dbe97512b05e54d3566948f5bc633f67216ffd97",
+      "package_claims": [
+        "libatk1.0-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libatk-bridge-2.0.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0",
+      "source_sha256_at_lookup": "13670b19f87dbf32b697104cb5019c91ad886d8122e8d645c27162c97e41e877",
+      "package_claims": [
+        "libatk-bridge2.0-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libatspi.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libatspi.so.0.0.1",
+      "source_sha256_at_lookup": "e1df48522f75baa048beb637c749708536bb6459d7dc8e9df12736f003fb2a88",
+      "package_claims": [
+        "libatspi2.0-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libblkid.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libblkid.so.1.1.0",
+      "source_sha256_at_lookup": "0aa92efdef9d9419f49b784c9377e3fa09c6e4247162ff8b581934b891fcfa0f",
+      "package_claims": [
+        "libblkid1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libbrotlicommon.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libbrotlicommon.so.1.0.9",
+      "source_sha256_at_lookup": "abf86ae9362dbb413c740a55b194c74adb09a7bd92d8fbd96a293c797a4a6d08",
+      "package_claims": [
+        "libbrotli1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libbrotlidec.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libbrotlidec.so.1.0.9",
+      "source_sha256_at_lookup": "db9dbda709a46c3ae124433f47c4db71167db8aaba4eafdfd99c8a3a14584463",
+      "package_claims": [
+        "libbrotli1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libbsd.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libbsd.so.0.11.5",
+      "source_sha256_at_lookup": "e4ad21c203d8e8b9b7f49071311339af6b438026e1ad236403e3b379b022f23d",
+      "package_claims": [
+        "libbsd0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libbz2.so.1.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libbz2.so.1.0.4",
+      "source_sha256_at_lookup": "54d16979912ab62282350dd2dc5dceb5b73b13e27bb02792087aff752d16f6e9",
+      "package_claims": [
+        "libbz2-1.0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libcairo-gobject.so.2",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libcairo-gobject.so.2.11600.0",
+      "source_sha256_at_lookup": "edecf402c8e98ed8d8eb3a7e4b9df27671678b7f7b786bdf243a4c84c003b9b1",
+      "package_claims": [
+        "libcairo-gobject2:amd64"
+      ]
+    },
+    {
+      "collection_path": "libcairo.so.2",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libcairo.so.2.11600.0",
+      "source_sha256_at_lookup": "62328c06e62439ce52ee03a7e7fa44ebe33a39a56d22b8c96ffc7c7e1eaf0d19",
+      "package_claims": [
+        "libcairo2:amd64"
+      ]
+    },
+    {
+      "collection_path": "libcap.so.2",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libcap.so.2.44",
+      "source_sha256_at_lookup": "00e8d9ef4e9c081a3c8d8164cfd06165937c9bcb6d4f9b47c6dcfa53d9e52046",
+      "package_claims": [
+        "libcap2:amd64"
+      ]
+    },
+    {
+      "collection_path": "libcom_err.so.2",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libcom_err.so.2.1",
+      "source_sha256_at_lookup": "f196091d8ec9790b4cd203ecdb0eab3b242d35ae8625ead7962d0a944a8fdfa5",
+      "package_claims": [
+        "libcom-err2:amd64"
+      ]
+    },
+    {
+      "collection_path": "libcrypto.so.3",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libcrypto.so.3",
+      "source_sha256_at_lookup": "7cc817ff1841b59516d684f357bc0c3fc2cc52c3fa9b4ffb8ce8bdc215f02915",
+      "package_claims": [
+        "libssl3:amd64"
+      ]
+    },
+    {
+      "collection_path": "libdatrie.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libdatrie.so.1.4.0",
+      "source_sha256_at_lookup": "bb12f6deede55959973954640ed050ec758de674a73c19715adcd6202abb8dcd",
+      "package_claims": [
+        "libdatrie1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libdbus-1.so.3",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libdbus-1.so.3.19.13",
+      "source_sha256_at_lookup": "a3d53f7215af9860f3466b94cd8fe3e95c253c46df164dea62af9b9def93dcea",
+      "package_claims": [
+        "libdbus-1-3:amd64"
+      ]
+    },
+    {
+      "collection_path": "libepoxy.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libepoxy.so.0.0.0",
+      "source_sha256_at_lookup": "bc592509279dab19668583d47e2edc2b1c6ae9b93ed7ed1a2cef9810b0ad263d",
+      "package_claims": [
+        "libepoxy0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libexpat.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libexpat.so.1.8.7",
+      "source_sha256_at_lookup": "683e2e41db14581194bf1f6616e95a8f02cd4ab599f0fba807e46325ec01d21f",
+      "package_claims": [
+        "libexpat1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libffi.so.8",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libffi.so.8.1.0",
+      "source_sha256_at_lookup": "247da4d5d34a91cadcdd6282be4c4644fcb8af001334d2b8a82ecda435418cbf",
+      "package_claims": [
+        "libffi8:amd64"
+      ]
+    },
+    {
+      "collection_path": "libfontconfig.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libfontconfig.so.1.12.0",
+      "source_sha256_at_lookup": "7d688909aab1c566b60832045fef012ea118ff7ee189df87608fbff999d3bd0d",
+      "package_claims": [
+        "libfontconfig1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libfreetype.so.6",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libfreetype.so.6.18.1",
+      "source_sha256_at_lookup": "c338538f8d90eb85217e8525ab363e68e79b46d3c8acc0b6824190e032687e5f",
+      "package_claims": [
+        "libfreetype6:amd64"
+      ]
+    },
+    {
+      "collection_path": "libfribidi.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libfribidi.so.0.4.0",
+      "source_sha256_at_lookup": "91879069d84de2889086ad44dfc088405e7e7065e1220c1a122f8970fb1f29a9",
+      "package_claims": [
+        "libfribidi0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libgcc_s.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libgcc_s.so.1",
+      "source_sha256_at_lookup": "fc9d43b2f6c20e53b009238f767c5b949d202389e20de9e202ea684b4ba3729a",
+      "package_claims": [
+        "libgcc-s1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libgcrypt.so.20",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libgcrypt.so.20.3.4",
+      "source_sha256_at_lookup": "82f7902f4cffbb89540c09cdb3045d8026548ae4c811d003f25e7b74a6de9d9c",
+      "package_claims": [
+        "libgcrypt20:amd64"
+      ]
+    },
+    {
+      "collection_path": "libgdk-3.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libgdk-3.so.0.2404.29",
+      "source_sha256_at_lookup": "65444438dce4b145a61cdf9ccee7dd3feb2ae249c939056eff89c04d8766e5a7",
+      "package_claims": [
+        "libgtk-3-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libgdk_pixbuf-2.0.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4200.8",
+      "source_sha256_at_lookup": "c9b29b64bff5f913438def9ffa26ea972245b89cd61dc9d2388bc1d1540412ef",
+      "package_claims": [
+        "libgdk-pixbuf-2.0-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libgio-2.0.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libgio-2.0.so.0.7200.4",
+      "source_sha256_at_lookup": "b63a477916c1f95de4b2c80bb4f5940a59ebc5860793d93b271448e90edbfe52",
+      "package_claims": [
+        "libglib2.0-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libglib-2.0.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libglib-2.0.so.0.7200.4",
+      "source_sha256_at_lookup": "86acf2c843bcfaf5e8c24ab959737960c797da53b41658dc8ec6f257c786048c",
+      "package_claims": [
+        "libglib2.0-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libgmodule-2.0.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libgmodule-2.0.so.0.7200.4",
+      "source_sha256_at_lookup": "1019fc28ced6829f22b446a091ecb5b76b9fa3b3c458bc6ea936c1d328302cb5",
+      "package_claims": [
+        "libglib2.0-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libgobject-2.0.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libgobject-2.0.so.0.7200.4",
+      "source_sha256_at_lookup": "05a94d6be0a50dba15a579f3ad1f5c6ec12c8d303f3b715a665fd27824ca523e",
+      "package_claims": [
+        "libglib2.0-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libgpg-error.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libgpg-error.so.0.32.1",
+      "source_sha256_at_lookup": "ed682e103b671d628ef11f19f8a5b772b8d2501ba26e4b80c055331a4c4d8dfc",
+      "package_claims": [
+        "libgpg-error0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libgraphite2.so.3",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libgraphite2.so.3.2.1",
+      "source_sha256_at_lookup": "1d9215d0099e87da7ed9e1a9c2064fdb1da270253b869721ea0580a00657b723",
+      "package_claims": [
+        "libgraphite2-3:amd64"
+      ]
+    },
+    {
+      "collection_path": "libgssapi_krb5.so.2",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libgssapi_krb5.so.2.2",
+      "source_sha256_at_lookup": "a8c1a62a7b925e198c5fb8f8123bb2900c235dd678d6dbf0c1e0b5f06175e84b",
+      "package_claims": [
+        "libgssapi-krb5-2:amd64"
+      ]
+    },
+    {
+      "collection_path": "libgthread-2.0.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libgthread-2.0.so.0.7200.4",
+      "source_sha256_at_lookup": "a3189a3c7efcd13c2efc3552ae2f9d7348debdbfb2b95882f72adad996dfcacc",
+      "package_claims": [
+        "libglib2.0-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libgtk-3.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libgtk-3.so.0.2404.29",
+      "source_sha256_at_lookup": "7d48175fd1550f8b77119e77775073f10b5fd736e62efea25f6484fb97b15c57",
+      "package_claims": [
+        "libgtk-3-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libharfbuzz.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libharfbuzz.so.0.20704.0",
+      "source_sha256_at_lookup": "da47b2baefbb4e6e6058fec0c4dd0bc9d31703d94150c17c9615288188f4a118",
+      "package_claims": [
+        "libharfbuzz0b:amd64"
+      ]
+    },
+    {
+      "collection_path": "libjpeg.so.8",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libjpeg.so.8.2.2",
+      "source_sha256_at_lookup": "2cfbcf67051b3efd1bf634af7d0b65a47dda98ff61ba793a87415ed554731344",
+      "package_claims": [
+        "libjpeg-turbo8:amd64"
+      ]
+    },
+    {
+      "collection_path": "libk5crypto.so.3",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libk5crypto.so.3.1",
+      "source_sha256_at_lookup": "d3c3d1c5415f09918c67a5bb23cf5004aa9524b916003655af4a2bb15627760a",
+      "package_claims": [
+        "libk5crypto3:amd64"
+      ]
+    },
+    {
+      "collection_path": "libkeyutils.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libkeyutils.so.1.9",
+      "source_sha256_at_lookup": "ad20d5fb89df5297073b46373c65bfbb01f33a00b4949894055d29a7fcf00900",
+      "package_claims": [
+        "libkeyutils1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libkrb5.so.3",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libkrb5.so.3.3",
+      "source_sha256_at_lookup": "ecc1a3b592c3685e330499aba8eac3b635e9be80b99fa65b2ef3e4f0b2d8a166",
+      "package_claims": [
+        "libkrb5-3:amd64"
+      ]
+    },
+    {
+      "collection_path": "libkrb5support.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libkrb5support.so.0.1",
+      "source_sha256_at_lookup": "add5050d2a960ab105b568c714849d1e771cf2bd67a46dbfcc068a99de80eeec",
+      "package_claims": [
+        "libkrb5support0:amd64"
+      ]
+    },
+    {
+      "collection_path": "liblz4.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/liblz4.so.1.9.3",
+      "source_sha256_at_lookup": "65f47a3dc2cec5f938379b7b625f0621657bf1254551895d22462c6a204cbad8",
+      "package_claims": [
+        "liblz4-1:amd64"
+      ]
+    },
+    {
+      "collection_path": "liblzma.so.5",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/liblzma.so.5.2.5",
+      "source_sha256_at_lookup": "7fa51c1500cb9fcc4c7d69b7fe0a6d7203cfe6af64373f6c411c5445ef1b402c",
+      "package_claims": [
+        "liblzma5:amd64"
+      ]
+    },
+    {
+      "collection_path": "libmd.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libmd.so.0.0.5",
+      "source_sha256_at_lookup": "bb376813876bb214535bbbdac70f2c0c4b00baecb81557dab78a79518248df06",
+      "package_claims": [
+        "libmd0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libmount.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libmount.so.1.1.0",
+      "source_sha256_at_lookup": "b6e4a8ddc851b58e7f8c93945f875439d2a14a8809efde17b028c4e2db6af328",
+      "package_claims": [
+        "libmount1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libpango-1.0.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libpango-1.0.so.0.5000.6",
+      "source_sha256_at_lookup": "de79fa0f427b7f0e4eaec7246393435535541bb3b0333f0c71b65d73f07602e1",
+      "package_claims": [
+        "libpango-1.0-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libpangocairo-1.0.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libpangocairo-1.0.so.0.5000.6",
+      "source_sha256_at_lookup": "f8ca87d7af66241aae432050c679e61d726a6542cb47a1333ce248c0d14c2448",
+      "package_claims": [
+        "libpangocairo-1.0-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libpangoft2-1.0.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libpangoft2-1.0.so.0.5000.6",
+      "source_sha256_at_lookup": "158f0b0d7de5fdadf4b6671f97f69e84fa2eec827bb0416788a54dea41b85b39",
+      "package_claims": [
+        "libpangoft2-1.0-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libpcre.so.3",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libpcre.so.3.13.3",
+      "source_sha256_at_lookup": "baae995e98223eee1afe6c640f21bdbba91b9c170584ce766418b59810d98a93",
+      "package_claims": [
+        "libpcre3:amd64"
+      ]
+    },
+    {
+      "collection_path": "libpcre2-8.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libpcre2-8.so.0.10.4",
+      "source_sha256_at_lookup": "f887eed7d0df7073f3d8bdc9e60d35082453b10165cf45359b5019e33ba2b9ec",
+      "package_claims": [
+        "libpcre2-8-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libpixman-1.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libpixman-1.so.0.40.0",
+      "source_sha256_at_lookup": "f6b5d0cabb6fd4b1007edbfdff4a0601f6631aa66595a89aa4f0128958661dd0",
+      "package_claims": [
+        "libpixman-1-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libpng16.so.16",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libpng16.so.16.37.0",
+      "source_sha256_at_lookup": "0c55d5776d3382cb7859ff48fcf813e0c3b27f33c46f9364633748830246c723",
+      "package_claims": [
+        "libpng16-16:amd64"
+      ]
+    },
+    {
+      "collection_path": "libselinux.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libselinux.so.1",
+      "source_sha256_at_lookup": "624eb1e6a7510e0983e9caa1bbf3e1966acb64fd6d3ad4db94528addbe1e7224",
+      "package_claims": [
+        "libselinux1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libssl.so.3",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libssl.so.3",
+      "source_sha256_at_lookup": "51fc92556f11ddce62f3f988d3fe973fab8fb4742032e61a713688581c924262",
+      "package_claims": [
+        "libssl3:amd64"
+      ]
+    },
+    {
+      "collection_path": "libstdc++.so.6",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libstdc++.so.6.0.30",
+      "source_sha256_at_lookup": "ff0825e113603c3866680d5d52216bc6d8eedf3a59f52a0aef67ff01994db128",
+      "package_claims": [
+        "libstdc++6:amd64"
+      ]
+    },
+    {
+      "collection_path": "libsystemd.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libsystemd.so.0.32.0",
+      "source_sha256_at_lookup": "07e1466948401c25c5026c4eb616bd8c8aef4be410dd6b4a2489f321b7cb360d",
+      "package_claims": [
+        "libsystemd0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libthai.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libthai.so.0.3.1",
+      "source_sha256_at_lookup": "f8459dcadb747e81e21cad576f8143d7e794671689e2aac0edb1b319f548293a",
+      "package_claims": [
+        "libthai0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libuuid.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libuuid.so.1.3.0",
+      "source_sha256_at_lookup": "4472cf91dbc01395761fb45d0f4b25f6241406fe54cbf540c13755a3706a7b17",
+      "package_claims": [
+        "libuuid1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libxcb-cursor.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libxcb-cursor.so.0.0.0",
+      "source_sha256_at_lookup": "729297e66519bdb0df3ac8d5a2950e2e09b1e8d0b9eeea33250fce57a27aafa3",
+      "package_claims": [
+        "libxcb-cursor0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libxcb-glx.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libxcb-glx.so.0.0.0",
+      "source_sha256_at_lookup": "3ae585380e28079862b4a9928b2ca8798efe806e566ba5ba8d1bdc1c951e1d1f",
+      "package_claims": [
+        "libxcb-glx0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libxcb-image.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libxcb-image.so.0.0.0",
+      "source_sha256_at_lookup": "2ae417d723f9ad4e68951fa7890c8b50b2a386bee16c4ad5491da24addd67f13",
+      "package_claims": [
+        "libxcb-image0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libxcb-randr.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libxcb-randr.so.0.1.0",
+      "source_sha256_at_lookup": "942a242b33c80ab4a5ce6d3db62d12f8856589860fa1986248b046850e58a80e",
+      "package_claims": [
+        "libxcb-randr0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libxcb-render-util.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libxcb-render-util.so.0.0.0",
+      "source_sha256_at_lookup": "2a6dd5e6d3062be2874691c93392765f1d9ef224e2097fc22bc73906070de7bb",
+      "package_claims": [
+        "libxcb-render-util0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libxcb-render.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libxcb-render.so.0.0.0",
+      "source_sha256_at_lookup": "116b70d1eef6cbad17bec65091b19fce427dc009a6213cee796935fa6a9ce520",
+      "package_claims": [
+        "libxcb-render0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libxcb-shm.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libxcb-shm.so.0.0.0",
+      "source_sha256_at_lookup": "722e13a0a26551dd9f11b930c4632c9e51d2e9f743315d45c1b665356950d42d",
+      "package_claims": [
+        "libxcb-shm0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libxcb-sync.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libxcb-sync.so.1.0.0",
+      "source_sha256_at_lookup": "bfc92d901bfa11f61e3b921631676e0cd4a553dc825943d378e9997218345440",
+      "package_claims": [
+        "libxcb-sync1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libxcb-util.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libxcb-util.so.1.0.0",
+      "source_sha256_at_lookup": "d05e3f95b9fdc2264c28f3df6aa735c2942e39d6a7184e42bc092fd637ea6c80",
+      "package_claims": [
+        "libxcb-util1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libxcb-xfixes.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libxcb-xfixes.so.0.0.0",
+      "source_sha256_at_lookup": "e3d14d45bd5208e7b146627f8a6d8918c52846face02cfc4418690c32534bc42",
+      "package_claims": [
+        "libxcb-xfixes0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libxcb-xkb.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libxcb-xkb.so.1.0.0",
+      "source_sha256_at_lookup": "05db2c686a9d76722d4e2a433286b266ee39286e0eef87782431a10d2e16c5a1",
+      "package_claims": [
+        "libxcb-xkb1:amd64"
+      ]
+    },
+    {
+      "collection_path": "libxkbcommon-x11.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libxkbcommon-x11.so.0.0.0",
+      "source_sha256_at_lookup": "18144e8476746721512f4a23a2670fa4b3c0683715db0ed16f12e6bad39cc298",
+      "package_claims": [
+        "libxkbcommon-x11-0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libxkbcommon.so.0",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libxkbcommon.so.0.0.0",
+      "source_sha256_at_lookup": "26773f54626af26f5f26f0279a9748ea2445c1adcfef50a7d572c9b54575bd86",
+      "package_claims": [
+        "libxkbcommon0:amd64"
+      ]
+    },
+    {
+      "collection_path": "libz.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libz.so.1.2.11",
+      "source_sha256_at_lookup": "64c206f0146cc58bbddc4f22054436f4ff278f5a554aa3ce6921ddf7e9133370",
+      "package_claims": [
+        "zlib1g:amd64"
+      ]
+    },
+    {
+      "collection_path": "libzstd.so.1",
+      "source_root": "usr/lib",
+      "source_relative_path": "x86_64-linux-gnu/libzstd.so.1.4.8",
+      "source_sha256_at_lookup": "5df4f4df42d76270bb6981fabc7c1fdccd8ad28a23d84d67f73203fb3f537667",
+      "package_claims": [
+        "libzstd1:amd64"
+      ]
+    }
+  ],
+  "packages": [
+    {
+      "name": "libatk-bridge2.0-0:amd64",
+      "version": "2.38.0-3",
+      "source_package": "at-spi2-atk",
+      "source_version": "2.38.0-3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libatk-bridge2.0-0__amd64/copyright"
+    },
+    {
+      "name": "libatk1.0-0:amd64",
+      "version": "2.36.0-3build1",
+      "source_package": "atk1.0",
+      "source_version": "2.36.0-3build1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libatk1.0-0__amd64/copyright"
+    },
+    {
+      "name": "libatspi2.0-0:amd64",
+      "version": "2.44.0-3",
+      "source_package": "at-spi2-core",
+      "source_version": "2.44.0-3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libatspi2.0-0__amd64/copyright"
+    },
+    {
+      "name": "libblkid1:amd64",
+      "version": "2.37.2-4ubuntu3.6",
+      "source_package": "util-linux",
+      "source_version": "2.37.2-4ubuntu3.6",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libblkid1__amd64/copyright"
+    },
+    {
+      "name": "libbrotli1:amd64",
+      "version": "1.0.9-2build6",
+      "source_package": "brotli",
+      "source_version": "1.0.9-2build6",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libbrotli1__amd64/copyright"
+    },
+    {
+      "name": "libbsd0:amd64",
+      "version": "0.11.5-1",
+      "source_package": "libbsd",
+      "source_version": "0.11.5-1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libbsd0__amd64/copyright"
+    },
+    {
+      "name": "libbz2-1.0:amd64",
+      "version": "1.0.8-5ubuntu0.1",
+      "source_package": "bzip2",
+      "source_version": "1.0.8-5ubuntu0.1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libbz2-1.0__amd64/copyright"
+    },
+    {
+      "name": "libcairo-gobject2:amd64",
+      "version": "1.16.0-5ubuntu2.1",
+      "source_package": "cairo",
+      "source_version": "1.16.0-5ubuntu2.1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libcairo-gobject2__amd64/copyright"
+    },
+    {
+      "name": "libcairo2:amd64",
+      "version": "1.16.0-5ubuntu2.1",
+      "source_package": "cairo",
+      "source_version": "1.16.0-5ubuntu2.1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libcairo2__amd64/copyright"
+    },
+    {
+      "name": "libcap2:amd64",
+      "version": "1:2.44-1ubuntu0.22.04.3",
+      "source_package": "libcap2",
+      "source_version": "1:2.44-1ubuntu0.22.04.3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libcap2__amd64/copyright"
+    },
+    {
+      "name": "libcom-err2:amd64",
+      "version": "1.46.5-2ubuntu1.2",
+      "source_package": "e2fsprogs",
+      "source_version": "1.46.5-2ubuntu1.2",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libcom-err2__amd64/copyright"
+    },
+    {
+      "name": "libdatrie1:amd64",
+      "version": "0.2.13-2",
+      "source_package": "libdatrie",
+      "source_version": "0.2.13-2",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libdatrie1__amd64/copyright"
+    },
+    {
+      "name": "libdbus-1-3:amd64",
+      "version": "1.12.20-2ubuntu4.1",
+      "source_package": "dbus",
+      "source_version": "1.12.20-2ubuntu4.1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libdbus-1-3__amd64/copyright"
+    },
+    {
+      "name": "libepoxy0:amd64",
+      "version": "1.5.10-1",
+      "source_package": "libepoxy",
+      "source_version": "1.5.10-1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libepoxy0__amd64/copyright"
+    },
+    {
+      "name": "libexpat1:amd64",
+      "version": "2.4.7-1ubuntu0.9",
+      "source_package": "expat",
+      "source_version": "2.4.7-1ubuntu0.9",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libexpat1__amd64/copyright"
+    },
+    {
+      "name": "libffi8:amd64",
+      "version": "3.4.2-4",
+      "source_package": "libffi",
+      "source_version": "3.4.2-4",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libffi8__amd64/copyright"
+    },
+    {
+      "name": "libfontconfig1:amd64",
+      "version": "2.13.1-4.2ubuntu5",
+      "source_package": "fontconfig",
+      "source_version": "2.13.1-4.2ubuntu5",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libfontconfig1__amd64/copyright"
+    },
+    {
+      "name": "libfreetype6:amd64",
+      "version": "2.11.1+dfsg-1ubuntu0.4",
+      "source_package": "freetype",
+      "source_version": "2.11.1+dfsg-1ubuntu0.4",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libfreetype6__amd64/copyright"
+    },
+    {
+      "name": "libfribidi0:amd64",
+      "version": "1.0.8-2ubuntu3.1",
+      "source_package": "fribidi",
+      "source_version": "1.0.8-2ubuntu3.1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libfribidi0__amd64/copyright"
+    },
+    {
+      "name": "libgcc-s1:amd64",
+      "version": "12.3.0-1ubuntu1~22.04.3",
+      "source_package": "gcc-12",
+      "source_version": "12.3.0-1ubuntu1~22.04.3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libgcc-s1__amd64/copyright"
+    },
+    {
+      "name": "libgcrypt20:amd64",
+      "version": "1.9.4-3ubuntu3.3",
+      "source_package": "libgcrypt20",
+      "source_version": "1.9.4-3ubuntu3.3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libgcrypt20__amd64/copyright"
+    },
+    {
+      "name": "libgdk-pixbuf-2.0-0:amd64",
+      "version": "2.42.8+dfsg-1ubuntu0.5",
+      "source_package": "gdk-pixbuf",
+      "source_version": "2.42.8+dfsg-1ubuntu0.5",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libgdk-pixbuf-2.0-0__amd64/copyright"
+    },
+    {
+      "name": "libglib2.0-0:amd64",
+      "version": "2.72.4-0ubuntu2.10",
+      "source_package": "glib2.0",
+      "source_version": "2.72.4-0ubuntu2.10",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libglib2.0-0__amd64/copyright"
+    },
+    {
+      "name": "libgpg-error0:amd64",
+      "version": "1.43-3",
+      "source_package": "libgpg-error",
+      "source_version": "1.43-3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libgpg-error0__amd64/copyright"
+    },
+    {
+      "name": "libgraphite2-3:amd64",
+      "version": "1.3.14-1ubuntu0.1",
+      "source_package": "graphite2",
+      "source_version": "1.3.14-1ubuntu0.1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libgraphite2-3__amd64/copyright"
+    },
+    {
+      "name": "libgssapi-krb5-2:amd64",
+      "version": "1.19.2-2ubuntu0.10",
+      "source_package": "krb5",
+      "source_version": "1.19.2-2ubuntu0.10",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libgssapi-krb5-2__amd64/copyright"
+    },
+    {
+      "name": "libgtk-3-0:amd64",
+      "version": "3.24.33-1ubuntu2.2",
+      "source_package": "gtk+3.0",
+      "source_version": "3.24.33-1ubuntu2.2",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libgtk-3-0__amd64/copyright"
+    },
+    {
+      "name": "libharfbuzz0b:amd64",
+      "version": "2.7.4-1ubuntu3.2",
+      "source_package": "harfbuzz",
+      "source_version": "2.7.4-1ubuntu3.2",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libharfbuzz0b__amd64/copyright"
+    },
+    {
+      "name": "libjpeg-turbo8:amd64",
+      "version": "2.1.2-0ubuntu1",
+      "source_package": "libjpeg-turbo",
+      "source_version": "2.1.2-0ubuntu1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libjpeg-turbo8__amd64/copyright"
+    },
+    {
+      "name": "libk5crypto3:amd64",
+      "version": "1.19.2-2ubuntu0.10",
+      "source_package": "krb5",
+      "source_version": "1.19.2-2ubuntu0.10",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libk5crypto3__amd64/copyright"
+    },
+    {
+      "name": "libkeyutils1:amd64",
+      "version": "1.6.1-2ubuntu3",
+      "source_package": "keyutils",
+      "source_version": "1.6.1-2ubuntu3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libkeyutils1__amd64/copyright"
+    },
+    {
+      "name": "libkrb5-3:amd64",
+      "version": "1.19.2-2ubuntu0.10",
+      "source_package": "krb5",
+      "source_version": "1.19.2-2ubuntu0.10",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libkrb5-3__amd64/copyright"
+    },
+    {
+      "name": "libkrb5support0:amd64",
+      "version": "1.19.2-2ubuntu0.10",
+      "source_package": "krb5",
+      "source_version": "1.19.2-2ubuntu0.10",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libkrb5support0__amd64/copyright"
+    },
+    {
+      "name": "liblz4-1:amd64",
+      "version": "1.9.3-2build2",
+      "source_package": "lz4",
+      "source_version": "1.9.3-2build2",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/liblz4-1__amd64/copyright"
+    },
+    {
+      "name": "liblzma5:amd64",
+      "version": "5.2.5-2ubuntu1.1",
+      "source_package": "xz-utils",
+      "source_version": "5.2.5-2ubuntu1.1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/liblzma5__amd64/copyright"
+    },
+    {
+      "name": "libmd0:amd64",
+      "version": "1.0.4-1build1",
+      "source_package": "libmd",
+      "source_version": "1.0.4-1build1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libmd0__amd64/copyright"
+    },
+    {
+      "name": "libmount1:amd64",
+      "version": "2.37.2-4ubuntu3.6",
+      "source_package": "util-linux",
+      "source_version": "2.37.2-4ubuntu3.6",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libmount1__amd64/copyright"
+    },
+    {
+      "name": "libpango-1.0-0:amd64",
+      "version": "1.50.6+ds-2ubuntu1",
+      "source_package": "pango1.0",
+      "source_version": "1.50.6+ds-2ubuntu1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libpango-1.0-0__amd64/copyright"
+    },
+    {
+      "name": "libpangocairo-1.0-0:amd64",
+      "version": "1.50.6+ds-2ubuntu1",
+      "source_package": "pango1.0",
+      "source_version": "1.50.6+ds-2ubuntu1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libpangocairo-1.0-0__amd64/copyright"
+    },
+    {
+      "name": "libpangoft2-1.0-0:amd64",
+      "version": "1.50.6+ds-2ubuntu1",
+      "source_package": "pango1.0",
+      "source_version": "1.50.6+ds-2ubuntu1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libpangoft2-1.0-0__amd64/copyright"
+    },
+    {
+      "name": "libpcre2-8-0:amd64",
+      "version": "10.39-3ubuntu0.1",
+      "source_package": "pcre2",
+      "source_version": "10.39-3ubuntu0.1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libpcre2-8-0__amd64/copyright"
+    },
+    {
+      "name": "libpcre3:amd64",
+      "version": "2:8.39-13ubuntu0.22.04.1",
+      "source_package": "pcre3",
+      "source_version": "2:8.39-13ubuntu0.22.04.1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libpcre3__amd64/copyright"
+    },
+    {
+      "name": "libpixman-1-0:amd64",
+      "version": "0.40.0-1ubuntu0.22.04.1",
+      "source_package": "pixman",
+      "source_version": "0.40.0-1ubuntu0.22.04.1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libpixman-1-0__amd64/copyright"
+    },
+    {
+      "name": "libpng16-16:amd64",
+      "version": "1.6.37-3ubuntu0.7",
+      "source_package": "libpng1.6",
+      "source_version": "1.6.37-3ubuntu0.7",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libpng16-16__amd64/copyright"
+    },
+    {
+      "name": "libselinux1:amd64",
+      "version": "3.3-1build2",
+      "source_package": "libselinux",
+      "source_version": "3.3-1build2",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libselinux1__amd64/copyright"
+    },
+    {
+      "name": "libssl3:amd64",
+      "version": "3.0.2-0ubuntu1.30",
+      "source_package": "openssl",
+      "source_version": "3.0.2-0ubuntu1.30",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libssl3__amd64/copyright"
+    },
+    {
+      "name": "libstdc++6:amd64",
+      "version": "12.3.0-1ubuntu1~22.04.3",
+      "source_package": "gcc-12",
+      "source_version": "12.3.0-1ubuntu1~22.04.3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libstdc++6__amd64/copyright"
+    },
+    {
+      "name": "libsystemd0:amd64",
+      "version": "249.11-0ubuntu3.22",
+      "source_package": "systemd",
+      "source_version": "249.11-0ubuntu3.22",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libsystemd0__amd64/copyright"
+    },
+    {
+      "name": "libthai0:amd64",
+      "version": "0.1.29-1build1",
+      "source_package": "libthai",
+      "source_version": "0.1.29-1build1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libthai0__amd64/copyright"
+    },
+    {
+      "name": "libuuid1:amd64",
+      "version": "2.37.2-4ubuntu3.6",
+      "source_package": "util-linux",
+      "source_version": "2.37.2-4ubuntu3.6",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libuuid1__amd64/copyright"
+    },
+    {
+      "name": "libx11-6:amd64",
+      "version": "2:1.7.5-1ubuntu0.4",
+      "source_package": "libx11",
+      "source_version": "2:1.7.5-1ubuntu0.4",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libx11-6__amd64/copyright"
+    },
+    {
+      "name": "libx11-xcb1:amd64",
+      "version": "2:1.7.5-1ubuntu0.4",
+      "source_package": "libx11",
+      "source_version": "2:1.7.5-1ubuntu0.4",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libx11-xcb1__amd64/copyright"
+    },
+    {
+      "name": "libxau6:amd64",
+      "version": "1:1.0.9-1build5",
+      "source_package": "libxau",
+      "source_version": "1:1.0.9-1build5",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxau6__amd64/copyright"
+    },
+    {
+      "name": "libxcb-cursor0:amd64",
+      "version": "0.1.1-4ubuntu1",
+      "source_package": "xcb-util-cursor",
+      "source_version": "0.1.1-4ubuntu1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxcb-cursor0__amd64/copyright"
+    },
+    {
+      "name": "libxcb-glx0:amd64",
+      "version": "1.14-3ubuntu3",
+      "source_package": "libxcb",
+      "source_version": "1.14-3ubuntu3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxcb-glx0__amd64/copyright"
+    },
+    {
+      "name": "libxcb-image0:amd64",
+      "version": "0.4.0-2",
+      "source_package": "xcb-util-image",
+      "source_version": "0.4.0-2",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxcb-image0__amd64/copyright"
+    },
+    {
+      "name": "libxcb-randr0:amd64",
+      "version": "1.14-3ubuntu3",
+      "source_package": "libxcb",
+      "source_version": "1.14-3ubuntu3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxcb-randr0__amd64/copyright"
+    },
+    {
+      "name": "libxcb-render-util0:amd64",
+      "version": "0.3.9-1build3",
+      "source_package": "xcb-util-renderutil",
+      "source_version": "0.3.9-1build3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxcb-render-util0__amd64/copyright"
+    },
+    {
+      "name": "libxcb-render0:amd64",
+      "version": "1.14-3ubuntu3",
+      "source_package": "libxcb",
+      "source_version": "1.14-3ubuntu3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxcb-render0__amd64/copyright"
+    },
+    {
+      "name": "libxcb-shm0:amd64",
+      "version": "1.14-3ubuntu3",
+      "source_package": "libxcb",
+      "source_version": "1.14-3ubuntu3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxcb-shm0__amd64/copyright"
+    },
+    {
+      "name": "libxcb-sync1:amd64",
+      "version": "1.14-3ubuntu3",
+      "source_package": "libxcb",
+      "source_version": "1.14-3ubuntu3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxcb-sync1__amd64/copyright"
+    },
+    {
+      "name": "libxcb-util1:amd64",
+      "version": "0.4.0-1build2",
+      "source_package": "xcb-util",
+      "source_version": "0.4.0-1build2",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxcb-util1__amd64/copyright"
+    },
+    {
+      "name": "libxcb-xfixes0:amd64",
+      "version": "1.14-3ubuntu3",
+      "source_package": "libxcb",
+      "source_version": "1.14-3ubuntu3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxcb-xfixes0__amd64/copyright"
+    },
+    {
+      "name": "libxcb-xkb1:amd64",
+      "version": "1.14-3ubuntu3",
+      "source_package": "libxcb",
+      "source_version": "1.14-3ubuntu3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxcb-xkb1__amd64/copyright"
+    },
+    {
+      "name": "libxcomposite1:amd64",
+      "version": "1:0.4.5-1build2",
+      "source_package": "libxcomposite",
+      "source_version": "1:0.4.5-1build2",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxcomposite1__amd64/copyright"
+    },
+    {
+      "name": "libxcursor1:amd64",
+      "version": "1:1.2.0-2build4",
+      "source_package": "libxcursor",
+      "source_version": "1:1.2.0-2build4",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxcursor1__amd64/copyright"
+    },
+    {
+      "name": "libxdamage1:amd64",
+      "version": "1:1.1.5-2build2",
+      "source_package": "libxdamage",
+      "source_version": "1:1.1.5-2build2",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxdamage1__amd64/copyright"
+    },
+    {
+      "name": "libxdmcp6:amd64",
+      "version": "1:1.1.3-0ubuntu5",
+      "source_package": "libxdmcp",
+      "source_version": "1:1.1.3-0ubuntu5",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxdmcp6__amd64/copyright"
+    },
+    {
+      "name": "libxext6:amd64",
+      "version": "2:1.3.4-1build1",
+      "source_package": "libxext",
+      "source_version": "2:1.3.4-1build1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxext6__amd64/copyright"
+    },
+    {
+      "name": "libxfixes3:amd64",
+      "version": "1:6.0.0-1",
+      "source_package": "libxfixes",
+      "source_version": "1:6.0.0-1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxfixes3__amd64/copyright"
+    },
+    {
+      "name": "libxi6:amd64",
+      "version": "2:1.8-1build1",
+      "source_package": "libxi",
+      "source_version": "2:1.8-1build1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxi6__amd64/copyright"
+    },
+    {
+      "name": "libxinerama1:amd64",
+      "version": "2:1.1.4-3",
+      "source_package": "libxinerama",
+      "source_version": "2:1.1.4-3",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxinerama1__amd64/copyright"
+    },
+    {
+      "name": "libxkbcommon-x11-0:amd64",
+      "version": "1.4.0-1",
+      "source_package": "libxkbcommon",
+      "source_version": "1.4.0-1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxkbcommon-x11-0__amd64/copyright"
+    },
+    {
+      "name": "libxkbcommon0:amd64",
+      "version": "1.4.0-1",
+      "source_package": "libxkbcommon",
+      "source_version": "1.4.0-1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxkbcommon0__amd64/copyright"
+    },
+    {
+      "name": "libxrandr2:amd64",
+      "version": "2:1.5.2-1build1",
+      "source_package": "libxrandr",
+      "source_version": "2:1.5.2-1build1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxrandr2__amd64/copyright"
+    },
+    {
+      "name": "libxrender1:amd64",
+      "version": "1:0.9.10-1build4",
+      "source_package": "libxrender",
+      "source_version": "1:0.9.10-1build4",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libxrender1__amd64/copyright"
+    },
+    {
+      "name": "libzstd1:amd64",
+      "version": "1.4.8+dfsg-3build1",
+      "source_package": "libzstd",
+      "source_version": "1.4.8+dfsg-3build1",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/libzstd1__amd64/copyright"
+    },
+    {
+      "name": "zlib1g:amd64",
+      "version": "1:1.2.11.dfsg-2ubuntu9.2",
+      "source_package": "zlib",
+      "source_version": "1:1.2.11.dfsg-2ubuntu9.2",
+      "status": "installed",
+      "copyright_collected": true,
+      "notice_path": "packages/zlib1g__amd64/copyright"
+    }
+  ],
+  "files": [
+    {
+      "path": "common-licenses/Apache-2.0",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358,
+      "source_area": "common_licenses",
+      "source_relative_path": "Apache-2.0"
+    },
+    {
+      "path": "common-licenses/Artistic",
+      "sha256": "b7fd9b73ea99602016a326e0b62e6646060d18febdd065ceca8bb482208c3d88",
+      "bytes": 6111,
+      "source_area": "common_licenses",
+      "source_relative_path": "Artistic"
+    },
+    {
+      "path": "common-licenses/CC0-1.0",
+      "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+      "bytes": 7048,
+      "source_area": "common_licenses",
+      "source_relative_path": "CC0-1.0"
+    },
+    {
+      "path": "common-licenses/GFDL-1.2",
+      "sha256": "56976e64523fa1e68db4e6f464f5b2cb89d7d08f54b1d012e317b8db286b3faf",
+      "bytes": 20431,
+      "source_area": "common_licenses",
+      "source_relative_path": "GFDL-1.2"
+    },
+    {
+      "path": "common-licenses/GPL",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "bytes": 35147,
+      "source_area": "common_licenses",
+      "source_relative_path": "GPL"
+    },
+    {
+      "path": "common-licenses/GPL-1",
+      "sha256": "d77d235e41d54594865151f4751e835c5a82322b0e87ace266567c3391a4b912",
+      "bytes": 12632,
+      "source_area": "common_licenses",
+      "source_relative_path": "GPL-1"
+    },
+    {
+      "path": "common-licenses/GPL-2",
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "bytes": 18092,
+      "source_area": "common_licenses",
+      "source_relative_path": "GPL-2"
+    },
+    {
+      "path": "common-licenses/GPL-3",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903",
+      "bytes": 35147,
+      "source_area": "common_licenses",
+      "source_relative_path": "GPL-3"
+    },
+    {
+      "path": "common-licenses/LGPL",
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+      "bytes": 7651,
+      "source_area": "common_licenses",
+      "source_relative_path": "LGPL"
+    },
+    {
+      "path": "common-licenses/LGPL-2",
+      "sha256": "b7993225104d90ddd8024fd838faf300bea5e83d91203eab98e29512acebd69c",
+      "bytes": 25383,
+      "source_area": "common_licenses",
+      "source_relative_path": "LGPL-2"
+    },
+    {
+      "path": "common-licenses/LGPL-2.1",
+      "sha256": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551",
+      "bytes": 26530,
+      "source_area": "common_licenses",
+      "source_relative_path": "LGPL-2.1"
+    },
+    {
+      "path": "common-licenses/LGPL-3",
+      "sha256": "da7eabb7bafdf7d3ae5e9f223aa5bdc1eece45ac569dc21b3b037520b4464768",
+      "bytes": 7651,
+      "source_area": "common_licenses",
+      "source_relative_path": "LGPL-3"
+    },
+    {
+      "path": "common-licenses/MPL-1.1",
+      "sha256": "f849fc26a7a99981611a3a370e83078deb617d12a45776d6c4cada4d338be469",
+      "bytes": 25755,
+      "source_area": "common_licenses",
+      "source_relative_path": "MPL-1.1"
+    },
+    {
+      "path": "packages/libatk-bridge2.0-0__amd64/copyright",
+      "sha256": "87368802a069bed7640702c5932e4b2424b41f896fc4fdeea75ac5c212a5709b",
+      "bytes": 4460,
+      "source_area": "package_documentation",
+      "source_relative_path": "libatk-bridge2.0-0/copyright"
+    },
+    {
+      "path": "packages/libatk1.0-0__amd64/copyright",
+      "sha256": "4ef60081ff6152f4c638c196a79bfe7510b4ef9f1056ff72e8a4e1a9301b2b39",
+      "bytes": 1152,
+      "source_area": "package_documentation",
+      "source_relative_path": "libatk1.0-0/copyright"
+    },
+    {
+      "path": "packages/libatspi2.0-0__amd64/copyright",
+      "sha256": "4c9fe678a08f789b1f48edac3865d307459dd2cc103ce7cce3bc1cad99692713",
+      "bytes": 5749,
+      "source_area": "package_documentation",
+      "source_relative_path": "libatspi2.0-0/copyright"
+    },
+    {
+      "path": "packages/libblkid1__amd64/copyright",
+      "sha256": "2c447817698777e3b2365a5afe2a58ececb85367dfdf0ea2c0df49add90e93eb",
+      "bytes": 23045,
+      "source_area": "package_documentation",
+      "source_relative_path": "libblkid1/copyright"
+    },
+    {
+      "path": "packages/libbrotli1__amd64/copyright",
+      "sha256": "24a64e5bb83d0960d1835696a1e23c0896ad6055b0ca47c66ab0eb9a766324b1",
+      "bytes": 1354,
+      "source_area": "package_documentation",
+      "source_relative_path": "libbrotli1/copyright"
+    },
+    {
+      "path": "packages/libbsd0__amd64/copyright",
+      "sha256": "3761714adb9c45fa588b77b372d6e75dcc9e6822cc2d6baa712007241aec714e",
+      "bytes": 25649,
+      "source_area": "package_documentation",
+      "source_relative_path": "libbsd0/copyright"
+    },
+    {
+      "path": "packages/libbz2-1.0__amd64/copyright",
+      "sha256": "832ed535ff3c3d025a8d2348eb1b697b89addcf2eaadbc17650262040b9145e2",
+      "bytes": 2228,
+      "source_area": "package_documentation",
+      "source_relative_path": "libbz2-1.0/copyright"
+    },
+    {
+      "path": "packages/libcairo-gobject2__amd64/copyright",
+      "sha256": "e4dfd72c31eeb9054ea6fcbf7838cc3eb8058ffbc1b297811540cf60be070196",
+      "bytes": 28462,
+      "source_area": "package_documentation",
+      "source_relative_path": "libcairo-gobject2/copyright"
+    },
+    {
+      "path": "packages/libcairo2__amd64/copyright",
+      "sha256": "e4dfd72c31eeb9054ea6fcbf7838cc3eb8058ffbc1b297811540cf60be070196",
+      "bytes": 28462,
+      "source_area": "package_documentation",
+      "source_relative_path": "libcairo2/copyright"
+    },
+    {
+      "path": "packages/libcap2__amd64/copyright",
+      "sha256": "a906104348c333a96d63c3573e6eb9c2cc3b410d045f3ad512dcafa4b3e4cff3",
+      "bytes": 4631,
+      "source_area": "package_documentation",
+      "source_relative_path": "libcap2/copyright"
+    },
+    {
+      "path": "packages/libcom-err2__amd64/copyright",
+      "sha256": "9e3a4384b6d8d2358d44103f62bcd948328b3f8a63a1a6baa66abeb43302d581",
+      "bytes": 1154,
+      "source_area": "package_documentation",
+      "source_relative_path": "libcom-err2/copyright"
+    },
+    {
+      "path": "packages/libdatrie1__amd64/copyright",
+      "sha256": "1169f159b101610f58bdc54949c153de129ef8363294f532f45912de9f94b69c",
+      "bytes": 2123,
+      "source_area": "package_documentation",
+      "source_relative_path": "libdatrie1/copyright"
+    },
+    {
+      "path": "packages/libdbus-1-3__amd64/copyright",
+      "sha256": "151007a06fd9409b5fd1d743ce5749a1bbd94def4caee0e2bedf33318058a1a9",
+      "bytes": 19464,
+      "source_area": "package_documentation",
+      "source_relative_path": "libdbus-1-3/copyright"
+    },
+    {
+      "path": "packages/libepoxy0__amd64/copyright",
+      "sha256": "a8be83fe8a66a6ecc1a9fbcec9cf1b43aacca69d38220a94fb37632f090b611e",
+      "bytes": 1352,
+      "source_area": "package_documentation",
+      "source_relative_path": "libepoxy0/copyright"
+    },
+    {
+      "path": "packages/libexpat1__amd64/copyright",
+      "sha256": "60919fe1a156395ff14511bb6ff79756c50ade2fff59ac60c9bae1d8a7fe6292",
+      "bytes": 1756,
+      "source_area": "package_documentation",
+      "source_relative_path": "libexpat1/copyright"
+    },
+    {
+      "path": "packages/libffi8__amd64/copyright",
+      "sha256": "7258c8acc378030d8dbe1fcdf394e915769fa31dcbaf3d2991d9a79891f3bcdc",
+      "bytes": 3440,
+      "source_area": "package_documentation",
+      "source_relative_path": "libffi8/copyright"
+    },
+    {
+      "path": "packages/libfontconfig1__amd64/copyright",
+      "sha256": "b215a61cdd3e62b5b17cc28b1852c78acb3dd38be0fb30706f7efc050dba91db",
+      "bytes": 1301,
+      "source_area": "package_documentation",
+      "source_relative_path": "libfontconfig1/copyright"
+    },
+    {
+      "path": "packages/libfreetype6__amd64/copyright",
+      "sha256": "992b869abf2c114288dafb51c37f19c0afc3455477b9d589371d45ad214a8b07",
+      "bytes": 25162,
+      "source_area": "package_documentation",
+      "source_relative_path": "libfreetype6/copyright"
+    },
+    {
+      "path": "packages/libfribidi0__amd64/copyright",
+      "sha256": "39000badbcd15a4a144cfa2d2f0d906d4d9183f42350e8193ac775baded86b7c",
+      "bytes": 1450,
+      "source_area": "package_documentation",
+      "source_relative_path": "libfribidi0/copyright"
+    },
+    {
+      "path": "packages/libgcc-s1__amd64/copyright",
+      "sha256": "da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3",
+      "bytes": 68194,
+      "source_area": "package_documentation",
+      "source_relative_path": "libgcc-s1/copyright"
+    },
+    {
+      "path": "packages/libgcrypt20__amd64/copyright",
+      "sha256": "8bf0ea526b7b497bf7b31842e799c37caa69090cc53fd080c76403cc8b79f659",
+      "bytes": 24424,
+      "source_area": "package_documentation",
+      "source_relative_path": "libgcrypt20/copyright"
+    },
+    {
+      "path": "packages/libgdk-pixbuf-2.0-0__amd64/copyright",
+      "sha256": "4509ce25586e99da55525a8e27f1410bb7c3cb4647b9e1f586545110adc23a3c",
+      "bytes": 5480,
+      "source_area": "package_documentation",
+      "source_relative_path": "libgdk-pixbuf-2.0-0/copyright"
+    },
+    {
+      "path": "packages/libglib2.0-0__amd64/copyright",
+      "sha256": "607a2dbcf41b82733bc93345da5470995a7f80515774fbabc4689158fae956c2",
+      "bytes": 4119,
+      "source_area": "package_documentation",
+      "source_relative_path": "libglib2.0-0/copyright"
+    },
+    {
+      "path": "packages/libgpg-error0__amd64/copyright",
+      "sha256": "ef74578dd392759954c80d4ad3986273d05d8c2098b2e9ee18980f88e0ad3342",
+      "bytes": 5009,
+      "source_area": "package_documentation",
+      "source_relative_path": "libgpg-error0/copyright"
+    },
+    {
+      "path": "packages/libgraphite2-3__amd64/copyright",
+      "sha256": "a33017ba0308c41bdbde4751bff349ab7b26af45fadbb1e3e7ac67c372985572",
+      "bytes": 9348,
+      "source_area": "package_documentation",
+      "source_relative_path": "libgraphite2-3/copyright"
+    },
+    {
+      "path": "packages/libgssapi-krb5-2__amd64/copyright",
+      "sha256": "4a2d321ab57260e8de4b67bde8cff76c07d28be69c2d8b22dfc2bfa42f5c41b9",
+      "bytes": 61825,
+      "source_area": "package_documentation",
+      "source_relative_path": "libgssapi-krb5-2/copyright"
+    },
+    {
+      "path": "packages/libgtk-3-0__amd64/copyright",
+      "sha256": "b1fb413d22da493a7e4a2bf256905399cf1401e271c5da9eb9022a4313656bbd",
+      "bytes": 38707,
+      "source_area": "package_documentation",
+      "source_relative_path": "libgtk-3-0/copyright"
+    },
+    {
+      "path": "packages/libharfbuzz0b__amd64/copyright",
+      "sha256": "f04e7be76a1d2660b23bd0fbe9570fbf3e5beb2b657840410c08f08170b57172",
+      "bytes": 1852,
+      "source_area": "package_documentation",
+      "source_relative_path": "libharfbuzz0b/copyright"
+    },
+    {
+      "path": "packages/libjpeg-turbo8__amd64/copyright",
+      "sha256": "193468d9eb043a180f6f9e3386f7205104908dcb8525ad39c8236990dfd452ef",
+      "bytes": 6101,
+      "source_area": "package_documentation",
+      "source_relative_path": "libjpeg-turbo8/copyright"
+    },
+    {
+      "path": "packages/libk5crypto3__amd64/copyright",
+      "sha256": "4a2d321ab57260e8de4b67bde8cff76c07d28be69c2d8b22dfc2bfa42f5c41b9",
+      "bytes": 61825,
+      "source_area": "package_documentation",
+      "source_relative_path": "libk5crypto3/copyright"
+    },
+    {
+      "path": "packages/libkeyutils1__amd64/copyright",
+      "sha256": "6ab5c541723d8211cab7ebc1643d53aa51c4863c1c838e4625d797ece9472ee8",
+      "bytes": 2104,
+      "source_area": "package_documentation",
+      "source_relative_path": "libkeyutils1/copyright"
+    },
+    {
+      "path": "packages/libkrb5-3__amd64/copyright",
+      "sha256": "4a2d321ab57260e8de4b67bde8cff76c07d28be69c2d8b22dfc2bfa42f5c41b9",
+      "bytes": 61825,
+      "source_area": "package_documentation",
+      "source_relative_path": "libkrb5-3/copyright"
+    },
+    {
+      "path": "packages/libkrb5support0__amd64/copyright",
+      "sha256": "4a2d321ab57260e8de4b67bde8cff76c07d28be69c2d8b22dfc2bfa42f5c41b9",
+      "bytes": 61825,
+      "source_area": "package_documentation",
+      "source_relative_path": "libkrb5support0/copyright"
+    },
+    {
+      "path": "packages/liblz4-1__amd64/copyright",
+      "sha256": "a82c5d50439c6d9f32b874dbc75ae5292ba5a3e50318bed80e82a8f5254689ca",
+      "bytes": 3574,
+      "source_area": "package_documentation",
+      "source_relative_path": "liblz4-1/copyright"
+    },
+    {
+      "path": "packages/liblzma5__amd64/copyright",
+      "sha256": "a2dc8fac0f496e1c58aff67018cf0c6b88336316afa5642f9335b71642e28aa8",
+      "bytes": 15465,
+      "source_area": "package_documentation",
+      "source_relative_path": "liblzma5/copyright"
+    },
+    {
+      "path": "packages/libmd0__amd64/copyright",
+      "sha256": "4365ef6255ad553fce69dd4bc0e093472c5d0e41b8ea493a545cc926ce171aa6",
+      "bytes": 8018,
+      "source_area": "package_documentation",
+      "source_relative_path": "libmd0/copyright"
+    },
+    {
+      "path": "packages/libmount1__amd64/copyright",
+      "sha256": "2c447817698777e3b2365a5afe2a58ececb85367dfdf0ea2c0df49add90e93eb",
+      "bytes": 23045,
+      "source_area": "package_documentation",
+      "source_relative_path": "libmount1/copyright"
+    },
+    {
+      "path": "packages/libpango-1.0-0__amd64/copyright",
+      "sha256": "c0aef71da2cfce299d16c584cdde7c862c10996ee97f919dc91631bd9e7d0bc5",
+      "bytes": 53108,
+      "source_area": "package_documentation",
+      "source_relative_path": "libpango-1.0-0/copyright"
+    },
+    {
+      "path": "packages/libpangocairo-1.0-0__amd64/copyright",
+      "sha256": "c0aef71da2cfce299d16c584cdde7c862c10996ee97f919dc91631bd9e7d0bc5",
+      "bytes": 53108,
+      "source_area": "package_documentation",
+      "source_relative_path": "libpangocairo-1.0-0/copyright"
+    },
+    {
+      "path": "packages/libpangoft2-1.0-0__amd64/copyright",
+      "sha256": "c0aef71da2cfce299d16c584cdde7c862c10996ee97f919dc91631bd9e7d0bc5",
+      "bytes": 53108,
+      "source_area": "package_documentation",
+      "source_relative_path": "libpangoft2-1.0-0/copyright"
+    },
+    {
+      "path": "packages/libpcre2-8-0__amd64/copyright",
+      "sha256": "f65dae37239e4d61a1bdeaf2ded76b8569d012a054aa042233b78615e7a83210",
+      "bytes": 3123,
+      "source_area": "package_documentation",
+      "source_relative_path": "libpcre2-8-0/copyright"
+    },
+    {
+      "path": "packages/libpcre3__amd64/copyright",
+      "sha256": "ac9276490d2fa167442ae1aae33926514ad10c8886baa40046c5e367fccc5938",
+      "bytes": 2765,
+      "source_area": "package_documentation",
+      "source_relative_path": "libpcre3/copyright"
+    },
+    {
+      "path": "packages/libpixman-1-0__amd64/copyright",
+      "sha256": "1b3fb5690861e15ca4fd6640fd4def4b2576617942eec04b6fcb7d8bc6c4c9da",
+      "bytes": 2247,
+      "source_area": "package_documentation",
+      "source_relative_path": "libpixman-1-0/copyright"
+    },
+    {
+      "path": "packages/libpng16-16__amd64/copyright",
+      "sha256": "b2d88c45221e2016a5a0bb98406b45faf911f1aff87242eec12af05abae1de0a",
+      "bytes": 13341,
+      "source_area": "package_documentation",
+      "source_relative_path": "libpng16-16/copyright"
+    },
+    {
+      "path": "packages/libselinux1__amd64/copyright",
+      "sha256": "641806738b0c6a3d03168c2649e6b94205198bb66cd557e6bae3a20b71c9bb0b",
+      "bytes": 3131,
+      "source_area": "package_documentation",
+      "source_relative_path": "libselinux1/copyright"
+    },
+    {
+      "path": "packages/libssl3__amd64/copyright",
+      "sha256": "6a7da622fe0637a334d2a8fc470852d2ffb77d9a2b2f930f854e32a41ad6ef35",
+      "bytes": 2543,
+      "source_area": "package_documentation",
+      "source_relative_path": "libssl3/copyright"
+    },
+    {
+      "path": "packages/libstdc++6__amd64/copyright",
+      "sha256": "da8191658b3452ce9caf31638ba61dab31a38c619fa39df119812e050f592fd3",
+      "bytes": 68194,
+      "source_area": "package_documentation",
+      "source_relative_path": "libstdc++6/copyright"
+    },
+    {
+      "path": "packages/libsystemd0__amd64/copyright",
+      "sha256": "8541750aba2193c885f0c77df20870ef454c2ae8f905077105922bf3130108ad",
+      "bytes": 10893,
+      "source_area": "package_documentation",
+      "source_relative_path": "libsystemd0/copyright"
+    },
+    {
+      "path": "packages/libthai0__amd64/copyright",
+      "sha256": "016c3098ec29a08639005f6b9cd7519764e7627392eac3d87f2ea7488ce290e5",
+      "bytes": 2452,
+      "source_area": "package_documentation",
+      "source_relative_path": "libthai0/copyright"
+    },
+    {
+      "path": "packages/libuuid1__amd64/copyright",
+      "sha256": "2c447817698777e3b2365a5afe2a58ececb85367dfdf0ea2c0df49add90e93eb",
+      "bytes": 23045,
+      "source_area": "package_documentation",
+      "source_relative_path": "libuuid1/copyright"
+    },
+    {
+      "path": "packages/libx11-6__amd64/copyright",
+      "sha256": "0b380a7fd5b2228f26e9585e56f14812efd3350f3df307507d2bc055dfd8de3e",
+      "bytes": 47102,
+      "source_area": "package_documentation",
+      "source_relative_path": "libx11-6/copyright"
+    },
+    {
+      "path": "packages/libx11-xcb1__amd64/copyright",
+      "sha256": "0b380a7fd5b2228f26e9585e56f14812efd3350f3df307507d2bc055dfd8de3e",
+      "bytes": 47102,
+      "source_area": "package_documentation",
+      "source_relative_path": "libx11-xcb1/copyright"
+    },
+    {
+      "path": "packages/libxau6__amd64/copyright",
+      "sha256": "118dd263a7b91c8f21c489f949bf13281dff9e766deea92b829dac4dce66601a",
+      "bytes": 1224,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxau6/copyright"
+    },
+    {
+      "path": "packages/libxcb-cursor0__amd64/copyright",
+      "sha256": "42dc92e851927a08d00db5a44122cff695e143d7a16aec391fe7290caea5e00f",
+      "bytes": 1779,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxcb-cursor0/copyright"
+    },
+    {
+      "path": "packages/libxcb-glx0__amd64/copyright",
+      "sha256": "4f7cb9db6bf6542f5417e3d674c780d3a5fd12291a54d63054fb576ee0cfae80",
+      "bytes": 1781,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxcb-glx0/copyright"
+    },
+    {
+      "path": "packages/libxcb-image0__amd64/copyright",
+      "sha256": "daf2d51e978ec64fc21f59b12d850c2efc907c15eae5c4ba2f3237ce946476de",
+      "bytes": 2707,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxcb-image0/copyright"
+    },
+    {
+      "path": "packages/libxcb-randr0__amd64/copyright",
+      "sha256": "4f7cb9db6bf6542f5417e3d674c780d3a5fd12291a54d63054fb576ee0cfae80",
+      "bytes": 1781,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxcb-randr0/copyright"
+    },
+    {
+      "path": "packages/libxcb-render-util0__amd64/copyright",
+      "sha256": "94e32edbc98a324a3c13cd7a1687406328a9a94c6fefe319d6ac43dd4cbf151c",
+      "bytes": 2722,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxcb-render-util0/copyright"
+    },
+    {
+      "path": "packages/libxcb-render0__amd64/copyright",
+      "sha256": "4f7cb9db6bf6542f5417e3d674c780d3a5fd12291a54d63054fb576ee0cfae80",
+      "bytes": 1781,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxcb-render0/copyright"
+    },
+    {
+      "path": "packages/libxcb-shm0__amd64/copyright",
+      "sha256": "4f7cb9db6bf6542f5417e3d674c780d3a5fd12291a54d63054fb576ee0cfae80",
+      "bytes": 1781,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxcb-shm0/copyright"
+    },
+    {
+      "path": "packages/libxcb-sync1__amd64/copyright",
+      "sha256": "4f7cb9db6bf6542f5417e3d674c780d3a5fd12291a54d63054fb576ee0cfae80",
+      "bytes": 1781,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxcb-sync1/copyright"
+    },
+    {
+      "path": "packages/libxcb-util1__amd64/copyright",
+      "sha256": "1142dc404c2f6845a5e9a39ee569e670fd629b3a974a03bcd64f84e57e5acd90",
+      "bytes": 2741,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxcb-util1/copyright"
+    },
+    {
+      "path": "packages/libxcb-xfixes0__amd64/copyright",
+      "sha256": "4f7cb9db6bf6542f5417e3d674c780d3a5fd12291a54d63054fb576ee0cfae80",
+      "bytes": 1781,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxcb-xfixes0/copyright"
+    },
+    {
+      "path": "packages/libxcb-xkb1__amd64/copyright",
+      "sha256": "4f7cb9db6bf6542f5417e3d674c780d3a5fd12291a54d63054fb576ee0cfae80",
+      "bytes": 1781,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxcb-xkb1/copyright"
+    },
+    {
+      "path": "packages/libxcomposite1__amd64/copyright",
+      "sha256": "e37c7a7e4026343c3e5c13990a6d9a8879194ae3ab26bfe420b34f6f206bf35f",
+      "bytes": 2324,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxcomposite1/copyright"
+    },
+    {
+      "path": "packages/libxcursor1__amd64/copyright",
+      "sha256": "817abc0ccc9e2591057be256b0f6d80edb134221ced29dd545a9eafaf40b423c",
+      "bytes": 2774,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxcursor1/copyright"
+    },
+    {
+      "path": "packages/libxdamage1__amd64/copyright",
+      "sha256": "09182bc7805ff77a41251e450cebd0d33c48a74ba8ec4b734855a22c86f50417",
+      "bytes": 1221,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxdamage1/copyright"
+    },
+    {
+      "path": "packages/libxdmcp6__amd64/copyright",
+      "sha256": "1bcbb50f8603fe8b86d330bfa460b772ea04fbd3c70e4499f0768b5340b9fd6e",
+      "bytes": 1265,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxdmcp6/copyright"
+    },
+    {
+      "path": "packages/libxext6__amd64/copyright",
+      "sha256": "bc57e445ca1d9fe082c8d54189dd411ff26caa8552c9c63d44ea06a982f32124",
+      "bytes": 10421,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxext6/copyright"
+    },
+    {
+      "path": "packages/libxfixes3__amd64/copyright",
+      "sha256": "051ffe073ab38244c504bb379903b4ecda6081fb3d97d0d3dce44bc11712eef2",
+      "bytes": 2320,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxfixes3/copyright"
+    },
+    {
+      "path": "packages/libxi6__amd64/copyright",
+      "sha256": "c812f9c54513ae593aab9580b54a4b18219648df7068d49ca1daa47f522ba3fa",
+      "bytes": 4435,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxi6/copyright"
+    },
+    {
+      "path": "packages/libxinerama1__amd64/copyright",
+      "sha256": "e49d9732f261b3ffcb50c40914bd9d144de5557dad9b2ae20dbe8e3c5b3d17fb",
+      "bytes": 3670,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxinerama1/copyright"
+    },
+    {
+      "path": "packages/libxkbcommon-x11-0__amd64/copyright",
+      "sha256": "5eeaeb1b6e029a0274e1573765bb0bae2926ef96a3679203faa4fd00fdaeaa88",
+      "bytes": 3566,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxkbcommon-x11-0/copyright"
+    },
+    {
+      "path": "packages/libxkbcommon0__amd64/copyright",
+      "sha256": "5eeaeb1b6e029a0274e1573765bb0bae2926ef96a3679203faa4fd00fdaeaa88",
+      "bytes": 3566,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxkbcommon0/copyright"
+    },
+    {
+      "path": "packages/libxrandr2__amd64/copyright",
+      "sha256": "6d8e6239cfe9dd25bbeef06dcf0610d802ebbdc8968db87cf5adf00ff98927d4",
+      "bytes": 3733,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxrandr2/copyright"
+    },
+    {
+      "path": "packages/libxrender1__amd64/copyright",
+      "sha256": "ed2a78123a5076b4f11da38cb1ffb85b5cb9fdc26b5746c517b1d7e7a9029704",
+      "bytes": 2252,
+      "source_area": "package_documentation",
+      "source_relative_path": "libxrender1/copyright"
+    },
+    {
+      "path": "packages/libzstd1__amd64/copyright",
+      "sha256": "8cf66791fbe72801cb1d701c832b7e395dad0000bb9699dc42df94b49d699e91",
+      "bytes": 5268,
+      "source_area": "package_documentation",
+      "source_relative_path": "libzstd1/copyright"
+    },
+    {
+      "path": "packages/zlib1g__amd64/copyright",
+      "sha256": "d77204eee882807240f6351c4f5ae2a4bcdb5b773ff77d10647b9b66b826b2fb",
+      "bytes": 2920,
+      "source_area": "package_documentation",
+      "source_relative_path": "zlib1g/copyright"
+    }
+  ],
+  "missing_notices": [
+    {
+      "kind": "common_license",
+      "name": "GPL-2.0",
+      "referenced_by": "packages/libpango-1.0-0__amd64/copyright"
+    },
+    {
+      "kind": "common_license",
+      "name": "GPL-3.0",
+      "referenced_by": "packages/libpango-1.0-0__amd64/copyright"
+    },
+    {
+      "kind": "common_license",
+      "name": "GPL-2.0",
+      "referenced_by": "packages/libpangocairo-1.0-0__amd64/copyright"
+    },
+    {
+      "kind": "common_license",
+      "name": "GPL-3.0",
+      "referenced_by": "packages/libpangocairo-1.0-0__amd64/copyright"
+    },
+    {
+      "kind": "common_license",
+      "name": "GPL-2.0",
+      "referenced_by": "packages/libpangoft2-1.0-0__amd64/copyright"
+    },
+    {
+      "kind": "common_license",
+      "name": "GPL-3.0",
+      "referenced_by": "packages/libpangoft2-1.0-0__amd64/copyright"
+    }
+  ],
+  "reference_resolutions": [
+    {
+      "referenced_by": "packages/libbz2-1.0__amd64/copyright",
+      "literal_token": "GPL-2.",
+      "copied_name": "GPL-2",
+      "rule": "existing_file_after_sentence_period_removed"
+    },
+    {
+      "referenced_by": "packages/libgcc-s1__amd64/copyright",
+      "literal_token": "GPL.",
+      "copied_name": "GPL",
+      "rule": "existing_file_after_sentence_period_removed"
+    },
+    {
+      "referenced_by": "packages/libgcc-s1__amd64/copyright",
+      "literal_token": "LGPL.",
+      "copied_name": "LGPL",
+      "rule": "existing_file_after_sentence_period_removed"
+    },
+    {
+      "referenced_by": "packages/libgpg-error0__amd64/copyright",
+      "literal_token": "GPL-3.",
+      "copied_name": "GPL-3",
+      "rule": "existing_file_after_sentence_period_removed"
+    },
+    {
+      "referenced_by": "packages/libgpg-error0__amd64/copyright",
+      "literal_token": "LGPL-2.1.",
+      "copied_name": "LGPL-2.1",
+      "rule": "existing_file_after_sentence_period_removed"
+    },
+    {
+      "referenced_by": "packages/libgraphite2-3__amd64/copyright",
+      "literal_token": "GPL-1.",
+      "copied_name": "GPL-1",
+      "rule": "existing_file_after_sentence_period_removed"
+    },
+    {
+      "referenced_by": "packages/libgraphite2-3__amd64/copyright",
+      "literal_token": "GPL-2.",
+      "copied_name": "GPL-2",
+      "rule": "existing_file_after_sentence_period_removed"
+    },
+    {
+      "referenced_by": "packages/libgraphite2-3__amd64/copyright",
+      "literal_token": "LGPL-2.1.",
+      "copied_name": "LGPL-2.1",
+      "rule": "existing_file_after_sentence_period_removed"
+    },
+    {
+      "referenced_by": "packages/libgraphite2-3__amd64/copyright",
+      "literal_token": "MPL-1.1.",
+      "copied_name": "MPL-1.1",
+      "rule": "existing_file_after_sentence_period_removed"
+    },
+    {
+      "referenced_by": "packages/libjpeg-turbo8__amd64/copyright",
+      "literal_token": "LGPL-2.1.",
+      "copied_name": "LGPL-2.1",
+      "rule": "existing_file_after_sentence_period_removed"
+    },
+    {
+      "referenced_by": "packages/libstdc++6__amd64/copyright",
+      "literal_token": "GPL.",
+      "copied_name": "GPL",
+      "rule": "existing_file_after_sentence_period_removed"
+    },
+    {
+      "referenced_by": "packages/libstdc++6__amd64/copyright",
+      "literal_token": "LGPL.",
+      "copied_name": "LGPL",
+      "rule": "existing_file_after_sentence_period_removed"
+    }
+  ],
+  "summary": {
+    "collected_system_sources": 85,
+    "package_claims": 78,
+    "unclaimed_sources": 0,
+    "copied_notice_files": 91,
+    "missing_notice_references": 6
+  },
+  "scope": "dpkg database ownership claims and source-file hashes on the executing build host. Exact package notices/literal common-license references are copied without choosing terms. Review evidence is separate from installed notices; frozen app/inventory unchanged. Not binary authenticity, complete native/subcomponent licensing, source-offer or compliance certification."
+}

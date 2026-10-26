@@ -32,6 +32,28 @@ def run_smoke_check(report_path: Path) -> int:
 
     report: dict = {"version": __version__, "system": platform.system(), "checks": [], "success": False}
     app = QApplication.instance() or QApplication(["VISOR smoke check"])
+
+    def wait_for(condition) -> None:
+        if condition():
+            return
+        loop, poll, deadline = QEventLoop(), QTimer(), QTimer()
+        deadline.setSingleShot(True)
+        poll.timeout.connect(lambda: loop.quit() if condition() else None)
+        deadline.timeout.connect(loop.quit)
+        poll.start(5)
+        deadline.start(10000)
+        loop.exec()
+        poll.stop()
+        deadline.stop()
+        if not condition():
+            raise RuntimeError("Bundled background image loading timed out.")
+
+    def load_preview(widget, path: Path) -> bool:
+        if not widget.request_path(path):
+            raise RuntimeError("Image load request was rejected.")
+        wait_for(lambda: not widget.loading)
+        return widget.image_path == path.resolve()
+
     window = None
     try:
         if getattr(sys, "frozen", False):
@@ -72,11 +94,12 @@ def run_smoke_check(report_path: Path) -> int:
             drop = QDropEvent(QPointF(40, 40), actions, mime,
                               Qt.MouseButton.LeftButton, Qt.KeyboardModifier.ShiftModifier)
             QApplication.sendEvent(window.reference_input, drop)
+            wait_for(lambda: not window.reference_input.loading)
             if (not enter.isAccepted() or not drop.isAccepted() or drop.dropAction() != Qt.DropAction.CopyAction
                     or window.reference_input.image_path != reference.resolve() or not reference.exists()):
                 raise RuntimeError("Qt image drop did not load the input with copy semantics.")
             report["checks"].append("Qt URL drop events with copy semantics (not native shell drag)")
-            window.target_input.load_path(target)
+            load_preview(window.target_input, target)
             app.processEvents()
             if not window.run_button.isEnabled():
                 raise RuntimeError("Image loading did not enable analysis.")
@@ -87,10 +110,10 @@ def run_smoke_check(report_path: Path) -> int:
                 if not success:
                     raise RuntimeError(f"Cannot encode image-format fixture: {extension}")
                 encoded.tofile(sample)
-                window.target_input.load_path(sample)
+                load_preview(window.target_input, sample)
                 if window.target_input.image_path != sample.resolve():
                     raise RuntimeError(f"Bundled Qt image format failed: {extension}")
-            window.target_input.load_path(target)
+            load_preview(window.target_input, target)
             report["checks"].append("Qt PNG/JPEG/BMP/TIFF/WebP input decoding")
             # Hand-built EXIF avoids another runtime dependency for this check.
             success, encoded = cv2.imencode(".jpg", image)
@@ -102,20 +125,20 @@ def run_smoke_check(report_path: Path) -> int:
             raw = encoded.tobytes()
             rotated = folder / "orientation-6.jpg"
             rotated.write_bytes(raw[:2] + b"\xff\xe1" + struct.pack(">H", len(app1) + 2) + app1 + raw[2:])
-            window.target_input.load_path(rotated)
+            load_preview(window.target_input, rotated)
             if "280 × 360 px" not in window.target_input.metadata_label.text():
                 raise RuntimeError("Bundled input preview ignored EXIF orientation.")
             broken = folder / "unreadable.jpg"
             broken.write_bytes(b"not an image")
-            if window.target_input.load_path(broken) or window.target_input.image_path != rotated.resolve():
+            if load_preview(window.target_input, broken) or window.target_input.image_path != rotated.resolve():
                 raise RuntimeError("Unreadable replacement lost the selected image.")
             unavailable = folder / "temporarily-unavailable.jpg"
             rotated.rename(unavailable)
             window.target_input._update_preview()
             if window.target_input.preview.pixmap().isNull():
                 raise RuntimeError("Cached image preview was lost when the source became unavailable.")
-            window.target_input.load_path(target)
-            report["checks"].append("EXIF-oriented input, failed replacement recovery and cached preview")
+            load_preview(window.target_input, target)
+            report["checks"].append("Background EXIF-oriented input, failed replacement recovery and cached preview")
             for engine in ("SIFT", "ORB"):
                 result = analyze(reference, target, engine)
                 if not result.geometry.valid or result.geometry.inlier_count < 4:

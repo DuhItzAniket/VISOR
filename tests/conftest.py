@@ -1,10 +1,48 @@
 from __future__ import annotations
 
+import os
 import sys
 
 import cv2
 import numpy as np
 import pytest
+
+
+@pytest.fixture(scope="session", autouse=True)
+def application_lifetime():
+    """Keep one application alive until every test-owned Qt object is done.
+
+    Individual tests may exit nested event loops, but must not repeatedly
+    construct/destroy the process-wide application between native checks.
+    """
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+    from PySide6.QtWidgets import QApplication
+
+    app = QApplication.instance() or QApplication([])
+    yield app
+    app.processEvents()
+
+
+@pytest.fixture
+def qt_wait():
+    """Run the application's event loop while waiting for a bounded condition."""
+    from PySide6.QtCore import QEventLoop, QTimer
+
+    def wait(condition, timeout_ms=4000):
+        if condition():
+            return
+        loop, poll, timeout = QEventLoop(), QTimer(), QTimer()
+        timeout.setSingleShot(True)
+        poll.timeout.connect(lambda: loop.quit() if condition() else None)
+        timeout.timeout.connect(loop.quit)
+        poll.start(5)
+        timeout.start(timeout_ms)
+        loop.exec()
+        poll.stop()
+        timeout.stop()
+        assert condition(), "Qt operation did not finish before its deadline"
+
+    return wait
 
 
 @pytest.fixture(autouse=True)

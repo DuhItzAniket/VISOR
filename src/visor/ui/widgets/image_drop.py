@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from threading import Event
 
-from PySide6.QtCore import QSize, QStandardPaths, Qt, QUrl, Signal
-from PySide6.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QImageIOHandler, QImageReader, QPixmap
+from PySide6.QtCore import QStandardPaths, Qt, QTimer, QUrl, Signal
+from PySide6.QtGui import QDragEnterEvent, QDragMoveEvent, QDropEvent, QPixmap
 from PySide6.QtWidgets import (
     QFileDialog,
     QFrame,
@@ -18,15 +19,18 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from visor.ui.image_loader import DecodedPreview, PreviewLoader, PreviewRequest, decode_preview
+
 logger = logging.getLogger(__name__)
 IMAGE_FILTER = "Images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff *.webp);;All files (*.*)"
-PREVIEW_LIMIT = QSize(1024, 1024)
 
 
 class ImageDropWidget(QFrame):
     """A labeled image slot that accepts local image files by drop or picker."""
 
     image_changed = Signal(str, object)
+    loading_changed = Signal(bool)
+    loading_idle = Signal()
 
     def __init__(self, title: str, parent: QWidget | None = None) -> None:
         super().__init__(parent)
@@ -38,6 +42,13 @@ class ImageDropWidget(QFrame):
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self._image_path: Path | None = None
         self._thumbnail = QPixmap()
+        self._loader = PreviewLoader(self)
+        self._loader.completed.connect(self._apply_preview)
+        self._loader.failed.connect(self._load_failed)
+        self._loader.busy_changed.connect(self.loading_changed.emit)
+        self._loader.idle.connect(self._loading_finished)
+        self._cancel_requested = False
+        self._closing_requested = False
         self._browse_directory: Path | None = None
         self._title = title
 
@@ -88,6 +99,8 @@ class ImageDropWidget(QFrame):
 
     def clear_image(self) -> None:
         """Remove the current image and emit a clear notification to the app."""
+        self._loader.cancel()
+        self._cancel_requested = False
         self._image_path = None
         self._thumbnail = QPixmap()
         self.preview.clear()
@@ -105,7 +118,7 @@ class ImageDropWidget(QFrame):
             directory = Path(QStandardPaths.writableLocation(QStandardPaths.StandardLocation.PicturesLocation) or Path.home())
         filename, _ = QFileDialog.getOpenFileName(self, f"Choose {self._title}", str(directory), IMAGE_FILTER)
         if filename:
-            self.load_path(Path(filename))
+            self.request_path(Path(filename))
 
     def set_browse_directory(self, directory: Path) -> None:
         """Share the last image folder without changing the selected image."""
@@ -130,7 +143,8 @@ class ImageDropWidget(QFrame):
     def dropEvent(self, event: QDropEvent) -> None:
         if not self._accept_image_drag(event):
             return
-        if not self.load_path(self._dropped_image(event.mimeData().urls())[0]):
+        # Acceptance acknowledges a queued open request, not a completed decode.
+        if not self.request_path(self._dropped_image(event.mimeData().urls())[0]):
             event.ignore()
 
     @staticmethod
@@ -138,51 +152,81 @@ class ImageDropWidget(QFrame):
         accepted = {".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff", ".webp"}
         return [Path(url.toLocalFile()) for url in urls if url.isLocalFile() and Path(url.toLocalFile()).suffix.lower() in accepted]
 
-    def load_path(self, path: str | Path, *, preserve_previous: bool = True) -> bool:
-        """Load an upright, bounded preview; a bad replacement retains the input.
+    @property
+    def loading(self) -> bool:
+        return self._loader.busy
 
-        Project replay can explicitly clear missing project images rather than
-        silently using an unrelated image from the previous workspace.
-        """
-        normalized = Path(path)
-        reader = QImageReader(str(normalized))
-        reader.setAutoTransform(True)
-        original_size = reader.size()
-        oriented_size = QSize(original_size)
-        if reader.transformation() & QImageIOHandler.Transformation.TransformationRotate90:
-            oriented_size.transpose()
-        if original_size.isValid() and (original_size.width() > PREVIEW_LIMIT.width()
-                                        or original_size.height() > PREVIEW_LIMIT.height()):
-            reader.setScaledSize(original_size.scaled(PREVIEW_LIMIT, Qt.AspectRatioMode.KeepAspectRatio))
-        image = reader.read()
-        if image.isNull():
-            if not preserve_previous or self._image_path is None:
-                self.clear_image()
-            recovery = ("Current image retained. Choose another file." if self._image_path is not None
-                        else "Choose a supported image file.")
-            self.metadata_label.setText(f"Could not read this image. {recovery}")
-            self.metadata_label.setObjectName("errorText")
-            self.metadata_label.style().unpolish(self.metadata_label)
-            self.metadata_label.style().polish(self.metadata_label)
-            logger.warning("Unable to load image for %s: %s", self._title, normalized)
+    def request_path(self, path: str | Path, *, preserve_previous: bool = True) -> bool:
+        """Queue a user selection; only the latest successful decode is applied."""
+        request = PreviewRequest(Path(path), preserve_previous)
+        if not self._loader.request(request):
             return False
+        self._cancel_requested = False
+        self._set_metadata(f"Loading {request.path.name}…")
+        self.clear_button.setVisible(True)
+        return True
 
-        self._image_path = normalized.resolve()
-        if not oriented_size.isValid():
-            oriented_size = image.size()
-        # Some handlers cannot decode at the requested size. Bound retained
-        # memory independently of their scaled-decoding support.
-        self._thumbnail = QPixmap.fromImage(image.scaled(
-            PREVIEW_LIMIT, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation,
-        )) if image.width() > PREVIEW_LIMIT.width() or image.height() > PREVIEW_LIMIT.height() else QPixmap.fromImage(image)
+    def cancel_loading(self) -> None:
+        self._cancel_requested = self.loading
+        self._loader.cancel()
+        if self.loading:
+            self._set_metadata("Cancellation requested; waiting for the image decoder…")
+
+    def shutdown(self) -> None:
+        self._loader.shutdown()
+
+    def _loading_finished(self) -> None:
+        if self._cancel_requested:
+            retained = " Current image retained." if self._image_path is not None else " Choose an image."
+            self._set_metadata(f"Image loading cancelled.{retained}")
+            self.clear_button.setVisible(self._image_path is not None)
+        self.loading_idle.emit()
+        if self._closing_requested:
+            QTimer.singleShot(0, self.close)
+
+    def closeEvent(self, event) -> None:
+        self._closing_requested = True
+        self.shutdown()
+        if self.loading:
+            event.ignore()
+            return
+        super().closeEvent(event)
+
+    def load_path(self, path: str | Path, *, preserve_previous: bool = True) -> bool:
+        """Synchronous helper for controlled checks; user workflows use request_path."""
+        self._loader.cancel()
+        request = PreviewRequest(Path(path), preserve_previous)
+        try:
+            preview = decode_preview(request, Event())
+        except (OSError, ValueError) as exc:
+            self._load_failed(request, str(exc))
+            return False
+        self._apply_preview(preview)
+        return True
+
+    def _load_failed(self, request: PreviewRequest, message: str) -> None:
+        if not request.preserve_previous or self._image_path is None:
+            self.clear_image()
+        recovery = ("Current image retained. Choose another file." if self._image_path is not None
+                    else "Choose a supported image file.")
+        self._set_metadata(f"Could not read this image. {recovery}", error=True)
+        self.clear_button.setVisible(self._image_path is not None)
+        logger.warning("Unable to load image for %s: %s (%s)", self._title, request.path, message)
+
+    def _apply_preview(self, preview: DecodedPreview) -> None:
+        self._image_path = preview.request.path
+        self._thumbnail = QPixmap.fromImage(preview.image)
         self._update_preview()
-        self.metadata_label.setObjectName("mutedText")
-        self.metadata_label.setText(f"{self._image_path.name}  ·  {oriented_size.width()} × {oriented_size.height()} px")
-        self.metadata_label.style().unpolish(self.metadata_label)
-        self.metadata_label.style().polish(self.metadata_label)
+        size = preview.original_size
+        self._set_metadata(f"{self._image_path.name}  ·  {size.width()} × {size.height()} px")
         self.clear_button.setVisible(True)
         self.image_changed.emit(self._title, self._image_path)
-        return True
+
+    def _set_metadata(self, text: str, *, error: bool = False) -> None:
+        self.metadata_label.setObjectName("errorText" if error else "mutedText")
+        self.metadata_label.setText(text)
+        self.metadata_label.style().unpolish(self.metadata_label)
+        self.metadata_label.style().polish(self.metadata_label)
 
     def _update_preview(self) -> None:
         if self._thumbnail.isNull():
