@@ -41,3 +41,7 @@ This small sample does **not** establish an engine ranking, published HPatches b
 Keep this reporting sample unchanged. Select separate development scenes to investigate low-support but apparently valid fits; compare matching policies and support/plausibility diagnostics there. Then freeze any policy before testing additional held-out scenes and user-relevant unrelated/occluded/low-texture pairs. Track this work as I15 in the improvement ledger.
 
 This follow-up now has a preregistered protocol and [independent development evidence with frozen choices](RELIABILITY_FINDINGS.md). Its reports use their own recorded source revision and do not modify either original report above.
+
+## Broader synthetic development probe — 2026-10-26
+
+A separately frozen [21-pair protocol](SYNTHETIC_STRESS_PROTOCOL.md) adds repeated/low-texture/half-occluded positives and independent-scene/noise/blank negatives. [Findings and limitations](SYNTHETIC_STRESS_FINDINGS.md), [all 126 measured attempts and 42 warmups](synthetic-stress-20261026.json.gz). Both engines fit 18/36 positive attempts within 3 px and fail all repeated/low-texture positives. SIFT accepts one independent-scene negative on three repetitions; ORB accepts none in these nine distinct constructed negatives. All execution is CPU and no runtime/annotation error is omitted. No gate/default/held-out reporting choice changes, and no engine ranking or general robustness claim follows.

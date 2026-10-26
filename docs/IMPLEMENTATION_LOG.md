@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Publish the frozen CPU stress probe, including the adverse negative
+
+- Evaluated the unchanged preregistered construction/settings at clean c79b950 on CPU, with no installed Torch/LightGlue. Retained every 126 measured attempt and 42 warmups, no runtime/annotation errors. Verified every actual device is CPU and published exact compressed raw report bytes, their SHA256, per-condition denominators and limitations. Protocol/generator hashes and all input/truth hashes are embedded.
+- Each engine fit 18/36 truth-backed positives within 3 px; both failed all repeated-tile and low-texture positives. SIFT accepted one independent-scene negative on all three repetitions with nine inliers and ~0.327 px residual; ORB accepted none in this small constructed sample. Repeats are not independent scenes, and low residual/support is not object-presence proof. No reporting-set retuning, gate promotion, engine ranking or general reliability/speed claim; desktop algorithms/defaults/goldens are unchanged.
+- Current full CPU core after the generator addition passed 303 tests/6 skips/17 optional deselections in 18.10s. Generator/evaluator focus 13 tests, Ruff/focused generator types passed. The separately running native image-loader matrix 40311819086 at ce68a2c also passed all four targets; downloaded all four small audits and verified identities, inventory hashes, actual bundled/installed background-input smoke success and all 91 Linux notice hashes. Full candidate checksum downloads are in progress; no new manual desktop/GPU review is implied.
+
 ## 2026-10-26 — Freeze broader synthetic development cases before measurement
 
 - Added a deterministic CPU-only preparation tool for textured, repeated-tile, smooth low-texture and half-occluded positives with known mappings, plus independent-scene/noise/blank negatives. The frozen protocol fixes three seeds, 21 pairs, exact settings, one warmup/three measured repetitions, denominators and reporting rules before engine results are inspected. It does not tune I15's reserved reporting sample or change algorithms/defaults.

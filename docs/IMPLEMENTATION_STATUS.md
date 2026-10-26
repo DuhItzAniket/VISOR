@@ -31,7 +31,7 @@ LightGlue's pinned metadata requests opencv-python, so source setup now installs
 | Scope | Verified result |
 |---|---|
 | Full local source suite, including installed optional models | **276 passed, 5 skipped in 78.69s** before the subsequent maintainer-only trace tool; with accelerators masked in the existing developer environment; three skips are the host's unprivileged symlink restriction. This is regression evidence, not a speed benchmark |
-| Isolated headless Windows core suite | **301 passed, 6 skipped, 17 optional-model tests deselected in 16.69s**; original Windows/OpenCV goldens retained; prior local native crashes recorded separately; a session QApplication now anchors test lifetime, without claiming the crash cause |
+| Isolated headless Windows core suite | **303 passed, 6 skipped, 17 optional-model tests deselected in 18.10s**; original Windows/OpenCV goldens retained; prior local native crashes recorded separately; a session QApplication now anchors test lifetime, without claiming the crash cause |
 | Final explicit CPU optional checks | **17 passed, 264 deselected in 62.12s** after pipeline tests explicitly requested CPU and asserted actual device; CUDA visibility mask -1 |
 | Lint | Ruff passed for src, tests and shared desktop builder; whitespace check passed |
 | Type checking | Focused modules passed, including result contracts, matching/geometry, runtime/setup, registry/pipeline, jobs, evaluation/study, video, image input and builder. No whole-UI Mypy pass is claimed |
@@ -63,7 +63,7 @@ The 8fe7dfa executable exposed its native idle window and accessible control nam
 
 ## Research and independent evidence
 
-I23 freezes a [synthetic stress protocol](evaluation/SYNTHETIC_STRESS_PROTOCOL.md) and reproducible 21-pair generator before measurement. Preparation/evaluator checks pass; engine results are pending. The new cases target repeated texture, low texture, occlusion and independent negatives while leaving I15 reporting/defaults unchanged.
+I23 freezes a [synthetic stress protocol](evaluation/SYNTHETIC_STRESS_PROTOCOL.md) and reproducible 21-pair generator before measurement. Published [126 measured attempts and 42 warmups](evaluation/SYNTHETIC_STRESS_FINDINGS.md) from clean c79b950: each engine fits 18/36 positives within 3 px; both fail the repeated/low-texture positives. SIFT accepts one independent-scene negative on three repetitions; ORB accepts none in this small constructed sample. No runtime/annotation errors, model runtime or GPU; no general ranking/accuracy claim. I15 reporting/defaults remain unchanged.
 
 - Portable evaluation records manifests/input/truth hashes, runtime/source revision and dirty state, actual settings/results, raw failures, warmups and repetitions. Ground-truth corner error uses the documented pixel-extent convention; unannotated accuracy stays unavailable.
 - Original [published evidence](evaluation/README.md), clean b2c7f0b: 18 synthetic development attempts and 72 attempts on two HPatches reporting scenes. Adverse valid fits are retained, including ORB's approximately 305 px corner-error example. The sample establishes neither engine ranking nor general false-positive rates.
