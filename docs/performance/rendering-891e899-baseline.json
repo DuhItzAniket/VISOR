@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "kind": "local_rendering_profile",
+  "runtime": {
+    "visor": "0.2.0",
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.26300-SP0",
+    "architecture": "AMD64",
+    "numpy": "1.26.4",
+    "opencv-contrib-python-headless": "4.11.0.86",
+    "opencv-contrib-python": null,
+    "opencv-python-headless": null,
+    "opencv-python": null,
+    "PySide6": "6.11.2",
+    "torch": null,
+    "torchvision": null,
+    "lightglue": null,
+    "source_revision": "891e899f1682cc67042f00a31101ddd6acc7ed9c",
+    "source_dirty": false,
+    "evaluation_code_sha256": "464aacb5b22ff2b1caf96118df513ca99ba957f8940cb45037898b41fd5bdf32"
+  },
+  "qt_version": "6.11.2",
+  "warmups": 1,
+  "repetitions": 5,
+  "settings": {
+    "ratio_threshold": 0.75,
+    "ransac_threshold": 4.0,
+    "show_match_lines": true,
+    "show_inliers": true,
+    "show_outliers": true,
+    "show_keypoints": true,
+    "show_geometry": true,
+    "rainbow_feature_colors": true,
+    "feature_line_thickness": 6
+  },
+  "source_files_sha256": {
+    "scripts/profile_rendering.py": "56312c9ba166c07b0c705c71d1a78b184031867746f1b3762e869ed5792f8f2d",
+    "src/visor/pipeline.py": "e9d398439ade55112f04c03a29413ff1ea3481a9de2ff038d93bf9d738fd653d",
+    "src/visor/visualization.py": "8db03f77910fc4536c7401955da99981a96ba10b5e66cd29d3e7c08606d62e0d",
+    "src/visor/ui/widgets/image_canvas.py": "25de98ba771b121538825c53e0b81521cb7f7ea11daa88dc1aa49fd1134657b0"
+  },
+  "input_files_sha256": {
+    "tests/data/golden_reference.png": "526371673a6626315520bf3458052f2f1d40e6c43d110b8822ad4e2df1cebe3c",
+    "tests/data/golden_target.png": "ccc7202cd2983faaff03d28f08bd78cc63f13a117b9a63dbc8bfc1449e69e8a4"
+  },
+  "scope": "Uniformly scaled classical result; no feature redetection or accuracy measurement. Offscreen timings are not native interaction latency or portable speed guarantees.",
+  "rows": [
+    {
+      "input_size_px": [
+        560,
+        420
+      ],
+      "samples": [
+        {
+          "matches_ms": 27.311800004099496,
+          "localization_ms": 2.759199996944517,
+          "canvas_ms": 2.4670999991940334
+        },
+        {
+          "matches_ms": 31.61730000283569,
+          "localization_ms": 3.218199999537319,
+          "canvas_ms": 2.752700005657971
+        },
+        {
+          "matches_ms": 36.353999996208586,
+          "localization_ms": 3.2460999937029555,
+          "canvas_ms": 2.6702000031946227
+        },
+        {
+          "matches_ms": 35.44020000845194,
+          "localization_ms": 3.216400000383146,
+          "canvas_ms": 2.730599997448735
+        },
+        {
+          "matches_ms": 38.42650000296999,
+          "localization_ms": 3.819000005023554,
+          "canvas_ms": 3.0171000107657164
+        }
+      ],
+      "median_ms": {
+        "matches_ms": 35.44020000845194,
+        "localization_ms": 3.218199999537319,
+        "canvas_ms": 2.730599997448735
+      },
+      "p95_ms": {
+        "matches_ms": 38.01200000161771,
+        "localization_ms": 3.7044200027594343,
+        "canvas_ms": 2.9642200097441673
+      }
+    },
+    {
+      "input_size_px": [
+        2240,
+        1680
+      ],
+      "samples": [
+        {
+          "matches_ms": 94.12570000858977,
+          "localization_ms": 12.339799999608658,
+          "canvas_ms": 39.48439999658149
+        },
+        {
+          "matches_ms": 97.1066000056453,
+          "localization_ms": 11.830200004624203,
+          "canvas_ms": 41.74580000108108
+        },
+        {
+          "matches_ms": 96.40169999329373,
+          "localization_ms": 13.014700001804158,
+          "canvas_ms": 42.856800006120466
+        },
+        {
+          "matches_ms": 87.59739999368321,
+          "localization_ms": 12.966499998583458,
+          "canvas_ms": 42.30539999844041
+        },
+        {
+          "matches_ms": 97.54780000366736,
+          "localization_ms": 12.03350001014769,
+          "canvas_ms": 36.52670000155922
+        }
+      ],
+      "median_ms": {
+        "matches_ms": 96.40169999329373,
+        "localization_ms": 12.339799999608658,
+        "canvas_ms": 41.74580000108108
+      },
+      "p95_ms": {
+        "matches_ms": 97.45956000406295,
+        "localization_ms": 13.005060001160018,
+        "canvas_ms": 42.746520004584454
+      }
+    },
+    {
+      "input_size_px": [
+        3920,
+        2940
+      ],
+      "samples": [
+        {
+          "matches_ms": 159.2945000011241,
+          "localization_ms": 28.294100004131906,
+          "canvas_ms": 112.86649999965448
+        },
+        {
+          "matches_ms": 139.92240000516176,
+          "localization_ms": 28.66919999360107,
+          "canvas_ms": 108.2369999930961
+        },
+        {
+          "matches_ms": 152.06429999670945,
+          "localization_ms": 29.63209999143146,
+          "canvas_ms": 101.42150000319816
+        },
+        {
+          "matches_ms": 139.52760001120623,
+          "localization_ms": 26.87349999905564,
+          "canvas_ms": 105.93010000593495
+        },
+        {
+          "matches_ms": 159.34800000104588,
+          "localization_ms": 29.503700003260747,
+          "canvas_ms": 116.61450000246987
+        }
+      ],
+      "median_ms": {
+        "matches_ms": 152.06429999670945,
+        "localization_ms": 28.66919999360107,
+        "canvas_ms": 108.2369999930961
+      },
+      "p95_ms": {
+        "matches_ms": 159.33730000106152,
+        "localization_ms": 29.606419993797317,
+        "canvas_ms": 115.86490000190679
+      }
+    }
+  ],
+  "canvas_source_revision": "bc03d7e",
+  "comparison_scope": "Only the canvas implementation is loaded from bc03d7e; current drawing code and identical parameters, one warmup/five samples."
+}

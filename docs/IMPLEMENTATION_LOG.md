@@ -1,5 +1,10 @@
 # Implementation Log
 
+## 2026-10-26 — Investigate native overlay test delivery
+
+- Run 40295997052 at 891e899 exposed four overlay test wait failures on Linux and both Macs, despite local source success; the old verified downloads are unchanged. The tests repeatedly called C++ QTest.qWait rather than entering the real application event loop, which can starve Python drawing of the GIL on native builds.
+- Changed the overlay test wait helper to a real nested QEventLoop with poll/deadline timers, retaining the same four-second deadline and every assertion. Production smoke already uses that event-loop model. Focused source checks: 23 passed in 5.49s; isolated full core: 243 passed/5 skipped/17 deselected in 19.98s; Ruff passed. Native refresh follows; this hypothesis is not treated as resolved until it passes. Windows job of the original run passed packaging and the expanded frozen workflow.
+
 ## 2026-10-26 — Bound overlay work and preserve the inspected viewport
 
 - Local profiling of the scaled classical fixture exposed UI-thread drawing and repeated RGB uploads. Added a reusable maintainer profile with runtime/source/input hashes, raw samples, warmups and explicit scope: scaled existing features, not high-resolution extraction, accuracy or portable native latency. It refuses to overwrite evidence. Final clean-source profiles follow.

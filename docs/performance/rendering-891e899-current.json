@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "kind": "local_rendering_profile",
+  "runtime": {
+    "visor": "0.2.0",
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.26300-SP0",
+    "architecture": "AMD64",
+    "numpy": "1.26.4",
+    "opencv-contrib-python-headless": "4.11.0.86",
+    "opencv-contrib-python": null,
+    "opencv-python-headless": null,
+    "opencv-python": null,
+    "PySide6": "6.11.2",
+    "torch": null,
+    "torchvision": null,
+    "lightglue": null,
+    "source_revision": "891e899f1682cc67042f00a31101ddd6acc7ed9c",
+    "source_dirty": false,
+    "evaluation_code_sha256": "464aacb5b22ff2b1caf96118df513ca99ba957f8940cb45037898b41fd5bdf32"
+  },
+  "qt_version": "6.11.2",
+  "warmups": 1,
+  "repetitions": 5,
+  "settings": {
+    "ratio_threshold": 0.75,
+    "ransac_threshold": 4.0,
+    "show_match_lines": true,
+    "show_inliers": true,
+    "show_outliers": true,
+    "show_keypoints": true,
+    "show_geometry": true,
+    "rainbow_feature_colors": true,
+    "feature_line_thickness": 6
+  },
+  "source_files_sha256": {
+    "scripts/profile_rendering.py": "56312c9ba166c07b0c705c71d1a78b184031867746f1b3762e869ed5792f8f2d",
+    "src/visor/pipeline.py": "e9d398439ade55112f04c03a29413ff1ea3481a9de2ff038d93bf9d738fd653d",
+    "src/visor/visualization.py": "8db03f77910fc4536c7401955da99981a96ba10b5e66cd29d3e7c08606d62e0d",
+    "src/visor/ui/widgets/image_canvas.py": "38c6f73798053dba82f2a2971731953a59aae770125f3876816aae449c92582d"
+  },
+  "input_files_sha256": {
+    "tests/data/golden_reference.png": "526371673a6626315520bf3458052f2f1d40e6c43d110b8822ad4e2df1cebe3c",
+    "tests/data/golden_target.png": "ccc7202cd2983faaff03d28f08bd78cc63f13a117b9a63dbc8bfc1449e69e8a4"
+  },
+  "scope": "Uniformly scaled classical result; no feature redetection or accuracy measurement. Offscreen timings are not native interaction latency or portable speed guarantees.",
+  "rows": [
+    {
+      "input_size_px": [
+        560,
+        420
+      ],
+      "samples": [
+        {
+          "matches_ms": 32.9660999996122,
+          "localization_ms": 3.2561999978497624,
+          "canvas_ms": 1.1289999965811148
+        },
+        {
+          "matches_ms": 28.398000009474345,
+          "localization_ms": 2.474699998856522,
+          "canvas_ms": 0.8571999933337793
+        },
+        {
+          "matches_ms": 29.407199996057898,
+          "localization_ms": 3.156699996907264,
+          "canvas_ms": 1.1624000035226345
+        },
+        {
+          "matches_ms": 32.596100005321205,
+          "localization_ms": 3.024100005859509,
+          "canvas_ms": 1.0718000121414661
+        },
+        {
+          "matches_ms": 30.672599998069927,
+          "localization_ms": 2.7775999915320426,
+          "canvas_ms": 1.095500003430061
+        }
+      ],
+      "median_ms": {
+        "matches_ms": 30.672599998069927,
+        "localization_ms": 3.024100005859509,
+        "canvas_ms": 1.095500003430061
+      },
+      "p95_ms": {
+        "matches_ms": 32.892100000754,
+        "localization_ms": 3.2362999976612628,
+        "canvas_ms": 1.1557200021343306
+      }
+    },
+    {
+      "input_size_px": [
+        2240,
+        1680
+      ],
+      "samples": [
+        {
+          "matches_ms": 83.96680001169443,
+          "localization_ms": 11.155500003951602,
+          "canvas_ms": 9.740299996337853
+        },
+        {
+          "matches_ms": 82.30090000142809,
+          "localization_ms": 11.355399998137727,
+          "canvas_ms": 10.230100000626408
+        },
+        {
+          "matches_ms": 88.99450000899378,
+          "localization_ms": 11.81959999667015,
+          "canvas_ms": 10.064199988846667
+        },
+        {
+          "matches_ms": 83.54799999506213,
+          "localization_ms": 9.996900000260212,
+          "canvas_ms": 8.733099995879456
+        },
+        {
+          "matches_ms": 86.15420000569429,
+          "localization_ms": 11.430700003984384,
+          "canvas_ms": 9.561999992001802
+        }
+      ],
+      "median_ms": {
+        "matches_ms": 83.96680001169443,
+        "localization_ms": 11.355399998137727,
+        "canvas_ms": 9.740299996337853
+      },
+      "p95_ms": {
+        "matches_ms": 88.42644000833388,
+        "localization_ms": 11.741819998132996,
+        "canvas_ms": 10.19691999827046
+      }
+    },
+    {
+      "input_size_px": [
+        3920,
+        2940
+      ],
+      "samples": [
+        {
+          "matches_ms": 147.14260000619106,
+          "localization_ms": 24.538700003176928,
+          "canvas_ms": 27.659800005494617
+        },
+        {
+          "matches_ms": 139.6077000099467,
+          "localization_ms": 24.80640000430867,
+          "canvas_ms": 28.207800001837313
+        },
+        {
+          "matches_ms": 137.65390000480693,
+          "localization_ms": 26.289799992810003,
+          "canvas_ms": 28.106099998694845
+        },
+        {
+          "matches_ms": 139.51819999783766,
+          "localization_ms": 25.20869999716524,
+          "canvas_ms": 29.81500000169035
+        },
+        {
+          "matches_ms": 144.45560000604019,
+          "localization_ms": 30.54609999526292,
+          "canvas_ms": 33.64839999994729
+        }
+      ],
+      "median_ms": {
+        "matches_ms": 139.6077000099467,
+        "localization_ms": 25.20869999716524,
+        "canvas_ms": 28.207800001837313
+      },
+      "p95_ms": {
+        "matches_ms": 146.60520000616089,
+        "localization_ms": 29.694839994772337,
+        "canvas_ms": 32.8817200002959
+      }
+    }
+  ]
+}

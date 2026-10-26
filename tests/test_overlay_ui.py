@@ -2,13 +2,11 @@
 
 import os
 from threading import Event
-from time import monotonic
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 import pytest
-from PySide6.QtCore import QThread, QTimer
-from PySide6.QtTest import QTest
+from PySide6.QtCore import QEventLoop, QThread, QTimer
 from PySide6.QtWidgets import QApplication, QFileDialog
 
 from visor.exporting import load_project
@@ -17,10 +15,19 @@ from visor.ui import main_window, overlay_renderer
 
 
 def pump(app, condition):
-    deadline = monotonic() + 4
-    while not condition() and monotonic() < deadline:
-        app.processEvents()
-        QTest.qWait(5)
+    if condition():
+        return
+    # Use a real Qt event loop, as the application does. Repeated C++ qWait
+    # calls can retain the GIL and starve Python drawing on other native builds.
+    loop, poll, timeout = QEventLoop(), QTimer(), QTimer()
+    timeout.setSingleShot(True)
+    poll.timeout.connect(lambda: loop.quit() if condition() else None)
+    timeout.timeout.connect(loop.quit)
+    poll.start(5)
+    timeout.start(4000)
+    loop.exec()
+    poll.stop()
+    timeout.stop()
     assert condition()
 
 
