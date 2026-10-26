@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Verify I17 native delivery and prepare installed-artifact release checks
+
+- Run 40296839880 at 9085c12 passed Windows x64, Linux x64 and both Mac architectures after the test event-loop repair. Core: Windows 246 passed/2 skipped/17 deselected; other targets 244 passed/4 skipped/17 deselected. Downloaded all four audits and checked source identity, inventory SHA256, successful frozen reports and the new background/latest-style/viewport/styled-export check. Notice/files/unresolved counts are unchanged from the verified headless profile. Updated validation download links. The first failed run remains recorded; no assertion/deadline was removed.
+- Added CI-only actual installer/app-copy, installed workflow and removal checks. They refuse local/self-hosted machines and existing installs. Installed executables must match frozen hashes and run with an empty PATH directory and removed Python path variables. Windows uses per-user Inno setup/uninstall; Linux installs/purges its Debian package; Macs mount/read/copy/detach actual DMGs into private staging. This does not establish a clean-user-desktop, network-disabled, signing, Gatekeeper or native interaction gate.
+- Added atomic preparation of flat, platform-prefixed evidence, manifests and SHA256SUMS. Candidate creation rejects failed/stale/mismatched evidence and changed installer/evidence bytes; it never overwrites an existing candidate. Signing remains explicitly unverified. Sixteen focused runner-guard/provenance/tamper checks, Ruff and focused four-module Mypy passed. Final isolated core: 259 passed/5 skipped/17 deselected in 20.83s. Native installer refresh follows; full optional CPU checks run separately. See RELEASE_PREPARATION.md for commands and boundaries.
+
 ## 2026-10-26 — Investigate native overlay test delivery
 
 - Run 40295997052 at 891e899 exposed four overlay test wait failures on Linux and both Macs, despite local source success; the old verified downloads are unchanged. The tests repeatedly called C++ QTest.qWait rather than entering the real application event loop, which can starve Python drawing of the GIL on native builds.
