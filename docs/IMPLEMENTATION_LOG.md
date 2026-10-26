@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-10-26 — Verify automatic core CI and all downloaded native candidates
+
+- Run 40340933707 at 54e8d51 passed both full core jobs: Windows 316/2 skipped/17 optional deselections in 22.98s; Linux 314/4 skipped/17 deselections in 13.59s. All-source/script Ruff, all 17 declared type targets and isolated source-wheel audits passed on both. Downloaded JUnit reports each contain 318 executed/skipped entries, zero failures/errors. Fresh wheels have 46 modules/57 package files and their exact source/notice/provider checks pass. The earlier checkout/type failures remain documented; no claim is made that fresh CI diagnoses the local native aborts.
+- Completed all four ce68a2c candidate downloads using resumable, range-checked transfers; every ZIP passed CRC and flat-path validation. Independently rechecked all 26 package/evidence/manifest SHA256 values, source/inventory identities and the exact installer bytes/size in each successful installation report. Rechecked all 91 Linux notice hashes. Published a durable verification record, without binaries, credentials or signed URLs. No package was installed/launched locally and no GPU was probed or used.
+- Updated validation links/status and confirmed all 70 existing relative Markdown file links resolve to available repository files. Physical desktop/accessibility/offline review, trusted signing, full native/model licensing and the observed local process-stability issue remain open release gates.
+
 ## 2026-10-26 — Repair the type contracts found on fresh hosted runners
 
 - Run 40338832093 at 506a4c9 passed full core and lint on both hosts (Windows 316 passed/2 skipped/17 deselected; Linux 314 passed/4 skipped/17 deselected), then failed the new type step on 30 pre-existing errors in nine imported modules. It is not recorded as a successful overall workflow. Local explicit-eight-file checking had not reported those imported-module errors; the fresh runner exposed the gap.

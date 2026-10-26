@@ -13,7 +13,7 @@ VISOR's original source is licensed under [Apache 2.0](LICENSE), with the projec
 - **SIFT and ORB engines** — OpenCV implementations, no model training or weight downloads
 - **Source-only learned engines** — optional SuperPoint+LightGlue, XFeat, ALIKED+LightGlue, DISK+LightGlue and SIFT+LightGlue; excluded from standard desktop bundles
 - **Developer dependency installation** — source builds can install optional runtime packages with live output and a pinned XFeat source/weights cache
-- **Drag-and-drop image input** — drop PNG, JPEG, BMP, TIFF, or WebP into either slot, or use the file picker
+- **Drag-and-drop image input** — drop PNG, JPEG, BMP, TIFF, or WebP into either slot, or use the file picker; previews load in the background, respect photo orientation and preserve an existing image after an unreadable replacement
 - **Feature Matches view** — side-by-side match lines with inlier (green) / outlier (red-blue) coloring
 - **Localization view** — projected reference polygon and center point drawn on the target image
 - **Warped / Rectified view** — target image perspective-corrected back to reference dimensions
