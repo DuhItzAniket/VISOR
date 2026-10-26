@@ -29,6 +29,7 @@ from visor.evaluation_data import (
 from visor.exporting import analysis_document
 from visor.learned_engines import SuperPointConfiguration, XFeatConfiguration
 from visor.models import VALID_ENGINE_NAMES, AnalysisSettings, EngineName
+from visor.opencv_runtime import OPENCV_DISTRIBUTIONS
 from visor.pipeline import analyze
 
 
@@ -90,7 +91,7 @@ def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
 def runtime_versions() -> dict[str, Any]:
     versions: dict[str, Any] = {"visor": __version__, "python": platform.python_version(),
                                 "platform": platform.platform(), "architecture": platform.machine()}
-    for name in ("numpy", "opencv-contrib-python", "PySide6", "torch", "torchvision", "lightglue"):
+    for name in ("numpy", *OPENCV_DISTRIBUTIONS, "PySide6", "torch", "torchvision", "lightglue"):
         try:
             versions[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:

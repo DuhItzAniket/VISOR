@@ -2,7 +2,7 @@
 
 Reviewed 2026-10-26. The owner selected Apache-2.0 for VISOR's original source; root LICENSE/NOTICE and package metadata record that choice. This inventory records observed third-party declarations and upstream notices. It does not establish that a distribution has satisfied every dependency notice/source obligation; release checks remain open under I12/I13.
 
-## Automated artifact evidence â€” 2026-10-26
+## Automated artifact evidence — 2026-10-26
 
 The builder now stages exact package-provided license/notice files and the actual interpreter's license, plus a pinned [Qt/PySide source notice corpus](../third_party/README.md). All 203 upstream files have commit URLs and hashes; referenced attribution license files were resolved. The bundled `third-party/notices.json` records installed versions, exact copied hashes and scope. Frozen validation checks every indexed file and compares the actual Qt runtime version with the corpus. No notice download occurs during normal build or core validation.
 

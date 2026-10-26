@@ -58,6 +58,12 @@ def build() -> tuple[Path, str, str]:
     from PySide6.QtCore import qVersion
 
     from visor.distribution_audit import artifact_inventory, digest, stage_notices
+    from visor.opencv_runtime import DESKTOP_OPENCV, desktop_opencv_version, validate_opencv_build
+
+    desktop_opencv_version()
+    import cv2
+
+    validate_opencv_build(cv2.getBuildInformation())
 
     version = source_version(ROOT)
     system = platform.system()
@@ -121,7 +127,7 @@ def build() -> tuple[Path, str, str]:
         "python": platform.python_version(), "learned_engines_bundled": False,
         "dependencies": {
             name: importlib.metadata.version(name)
-            for name in ("numpy", "opencv-contrib-python", "PySide6", "PyInstaller")
+            for name in ("numpy", DESKTOP_OPENCV, "PySide6", "PyInstaller")
         },
     }
     (ROOT / "dist" / "build-info.json").write_text(json.dumps(info, indent=2), encoding="utf-8")

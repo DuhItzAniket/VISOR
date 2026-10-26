@@ -13,6 +13,7 @@ import cv2
 import numpy as np
 
 from visor import __version__
+from visor.opencv_runtime import validate_opencv_build
 
 
 def run_smoke_check(report_path: Path) -> int:
@@ -44,6 +45,8 @@ def run_smoke_check(report_path: Path) -> int:
 
             count = verify_notice_index(resources / "third-party" / "notices.json", qt_version=qVersion())
             report["checks"].append(f"Third-party notice index and {count} file hashes (not compliance certification)")
+            validate_opencv_build(cv2.getBuildInformation())
+            report["checks"].append("OpenCV HighGUI backend NONE; PySide6 supplies the desktop UI")
         with tempfile.TemporaryDirectory(prefix="visor-smoke-") as temporary:
             folder = Path(temporary)
             rng = np.random.default_rng(2026)
@@ -103,6 +106,21 @@ def run_smoke_check(report_path: Path) -> int:
             if load_project(folder / "session.visor").engine != "ORB":
                 raise RuntimeError("Project round trip failed.")
             report["checks"].append("project round trip")
+            from visor.video import track_reference_in_video
+
+            video_path = folder / "clip.avi"
+            writer = cv2.VideoWriter(str(video_path), cv2.VideoWriter_fourcc(*"MJPG"), 10.0, (360, 280))
+            try:
+                if not writer.isOpened():
+                    raise RuntimeError("Cannot create the MJPEG video fixture.")
+                for _ in range(3):
+                    writer.write(image)
+            finally:
+                writer.release()
+            video = track_reference_in_video(reference, video_path, engine="ORB")
+            if len(video.frames) != 3 or not all(frame.geometry_valid for frame in video.frames):
+                raise RuntimeError("Bundled MJPEG video decoding/tracking failed.")
+            report["checks"].append("MJPEG file encode/decode and three-frame ORB tracking (not camera hardware)")
             window.close()
             app.processEvents()
             window = None

@@ -1,7 +1,7 @@
 """Learned feature engines backed by LightGlue extractors.
 
 These engines are optional. They require ``torch`` and ``lightglue`` to be
-installed (``pip install git+https://github.com/cvg/LightGlue.git``).
+installed using the pinned source setup in docs/OPTIONAL_ENGINES.md.
 When the dependencies are absent the module still imports cleanly; the
 engines raise ``LearnedEngineUnavailable`` on construction.
 """
@@ -19,7 +19,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from visor.learned_pair import LightGluePairEngine, feature_set, measured
-from visor.model_runtime import LIGHTGLUE_REQUIREMENT, XFEAT_REVISION, load_xfeat, xfeat_ready
+from visor.model_runtime import XFEAT_REVISION, load_xfeat, xfeat_ready
 from visor.models import FeatureSet, MatchInfo, MatchSet, PairMatchResult
 
 logger = logging.getLogger(__name__)
@@ -46,8 +46,8 @@ def _ensure_runtime_usable(engine_name: str) -> None:
         )
     if not _LIGHTGLUE_AVAILABLE and engine_name != "XFeat":
         raise LearnedEngineUnavailable(
-            f"{engine_name} requires torch and lightglue. Install with: "
-            f"pip install {LIGHTGLUE_REQUIREMENT}"
+            f"{engine_name} requires torch and pinned lightglue. "
+            "Use source setup in docs/OPTIONAL_ENGINES.md to preserve a single cv2 provider."
         )
     if engine_name == "XFeat" and not is_xfeat_available():
         raise LearnedEngineUnavailable(

@@ -12,6 +12,10 @@ Downloaded and inspected all four audit artifacts; each inventory hash matches b
 
 ## Current verification
 
+I16 follow-up in progress: source/build requirements now select the headless contrib wheel at the same OpenCV 4.11.0.86 pin. Packaging rejects overlapping providers and actual HighGUI backends; frozen checks add MJPEG encoding/decoding and three-frame ORB tracking. An isolated Windows environment passed 226 core tests/5 skips/17 model deselections, including the original classical goldens. The full existing developer suite passed 243 tests/5 skips in 108.16s; 28 focused profile/installer/golden/image/video checks passed. Ruff and focused three-module Mypy passed. New native/optional lanes must pass before the download links are replaced.
+
+LightGlue's pinned metadata requests opencv-python, so source setup now installs its explicitly declared inference dependencies first and the pinned adapter with --no-deps separately. This avoids installing another cv2 provider; the upstream package-name mismatch remains documented rather than hidden with false metadata. Optional installation failures stop the sequence and remain failures. Standard desktop bundles still exclude learned dependencies and models.
+
 | Scope | Verified result |
 |---|---|
 | Full local source suite, including installed optional models | **227 passed, 5 skipped in 42.99s**; three skips are this Windows host's unprivileged symlink restriction. Focused audit/notice/version: 25 passed/3 skipped |

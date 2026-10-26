@@ -81,6 +81,12 @@ The user requires standalone Windows/macOS/Linux applications without a Python s
 
 ## Evidence limits
 
+### Native dependency follow-up — 2026-10-26
+
+The actual Linux frozen inventory at a6fc4fd contains OpenCV Qt5 libraries in addition to PySide's Qt6. VISOR does not use HighGUI functions. Upstream recommends a headless wheel when another toolkit supplies the interface, and installing exactly one cv2 provider. I16 evaluates opencv-contrib-python-headless at the same 4.11.0.86 desktop pin using retained goldens and native image/video checks. This is a packaging change, not a proposed vision algorithm change or a native-license conclusion. [OpenCV wheel guidance](https://github.com/opencv/opencv-python#installation-and-usage).
+
+The pinned LightGlue metadata requests opencv-python. Source setup therefore supplies its other inference dependencies explicitly and installs the adapter with --no-deps to reuse VISOR's headless contrib cv2. The upstream metadata still reports its package-name requirement; actual inference must be verified separately. [Pinned upstream metadata](https://github.com/cvg/LightGlue/blob/eb42fee2d71449efb0aa5c10549752b5d75384d8/pyproject.toml).
+
 ### Follow-up integration review — 2026-10-25
 
 The XFeat pin exposes detectAndCompute with keypoints, scores and 64-D descriptors. Its Hub entry fetches weights through a moving main URL, so VISOR now caches the weights committed at the same fixed source revision instead. The adapter initializes the pinned inference state on the requested device to avoid upstream's unconditional CUDA preference. [Pinned inference source](https://github.com/verlab/accelerated_features/blob/e92685f57f8318b18725c5c8c0bd28c7fe188d9a/modules/xfeat.py), [Hub entry](https://github.com/verlab/accelerated_features/blob/e92685f57f8318b18725c5c8c0bd28c7fe188d9a/hubconf.py).

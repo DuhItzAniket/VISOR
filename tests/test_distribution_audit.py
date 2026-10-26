@@ -105,7 +105,8 @@ def test_clean_qt_wheels_without_notice_files_use_verified_source_fallback(tmp_p
         stage_notices(tmp_path / "missing-corpus", snapshot, distribution=packages.__getitem__, runtime_notice=runtime)
 
 
-def test_file_inventory_matches_actual_bytes_and_keeps_unknown_origin(tmp_path, audit_inputs):
+@pytest.mark.parametrize("forbidden", ["Qt6VirtualKeyboard.dll", "Qt5Core.dll", "libQt5Core-example.so.5"])
+def test_file_inventory_matches_actual_bytes_and_keeps_unknown_origin(tmp_path, audit_inputs, forbidden):
     packages, _, _ = audit_inputs
     source = Path(packages["numpy"].locate_file("demo.dll"))
     source.write_bytes(b"a native library")
@@ -123,7 +124,7 @@ def test_file_inventory_matches_actual_bytes_and_keeps_unknown_origin(tmp_path, 
     assert library["origin"]["component"] == "numpy"
     assert result["file_count"] == 2 and result["unresolved_origin_count"] == 1
     assert str(tmp_path) not in output.read_text()  # no developer filesystem paths published
-    (bundle / "_internal/Qt6VirtualKeyboard.dll").write_bytes(b"unwanted plugin")
+    (bundle / "_internal" / forbidden).write_bytes(b"unwanted GUI module")
     with pytest.raises(RuntimeError, match="Unused excluded Qt"):
         artifact_inventory(bundle, toc, output, project_root=tmp_path, distribution=packages.__getitem__)
 
@@ -143,8 +144,8 @@ def test_overlapping_distribution_records_preserve_both_claims(tmp_path, audit_i
     source = Path(packages["numpy"].locate_file("shared.dll"))
     source.write_bytes(b"shared runtime")
     packages["numpy"].files.append(PurePosixPath("shared.dll"))
-    packages["opencv-contrib-python"].files = [PurePosixPath("shared.dll")]
-    packages["opencv-contrib-python"].locate_file = packages["numpy"].locate_file
+    packages["opencv-contrib-python-headless"].files = [PurePosixPath("shared.dll")]
+    packages["opencv-contrib-python-headless"].locate_file = packages["numpy"].locate_file
     bundle = tmp_path / "bundle"
     bundle.mkdir()
     (bundle / "shared.dll").write_bytes(source.read_bytes())
@@ -154,14 +155,14 @@ def test_overlapping_distribution_records_preserve_both_claims(tmp_path, audit_i
                                 distribution=packages.__getitem__)
     origin = result["files"][0]["origin"]
     assert origin["kind"] == "overlapping_distribution_records"
-    assert {claim["component"] for claim in origin["claims"]} == {"numpy", "opencv-contrib-python"}
+    assert {claim["component"] for claim in origin["claims"]} == {"numpy", "opencv-contrib-python-headless"}
 
 
 @pytest.mark.parametrize("ambiguous", [False, True])
 def test_relocated_library_uses_only_a_unique_collection_source(tmp_path, audit_inputs, ambiguous):
     packages, _, _ = audit_inputs
     entries = []
-    for component in ("numpy", "opencv-contrib-python") if ambiguous else ("numpy",):
+    for component in ("numpy", "opencv-contrib-python-headless") if ambiguous else ("numpy",):
         source = Path(packages[component].locate_file("shared.dylib"))
         source.write_bytes(component.encode())
         packages[component].files.append(PurePosixPath("shared.dylib"))

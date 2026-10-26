@@ -26,7 +26,9 @@ jobs:
           python -m pip install -r requirements/desktop-build.txt
           python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
           python -m pip install -r requirements/learned.txt pytest
+          python -m pip install --no-deps -r requirements/learned-adapter.txt
           python -m pip install --no-deps .
+          python -c "from visor.opencv_runtime import desktop_opencv_version; print(desktop_opencv_version())"
       - name: Prepare pinned XFeat source and weights
         run: python -m visor.model_setup --xfeat
       - name: Real CPU inference checks

@@ -31,13 +31,12 @@ class EngineEntry(NamedTuple):
 
 def _collect_entries() -> list[EngineEntry]:
     from visor.engine_registry import engine_capabilities
-    from visor.model_runtime import LIGHTGLUE_REQUIREMENT
 
     entries = []
     for item in engine_capabilities():
         command = ""
         if not item.available and item.category == "Learned" and not getattr(sys, "frozen", False):
-            command = "python -m visor.model_setup --xfeat" if item.name == "XFeat" else f"python -m pip install {LIGHTGLUE_REQUIREMENT}"
+            command = "python -m visor.model_setup --xfeat" if item.name == "XFeat" else "See docs/OPTIONAL_ENGINES.md (pinned setup; one cv2 provider)"
         entries.append(EngineEntry(item.name, item.available, item.category,
                                    f"{item.readiness}: {item.reason}", command))
     return entries

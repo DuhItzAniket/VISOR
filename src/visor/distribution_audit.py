@@ -12,7 +12,7 @@ from importlib import metadata
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
 
-COMPONENTS = ("numpy", "opencv-contrib-python", "PySide6", "PySide6_Essentials", "PySide6_Addons", "shiboken6", "pyinstaller")
+COMPONENTS = ("numpy", "opencv-contrib-python-headless", "PySide6", "PySide6_Essentials", "PySide6_Addons", "shiboken6", "pyinstaller")
 QT_COMPONENTS = {"PySide6", "PySide6_Essentials", "PySide6_Addons", "shiboken6"}
 
 
@@ -205,8 +205,11 @@ def artifact_inventory(bundle: Path, toc_path: Path, output: Path, *, project_ro
         if path.is_symlink():
             record["symlink_target"] = path.readlink().as_posix()
         records.append(record)
-    forbidden = [row["path"] for row in records if any(name in row["path"].lower()
-                  for name in ("qt6virtualkeyboard", "qtvirtualkeyboard.framework", "qtvirtualkeyboardplugin", "qpdf.", "qt6pdf.", "qtpdf.framework"))]
+    forbidden = [row["path"] for row in records if (
+        PurePosixPath(row["path"]).name.lower().startswith(("libqt5", "qt5"))
+        or any(name in row["path"].lower() for name in (
+            "qt6virtualkeyboard", "qtvirtualkeyboard.framework", "qtvirtualkeyboardplugin", "qpdf.", "qt6pdf.", "qtpdf.framework"))
+    )]
     if forbidden:
         raise RuntimeError(f"Unused excluded Qt modules remain bundled: {forbidden}")
     document = {"schema_version": 1, "kind": "frozen_filesystem_inventory", "files": records,

@@ -229,7 +229,7 @@ class InstallWorker(QThread):
     # Correct install commands for each optional learned-engine dependency.
     # LightGlue: official CVG repo (covers SuperPoint, ALIKED, DISK, SIFT+LG)
     # accelerated-features: the real XFeat package from verlab
-    LIGHTGLUE_CMD = ("torch>=2.0", "torchvision>=0.15", LIGHTGLUE_REQUIREMENT)
+    LIGHTGLUE_CMD = ("torch>=2.0", "torchvision>=0.15", "kornia>=0.6.11", "matplotlib")
     XFEAT_CMD = ("torch>=2.0", "tqdm>=4.66")
 
     def __init__(self, python_exe: str, install_lightglue: bool, install_xfeat: bool) -> None:
@@ -248,21 +248,25 @@ class InstallWorker(QThread):
         if not packages:
             self.completed.emit(True, "Nothing to install.")
             return
-        cmd = [self.python_exe, "-m", "pip", "install", "--upgrade"] + packages
-        self.progress.emit(f"Running: {' '.join(cmd)}")
+        commands = [[self.python_exe, "-m", "pip", "install", "--upgrade"] + packages]
+        if self.install_lightglue:
+            # Upstream names opencv-python, but VISOR supplies the same cv2 API
+            # through headless contrib. Never install a second provider over it.
+            commands.append([self.python_exe, "-m", "pip", "install", "--no-deps", LIGHTGLUE_REQUIREMENT])
         try:
-            proc = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                bufsize=1,
-            )
-            assert proc.stdout is not None
-            for line in proc.stdout:
-                self.progress.emit(line.rstrip())
-            proc.wait()
-            if proc.returncode == 0 and self.install_xfeat:
+            for cmd in commands:
+                self.progress.emit(f"Running: {' '.join(cmd)}")
+                proc = subprocess.Popen(
+                    cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1,
+                )
+                assert proc.stdout is not None
+                for line in proc.stdout:
+                    self.progress.emit(line.rstrip())
+                proc.wait()
+                if proc.returncode != 0:
+                    self.completed.emit(False, f"pip exited with code {proc.returncode}. Check Diagnostics for details.")
+                    return
+            if self.install_xfeat:
                 self.progress.emit("Preparing the pinned XFeat source and weights…")
                 setup = subprocess.Popen([self.python_exe, "-m", "visor.model_setup", "--xfeat"],
                                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
@@ -273,10 +277,7 @@ class InstallWorker(QThread):
                 if setup.returncode != 0:
                     self.completed.emit(False, "Pinned XFeat setup failed. See Diagnostics for details.")
                     return
-            if proc.returncode == 0:
-                self.completed.emit(True, "Learned engine dependencies installed successfully.")
-            else:
-                self.completed.emit(False, f"pip exited with code {proc.returncode}. Check the engine console for details.")
+            self.completed.emit(True, "Learned engine dependencies installed successfully.")
         except Exception as exc:  # noqa: BLE001
             self.completed.emit(False, str(exc))
 

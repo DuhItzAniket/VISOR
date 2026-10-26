@@ -1,6 +1,6 @@
 # Optional learned runtime setup
 
-Updated 2026-10-25. These instructions are for source developers. Standard desktop bundles continue to provide SIFT/ORB and do not expose package installation to end users.
+Updated 2026-10-26. These instructions are for source developers. Standard desktop bundles continue to provide SIFT/ORB and do not expose package installation to end users.
 
 ## Supported source pins
 
@@ -15,8 +15,11 @@ The reviewed XFeat source has no installable setup.py and does not expose `xfeat
 
 ```powershell
 python -m pip install -r requirements/learned.txt
+python -m pip install --no-deps -r requirements/learned-adapter.txt
 python -m visor.model_setup --xfeat
 ```
+
+LightGlue's pinned upstream metadata requires the package name opencv-python. VISOR supplies its cv2 API using opencv-contrib-python-headless; the separate --no-deps adapter step avoids overlapping providers after installing the explicitly listed inference dependencies. pip check can still report that upstream package-name requirement as unsatisfied: no metadata shim or false package claim is installed. Real inference checks, not metadata discovery, establish adapter operation. Recreate a contaminated environment rather than uninstalling one overlapping package in place.
 
 The source app offers the same setup under Window → Diagnostics. Git is required for explicit XFeat setup. Existing valid caches are reused. An existing corrupt cache is reported and preserved; setup does not silently replace it.
 

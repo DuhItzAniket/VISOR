@@ -1,5 +1,9 @@
 # Architecture Decisions
 
+## 2026-10-26: One OpenCV provider with Qt as the desktop interface
+
+Actual Linux artifact inventory showed OpenCV's Qt5 runtime alongside PySide's Qt6. Use the same OpenCV 4.11.0.86 contrib APIs through the headless wheel, following upstream guidance for apps whose interface is supplied by another toolkit. No application HighGUI calls exist. Reject overlapping cv2 distributions during packaging and require compiled GUI backend NONE. Retain the classical golden fixtures and test actual image/video functionality in isolated source and native frozen builds. This minimizes unnecessary GUI dependencies; it does not remove all native codec dependencies or certify their licensing.
+
 ## 2026-10-26: Audit actual artifacts without inventing ownership
 
 Collect exact installed dependency/interpreter notices offline and a hash-pinned Qt source corpus; version-matched Qt source fallback is explicit when wheels omit standalone texts. Hash the actual frozen filesystem outside the app, preserving ambiguous origins and opaque native/embedded contents. Unique relocated filename mapping is labeled; links/signature metadata are not library ownership. These records support review rather than certify transitive/source-offer compliance. Exclude unused Qt PDF-image/Virtual Keyboard plugins while protecting advertised image codecs through actual frozen decoding checks.
