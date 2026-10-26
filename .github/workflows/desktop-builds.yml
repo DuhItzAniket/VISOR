@@ -42,10 +42,7 @@ jobs:
         run: |
           python -m pip install pytest ruff
           python -m pytest -q -m "not optional_model"
-          python -m ruff check src tests scripts/build_desktop.py
-          python -m ruff check scripts/refresh_qt_notices.py scripts/pyinstaller_hooks
-          python -m ruff check scripts/profile_rendering.py scripts/verify_installer.py scripts/prepare_release.py
-          python -m ruff check scripts/collect_system_notices.py scripts/trace_artifact_origins.py
+          python -m ruff check src tests scripts
       - name: Install Windows installer compiler
         if: runner.os == 'Windows'
         run: choco install innosetup --no-progress -y

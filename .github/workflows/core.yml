@@ -1,0 +1,64 @@
+name: Core checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: core-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, ubuntu-22.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    env:
+      QT_QPA_PLATFORM: offscreen
+      CUDA_VISIBLE_DEVICES: '-1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Linux Qt runtime libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1 libegl1 libglib2.0-0 libxkbcommon-x11-0 libxcb-cursor0
+      - name: Install the pinned model-free profile
+        run: |
+          python -m pip install -r requirements/desktop-build.txt
+          python -m pip install --no-deps .
+          python -m pip install pytest ruff mypy
+          python -m pip check
+      - name: Core regressions without model downloads
+        run: python -m pytest -q -m "not optional_model" --junitxml=core-results.xml
+      - name: Lint all maintained source and scripts
+        run: python -m ruff check src tests scripts
+      - name: Focused type contracts
+        run: >-
+          python -m mypy src/visor/ui/image_loader.py src/visor/ui/widgets/image_drop.py
+          src/visor/smoke_check.py src/visor/evaluate.py src/visor/evaluation_data.py
+          scripts/create_stress_manifest.py scripts/evaluate_pair_manifest.py scripts/verify_source_wheel.py
+      - name: Build a source wheel
+        run: python -m pip wheel --no-deps --wheel-dir dist/source-wheel .
+      - name: Verify source wheel bytes and project notices
+        run: python scripts/verify_source_wheel.py dist/source-wheel
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: VISOR-core-${{ runner.os }}
+          path: core-results.xml
+          if-no-files-found: warn

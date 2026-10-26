@@ -35,3 +35,16 @@ On Linux, validate the downloaded candidate's files with `sha256sum -c <prefix>-
 Before public release, complete the open I12/I13/I14 obligations, choose the reviewed release notes/version, and verify final signed/notarized bytes. Signing or another transformation that changes frozen files/installers requires fresh inventories, workflow/installation checks and checksums. Current Actions artifacts expire and are validation downloads; permanent release publication is a separate step after those gates.
 
 Primary references: [Inno setup flags](https://jrsoftware.org/ishelp/topic_setupcmdline.htm), [Inno uninstall flags](https://jrsoftware.org/ishelp/topic_uninstcmdline.htm), [dpkg operations](https://manpages.ubuntu.com/manpages/jammy/man1/dpkg.1.html), [GitHub runner environment variables](https://docs.github.com/en/actions/reference/workflows-and-actions/variables).
+
+## Automatic source checks
+
+The Core checks workflow runs on main pushes and pull requests, with an optional manual trigger. Windows/Linux use the pinned desktop dependency profile, offscreen Qt and CUDA visibility -1, run model-free regressions, lint all maintained scripts, check focused type contracts, build a source wheel in isolation and verify package/source bytes, project notices, identity/version and the headless OpenCV dependency. JUnit results are retained even on failure. This lane never builds/installs native packages or publishes a release; the separate four-target Desktop bundles workflow remains the native distribution check.
+
+The wheel verifier reads the archive without importing it and accepts a wheel path or a directory containing exactly one wheel. It rejects duplicate/unsafe members, another package/version, ambiguous identity/license metadata, missing/tampered source/icons/notices and an unexpected OpenCV provider. A wheel directory with multiple versions fails instead of selecting an arbitrary file. Its report is source/project-metadata evidence, not a transitive native/model licensing certificate.
+
+```text
+python -m pip wheel --no-deps --wheel-dir build/source-wheel .
+python scripts/verify_source_wheel.py build/source-wheel
+```
+
+The workflow uses read-only repository access and cancels superseded core runs on the same ref. GitHub documents [push/pull-request triggers](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows) and [per-ref concurrency](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency). It does not configure branch protection or make a check mandatory without an owner decision.
