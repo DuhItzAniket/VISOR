@@ -32,10 +32,11 @@ smoke() {
         HOME="$workdir" XDG_RUNTIME_DIR="$workdir/runtime" PATH=/usr/bin:/bin LANG=C.UTF-8 \
         QT_QPA_PLATFORM=xcb QT_XCB_GL_INTEGRATION=none QT_OPENGL=software \
         CUDA_VISIBLE_DEVICES=-1 OPENCV_OPENCL_RUNTIME=disabled \
-        /usr/bin/xvfb-run -a -e /dev/stderr -s '-screen 0 1280x800x24 -nolisten tcp -extension GLX' \
+        /usr/bin/xvfb-run -a -e "$report.xvfb.log" -s '-screen 0 1280x800x24 -nolisten tcp -extension GLX' \
         /usr/bin/env PATH=/nonexistent "$executable" --smoke-check "$report" || status=$?
     if (( status != 0 )); then
         echo "Smoke check exited with status $status: $executable" >&2
+        if test -f "$report.xvfb.log"; then cat "$report.xvfb.log" >&2; fi
         if test -f "$report"; then cat "$report"; fi
         return "$status"
     fi
@@ -44,9 +45,16 @@ smoke() {
     grep -Eq '"success":[[:space:]]*true' "$report"
 }
 
-dpkg --install /fixture/visor.deb
+printf 'Base image dpkg path filters:\n'
+grep -H -E '^[[:space:]]*path-(include|exclude)' /etc/dpkg/dpkg.cfg.d/* || true
+# Minimal images can exclude /usr/share/doc/* during unpacking. Preserve the
+# package's own notice subtree so this installation can check those files too.
+dpkg --path-include='/usr/share/doc/visor/*' --install /fixture/visor.deb
 dpkg-query -L visor | grep -Fx /usr/share/applications/org.visor.desktop.desktop
-test -f /usr/share/doc/visor/system-notices/manifest.json
+if ! test -f /usr/share/doc/visor/system-notices/manifest.json; then
+    echo "Installed system notice manifest missing from the clean image" >&2
+    exit 1
+fi
 smoke /opt/visor/VISOR "$workdir/installed-smoke.json"
 dpkg --purge visor
 test ! -e /opt/visor

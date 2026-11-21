@@ -1,5 +1,9 @@
 # Implementation Log
 
+## 2026-11-21 — Keep the notice directory in the minimal Ubuntu test
+
+- Run 44889876579 confirmed that the clean image provisioned `libegl1` and installed the package and desktop entry. The script stopped before emitting a smoke result. The minimal image can filter `/usr/share/doc` during package extraction. The check now prints the dpkg filters and explicitly includes only VISOR's notice subtree for this installation, then requires the installed manifest. Xvfb diagnostics use an unprivileged writable file and are printed on failure. [dpkg path filter documentation](https://manpages.ubuntu.com/manpages/jammy/man1/dpkg.1.html)
+
 ## 2026-11-21 — Declare the Linux Qt GUI loader dependency
 
 - The regular installed X11 check passed in 44889303026. The clean container installed the Debian package but failed before its X11 smoke succeeded. Inspection of the frozen Qt GUI ELF dependency table found a direct `libEGL.so.1` dependency. It is present on the build runner via `libegl1`, absent from the frozen bundle and absent from the first clean image's prerequisite list. Added it to the real Debian package metadata.
