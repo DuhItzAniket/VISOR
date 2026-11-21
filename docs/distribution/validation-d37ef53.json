@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "kind": "downloaded_native_audit_verification",
+  "verification_date": "2026-11-21",
+  "validation_run_id": 44887364989,
+  "source_revision": "d37ef5357fb34db8bdd295fb3323e6c6b0a4e622",
+  "scope": "Locally checked four audit records and the Linux notice ZIP. Package identities are from the hosted installer reports. Full candidate archives were not independently hash-checked locally for this cohort.",
+  "platforms": {
+    "windows": {
+      "system": "Windows",
+      "architecture": "amd64",
+      "version": "0.2.0",
+      "candidate_artifact_id": 14700706394,
+      "candidate_url": "https://github.com/DuhItzAniket/VISOR/actions/runs/44887364989/artifacts/14700706394",
+      "inventory_sha256": "12fc165c4d1fe64253727548d4b2111d11c1f845ed08159771ff31b3b70f1a95",
+      "installer": {
+        "file": "VISOR-0.2.0-windows-setup.exe",
+        "sha256": "0f1febd2c251645f68c46fa72cd241abe51f40c9098942350f1f789cd0132ae8",
+        "bytes": 63044571
+      },
+      "installer_report_sha256": "60abe1c8120570430c5ab980c4327b71ef4ab049ca71bdad3af5a1a5dcb5717c",
+      "installed_qt_platform": "offscreen",
+      "installed_network": {
+        "mode": "runner_default"
+      }
+    },
+    "macos-arm64": {
+      "system": "Darwin",
+      "architecture": "arm64",
+      "version": "0.2.0",
+      "candidate_artifact_id": 14701100001,
+      "candidate_url": "https://github.com/DuhItzAniket/VISOR/actions/runs/44887364989/artifacts/14701100001",
+      "inventory_sha256": "4825461b4843b4d179a00ca2dd761cbc907592833a7249321ee5e036deacc7e1",
+      "installer": {
+        "file": "VISOR-0.2.0-darwin-arm64.dmg",
+        "sha256": "6f2d596b82baaa47d9cab07f7fc158e41537d5758f365127094e31977f4d5c97",
+        "bytes": 95442399
+      },
+      "installer_report_sha256": "19e0635c3e610651bf93d3c9c85c4ce34de988079f2e21c0c4addd627fa21add",
+      "installed_qt_platform": "offscreen",
+      "installed_network": {
+        "mode": "runner_default"
+      }
+    },
+    "macos-intel": {
+      "system": "Darwin",
+      "architecture": "x86_64",
+      "version": "0.2.0",
+      "candidate_artifact_id": 14701040477,
+      "candidate_url": "https://github.com/DuhItzAniket/VISOR/actions/runs/44887364989/artifacts/14701040477",
+      "inventory_sha256": "302d310793c9e983dc302ff0e821b95c6862077d683b433b54ef1cd954946752",
+      "installer": {
+        "file": "VISOR-0.2.0-darwin-x86_64.dmg",
+        "sha256": "de968d7b9b6067ae60064fe8e5136a8006d78eb3c83ccfedc0377fa9281adc8b",
+        "bytes": 128624483
+      },
+      "installer_report_sha256": "7d5b7a5d7d0a95d6cb8e93534777501068b4aa0434a0d79fce01845d30968e61",
+      "installed_qt_platform": "offscreen",
+      "installed_network": {
+        "mode": "runner_default"
+      }
+    },
+    "linux": {
+      "system": "Linux",
+      "architecture": "x86_64",
+      "version": "0.2.0",
+      "candidate_artifact_id": 14701080327,
+      "candidate_url": "https://github.com/DuhItzAniket/VISOR/actions/runs/44887364989/artifacts/14701080327",
+      "inventory_sha256": "41cd76ddf7dc8e54213c4c99a4f600cefbe08ff69af38bb493553abf5a16df2a",
+      "installer": {
+        "file": "VISOR-0.2.0-linux-x86_64.deb",
+        "sha256": "6d220d4eaac6b5f993f5118d53b1d1ab41cd7d3523fa1f75da036430b09f46f2",
+        "bytes": 101878382
+      },
+      "installer_report_sha256": "47cf158470251a3f6f1e191266b6d11176776c255c856446f3bf01c923b303c7",
+      "installed_qt_platform": "xcb",
+      "installed_network": {
+        "mode": "loopback_only",
+        "interfaces": [
+          "lo"
+        ]
+      }
+    }
+  },
+  "linux_system_notices": {
+    "artifact_id": 14700214905,
+    "manifest_sha256": "f8142bdf447fd055647c402e95cc8c8e9ed160b5d4901e4d9f9d6c186e1c1664",
+    "files_independently_verified": 94,
+    "files_verified_after_install": 94,
+    "collection_summary": {
+      "collected_system_sources": 88,
+      "package_claims": 81,
+      "unclaimed_sources": 0,
+      "copied_notice_files": 94,
+      "missing_notice_references": 0
+    }
+  }
+}

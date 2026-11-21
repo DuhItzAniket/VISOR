@@ -1,5 +1,12 @@
 # Implementation Log
 
+## 2026-11-21 — Verify the refreshed four-platform candidates
+
+- Native run 44887364989 at d37ef53 passed Windows x64, Linux x64, Apple Silicon and Intel. Windows ran 331 core tests with two skips. The other three ran 329 each with four skips. Each deselected 17 optional tests. All four downloaded audit reports matched their source and inventory hashes. Linux installed the Debian package, ran with actual Qt XCB on a loopback-only network and passed purge.
+- The downloaded Linux notice ZIP matched its audit manifest and all 94 file hashes. The recorded Debian install checked the same manifest and file count. Collection found 88 system sources and 81 package claims, with no unresolved literal references. The notice scope is limited to observed build-host files.
+- Automatic core 44887681988 passed at bffbfb8 after the static Qt backend API fix. Windows/Linux core, Ruff, all 18 Mypy targets and both source-wheel audits passed. In three fresh software-only Windows processes, 27 targeted benchmark, sweep, overlay and project tests passed each time. These runs did not reproduce the October crashes.
+- Added a packaging regression that exercises the Linux builder with a fixture and reads the actual portable TAR, review ZIP and Debian staging files. It checks that all three carry matching notice bytes. Thirty focused tests passed with one skip and the full software-only local suite passed 328 with six skips and 17 optional deselections. Ruff passed. The [durable audit record](distribution/validation-d37ef53.json) covers all four downloaded audit records and the 94-file review ZIP. The large Linux candidate transfer remained partial and was stopped. Full independent package-byte verification for this cohort remains pending.
+
 ## 2026-11-21 — Correct the smoke backend type contract
 
 - Hosted core run 44887425982 passed the regression and lint steps but failed the type gate on both hosts. PySide's `instance()` stub returns `QCoreApplication`; the backend name is a static GUI application method. Use `QApplication.platformName()` to query the same runtime value through its declared API.
