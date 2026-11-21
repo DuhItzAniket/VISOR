@@ -1,5 +1,9 @@
 # Implementation Log
 
+## 2026-11-21 — Correct the smoke backend type contract
+
+- Hosted core run 44887425982 passed the regression and lint steps but failed the type gate on both hosts. PySide's `instance()` stub returns `QCoreApplication`; the backend name is a static GUI application method. Use `QApplication.platformName()` to query the same runtime value through its declared API.
+
 ## 2026-11-21 — Publish the natural-image occlusion measurements
 
 - Measured all 48 frozen pairs and engine configurations from clean bc999da on Windows CPU, with two OpenCV threads, OpenCL disabled and no learned runtime. Verified the actual CPU metadata, frozen protocol hash, all three conditions and matched transitions. Zero runtime/annotation errors.

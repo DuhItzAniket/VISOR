@@ -33,7 +33,7 @@ def run_smoke_check(report_path: Path) -> int:
 
     report: dict = {"version": __version__, "system": platform.system(), "checks": [], "success": False}
     app = QApplication.instance() or QApplication(["VISOR smoke check"])
-    report["qt_platform"] = app.platformName()
+    report["qt_platform"] = QApplication.platformName()
 
     def wait_for(condition) -> None:
         if condition():
