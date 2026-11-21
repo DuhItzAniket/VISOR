@@ -1,7 +1,7 @@
 """Exercise host installers only on disposable GitHub-hosted runners.
 
-This is installed-artifact evidence, not clean-user-desktop, Gatekeeper,
-screen-reader, offline-network or code-signing certification.
+Linux install, smoke and removal run in a fresh network namespace.
+Windows and macOS installed-artifact checks use normal runner networking.
 """
 
 from __future__ import annotations
@@ -11,6 +11,7 @@ import json
 import os
 import platform
 import shutil
+import socket
 import subprocess
 import sys
 import tempfile
@@ -153,9 +154,15 @@ def verify(dist: Path, output: Path) -> int:
     report = {"schema_version": 1, "kind": "host_installer_check", "system": system, "version": info["version"],
               "source_revision": info["source_revision"], "success": False, "checks": [],
               "installer": {"file": artifact.name, "sha256": digest(artifact), "bytes": artifact.stat().st_size},
-              "scope": "Disposable hosted runner install/copy, workflow and removal. Network is not disabled. "
-                       "Not clean-user-desktop, native interaction, signing or Gatekeeper certification."}
+              "network": {"mode": "unverified" if system == "Linux" else "runner_default"},
+              "scope": "Disposable hosted runner install/copy, offscreen workflow and removal."}
     try:
+        if system == "Linux":
+            interfaces = sorted(name for _, name in socket.if_nameindex())
+            if interfaces != ["lo"]:
+                raise RuntimeError(f"Linux installer verification requires loopback-only networking; found {interfaces}.")
+            report["network"] = {"mode": "loopback_only", "interfaces": interfaces}
+            report["checks"].append("Verified loopback-only network interfaces before install, smoke and purge")
         with tempfile.TemporaryDirectory(prefix="visor-installer-") as stage:
             folder = Path(stage).resolve()
             if not folder.is_relative_to(Path(tempfile.gettempdir()).resolve()):

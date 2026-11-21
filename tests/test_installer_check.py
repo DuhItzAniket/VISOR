@@ -51,3 +51,28 @@ def test_failed_installed_workflow_is_recorded_as_failure(checker, monkeypatch, 
     assert checker.verify(tmp_path, report) == 1
     data = json.loads(report.read_text(encoding="utf-8"))
     assert data["success"] is False and "Failed installed fixture" in data["error"]
+
+
+@pytest.mark.parametrize("interfaces", [[(1, "lo")], [(1, "lo"), (2, "eth0")]])
+def test_linux_install_requires_loopback_only(checker, monkeypatch, tmp_path, interfaces):
+    monkeypatch.setattr(checker, "require_disposable_runner", lambda: None)
+    monkeypatch.setattr(checker.platform, "system", lambda: "Linux")
+    monkeypatch.setattr(checker.socket, "if_nameindex", lambda: interfaces)
+    (tmp_path / "installers").mkdir()
+    (tmp_path / "installers/visor.deb").write_bytes(b"Never executed")
+    (tmp_path / "build-info.json").write_text(
+        json.dumps({"version": "0.2.0", "system": "Linux", "source_revision": "a" * 40}), encoding="utf-8"
+    )
+    installed = []
+    monkeypatch.setattr(checker, "check_linux", lambda *args: installed.append(args[0]))
+    output = tmp_path / "installer-report.json"
+    offline = interfaces == [(1, "lo")]
+    assert checker.verify(tmp_path, output) == (0 if offline else 1)
+    report = json.loads(output.read_text(encoding="utf-8"))
+    assert report["success"] is offline
+    assert bool(installed) is offline
+    if offline:
+        assert report["network"] == {"mode": "loopback_only", "interfaces": ["lo"]}
+    else:
+        assert report["network"] == {"mode": "unverified"}
+        assert "eth0" in report["error"]

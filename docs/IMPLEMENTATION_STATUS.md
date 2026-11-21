@@ -1,6 +1,8 @@
 # Implementation status
 
-Updated 2026-10-26. This is the current snapshot; chronological changes, prior checks and failed runs are preserved in [IMPLEMENTATION_LOG.md](IMPLEMENTATION_LOG.md) and Git history. Tasks and acceptance gates are in [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md).
+Updated 2026-11-21. This is the current snapshot; chronological changes, prior checks and failed runs are preserved in [IMPLEMENTATION_LOG.md](IMPLEMENTATION_LOG.md) and Git history. Tasks and acceptance gates are in [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md).
+
+I28 adds loopback-only verification to the hosted Linux install, workflow and removal check. The verifier records the observed interfaces and stops before installation when the namespace has an external interface. Windows and macOS retain their original hosted networking. Focused installer/candidate checks passed (18), as did Ruff and the local software-rendered Windows core suite (322 passed, six skipped, 17 optional deselections). A fresh hosted Linux run is required to validate the namespace and installer together. The historical local crashes did not recur in this run and their cause remains open.
 
 ## Dependency-notice and artifact audit follow-up
 

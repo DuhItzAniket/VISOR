@@ -23,8 +23,12 @@ jobs:
     timeout-minutes: 25
     env:
       QT_QPA_PLATFORM: offscreen
+      QT_OPENGL: software
+      CUDA_VISIBLE_DEVICES: '-1'
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -66,8 +70,18 @@ jobs:
         run: dist/VISOR/VISOR --smoke-check dist/smoke-report.json
       - name: Read smoke check result
         run: python -c "import json; r=json.load(open('dist/smoke-report.json')); print(r); assert r['success']"
-      - name: Verify installer and installed workflow on disposable runner
+      - name: Verify installed workflow on Windows or macOS
+        if: runner.os != 'Linux'
         run: python scripts/verify_installer.py
+      - name: Verify Linux install, workflow and removal without external networking
+        if: runner.os == 'Linux'
+        run: |
+          sudo -n /usr/bin/unshare --net -- \
+            /usr/bin/setpriv --reuid="$(id -u)" --regid="$(id -g)" --init-groups -- \
+            /usr/bin/env -i HOME="$HOME" PATH=/usr/bin:/bin LANG=C.UTF-8 \
+            GITHUB_ACTIONS="$GITHUB_ACTIONS" RUNNER_ENVIRONMENT="$RUNNER_ENVIRONMENT" \
+            QT_QPA_PLATFORM=offscreen QT_OPENGL=software CUDA_VISIBLE_DEVICES=-1 \
+            "$(command -v python)" scripts/verify_installer.py
       - name: Prepare validation candidate and checksums
         run: python scripts/prepare_release.py
       - uses: actions/upload-artifact@v4

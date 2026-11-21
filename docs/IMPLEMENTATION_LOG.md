@@ -1,5 +1,10 @@
 # Implementation Log
 
+## 2026-11-21 — Add offline Linux installer validation and revisit local Windows crashes
+
+- The hosted Linux verification step enters a fresh network namespace with the runner user's privileges restored before running the verifier. The actual Debian install, installed smoke check and purge share the namespace. The verifier requires only the loopback interface and records what it observed. Windows and macOS retain normal runner networking, recorded explicitly in their reports. The runner's network stays available for later audit uploads.
+- The focused installer/candidate suite passed 18 tests and Ruff passed for source, tests and scripts. Local Windows core passed 322 with six skips and 17 optional deselections using software Qt rendering and disabled OpenCV OpenCL/CUDA. The October traces still point to distinct failure sites, and the Application log query for the October incident dates returned no matching Python/VISOR Application Error events. A clean run leaves the cause open. No local installer or interactive window was launched.
+
 ## 2026-10-26 — Verify atomic replay across native builds, CPU models and downloaded candidates
 
 - Native 40349543926 at 21c1ec8 passed all four targets, actual bundled/installed atomic replay/failed-open preservation, terminal recovery messages and install/removal. Core counts: Windows 324/2 skipped/17 optional deselections; macOS/Linux 322/4 skipped/17 deselections. Automatic core 40349547403 passed Windows/Linux, all 18 explicit type targets, all-source/script lint and both 47-module/58-file source-wheel audits.
