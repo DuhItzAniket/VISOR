@@ -4,6 +4,8 @@ Evaluator source: `b2c7f0b`; both reports recorded a clean source checkout. JSON
 
 ## Raw reports
 
+- [Natural cross-scene negative results](NATURAL_NEGATIVES_FINDINGS.md), November 2026. Twelve directed pairs, two classical engines and 24 CPU attempts.
+
 - [Natural-image occlusion study](NATURAL_OCCLUSION_FINDINGS.md), November 2026. Four new HPatches scenes, full and half-masked targets, 48 CPU attempts. The findings link the raw report and frozen protocol.
 
 - [Synthetic development report](synthetic-20261025.json.gz): one known warp and two negatives, two classical engines, three measured repetitions after one warmup per pair/engine; 18 measured attempts.

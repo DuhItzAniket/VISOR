@@ -16,6 +16,8 @@ I31 published [48 CPU-only natural-image occlusion attempts](evaluation/NATURAL_
 
 I32 adds a clean Ubuntu 22.04 runtime check for both Linux package formats. The container has only the base image, declared Debian prerequisites and a virtual X11 display with fonts. The actual Debian install, workflow and purge, followed by the portable workflow, run with networking disabled and no system Python. The check records the base image digest, package hashes and installed prerequisites. Hosted execution follows.
 
+I33 published [24 natural cross-scene CPU results](evaluation/NATURAL_NEGATIVES_FINDINGS.md) from clean e321fba. Neither engine accepted any of its 12 directed pairs. No errors were recorded and no ground-truth corner error was assigned to a negative. This small four-scene sample leaves similar-object negatives and deployment reliability open.
+
 ## Dependency-notice and artifact audit follow-up
 
 Added offline collection of actual installed dependency/runtime notices and a checked-in, hash-pinned 203-file Qt/PySide notice corpus. The bundle validates the notice index against actual Qt version and file hashes. A separate frozen-file inventory records hashes, distribution/source origins, overlapping claims and unresolved entries, without publishing developer absolute paths or claiming full transitive compliance.

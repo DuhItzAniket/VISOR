@@ -1,5 +1,9 @@
 # Implementation Log
 
+## 2026-11-21 — Publish the natural cross-scene negative test
+
+- All four original first-image hashes matched the earlier occlusion manifest. Ran 24 CPU attempts from clean e321fba with OpenCV set to two threads and OpenCL disabled. No runtime errors and zero fits accepted by either engine. Published all raw rows, including null ground-truth fields and effective settings. [Findings](evaluation/NATURAL_NEGATIVES_FINDINGS.md)
+
 ## 2026-11-21 — Freeze a natural cross-scene negative test
 
 - Inspected the first frames from the fixed four-scene HPatches set and recorded scene descriptions. Froze all 12 directed cross-scene pairs and the CPU evaluation settings in the [protocol](evaluation/NATURAL_NEGATIVES_PROTOCOL.md) before measuring any of those pairs. The original study measured positives and controlled occlusions only.
