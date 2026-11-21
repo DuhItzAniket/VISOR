@@ -12,6 +12,8 @@ The [native desktop review procedure](NATIVE_RELEASE_REVIEW.md) gives testers on
 
 The desktop matrix uses GitHub's macOS 15 Apple Silicon and Intel images. The retired macOS 14 Apple Silicon job was cancelled by the hosted runner. Verification on the replacement image follows.
 
+I31 published [48 CPU-only natural-image occlusion attempts](evaluation/NATURAL_OCCLUSION_FINDINGS.md) at clean bc999da. Each engine stayed within 3 px mean corner error on 3/8 unmasked and 2/8 under either mask. ORB accepted one masked fit with five inliers, 0.56 px mean fit residual and 449.25 px mean corner error. No runtime or annotation errors. Broader natural negatives remain open and no fit policy changed.
+
 ## Dependency-notice and artifact audit follow-up
 
 Added offline collection of actual installed dependency/runtime notices and a checked-in, hash-pinned 203-file Qt/PySide notice corpus. The bundle validates the notice index against actual Qt version and file hashes. A separate frozen-file inventory records hashes, distribution/source origins, overlapping claims and unresolved entries, without publishing developer absolute paths or claiming full transitive compliance.

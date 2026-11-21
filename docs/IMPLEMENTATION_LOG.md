@@ -1,5 +1,10 @@
 # Implementation Log
 
+## 2026-11-21 — Publish the natural-image occlusion measurements
+
+- Measured all 48 frozen pairs and engine configurations from clean bc999da on Windows CPU, with two OpenCV threads, OpenCL disabled and no learned runtime. Verified the actual CPU metadata, frozen protocol hash, all three conditions and matched transitions. Zero runtime/annotation errors.
+- Both engines stayed within 3 px on three of eight unmasked pairs and two of eight for each mask. ORB accepted a half-masked fit with five inliers and a 449.25 px mean annotated corner error. The [findings and raw rows](evaluation/NATURAL_OCCLUSION_FINDINGS.md) retain the adverse result. Correspondences, fit logic and thresholds remain unchanged.
+
 ## 2026-11-21 — Replace the retired Apple Silicon runner
 
 - Run 44887213103 cancelled its `macos-14` job before building. GitHub retired that image on November 2. The desktop matrix now uses `macos-15` for Apple Silicon and retains `macos-15-intel` for Intel. The published runner architecture distinguishes these labels. This does not establish the minimum supported macOS release. [GitHub runner image retirement](https://github.com/actions/runner-images/issues/13518) · [Hosted runner labels](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)
