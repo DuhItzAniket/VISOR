@@ -17,6 +17,7 @@ from visor.distribution_audit import digest, relative_path
 
 PACKAGE = re.compile(r"[a-z0-9][a-z0-9+.-]*(?::[a-z0-9][a-z0-9-]*)?")
 COMMON_LICENSE = re.compile(rb"/usr/share/common-licenses/([A-Za-z0-9][A-Za-z0-9+_.-]*)")
+GPL_FILENAMES = {"GPL-2.0": ("GPL-2", b"Version 2,"), "GPL-3.0": ("GPL-3", b"Version 3,")}
 
 
 def _query(arguments: list[str]) -> subprocess.CompletedProcess[str]:
@@ -109,6 +110,16 @@ def collect_system_review(toc: Path, build_info: dict[str, Any], output: Path, *
                     resolutions.append({"referenced_by": destination, "literal_token": filename,
                                         "copied_name": candidate, "rule": "existing_file_after_sentence_period_removed"})
                     filename, notice = candidate, common_root / candidate
+            if not notice.is_file() and filename in GPL_FILENAMES:
+                candidate, version = GPL_FILENAMES[filename]
+                alias = common_root / candidate
+                if alias.is_file() and alias.resolve().is_relative_to(common_root.resolve()):
+                    with alias.open("rb") as stream:
+                        title, edition = stream.readline(256).strip(), stream.readline(256).strip()
+                    if title == b"GNU GENERAL PUBLIC LICENSE" and edition.startswith(version):
+                        resolutions.append({"referenced_by": destination, "literal_token": filename,
+                                            "copied_name": candidate, "rule": "versioned_gpl_common_license_filename"})
+                        filename, notice = candidate, alias
             if notice.is_file():
                 copy_notice(notice, f"common-licenses/{filename}", "common_licenses", filename)
             else:
@@ -157,7 +168,7 @@ def collect_system_review(toc: Path, build_info: dict[str, Any], output: Path, *
                             "copied_notice_files": len(copied), "missing_notice_references": len(missing)},
                 "scope": "dpkg database ownership claims and source-file hashes on the executing build host. "
                          "Exact package notices/literal common-license references are copied without choosing terms. "
-                         "Review evidence is separate from installed notices; frozen app/inventory unchanged. "
+                         "Collection leaves the frozen app/inventory unchanged. "
                          "Not binary authenticity, complete native/subcomponent licensing, source-offer or compliance certification."}
     (output / "manifest.json").write_text(json.dumps(document, indent=2) + "\n", encoding="utf-8", newline="\n")
     return document

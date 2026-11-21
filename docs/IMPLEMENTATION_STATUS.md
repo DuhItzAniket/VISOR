@@ -4,6 +4,8 @@ Updated 2026-11-21. This is the current snapshot; chronological changes, prior c
 
 I28 adds loopback-only verification to the hosted Linux install, workflow and removal check. The verifier records the observed interfaces and stops before installation when the namespace has an external interface. Windows and macOS retain their original hosted networking. Focused installer/candidate checks passed (18), as did Ruff and the local software-rendered Windows core suite (322 passed, six skipped, 17 optional deselections). A fresh hosted Linux run is required to validate the namespace and installer together. The historical local crashes did not recur in this run and their cause remains open.
 
+I29 packages the Linux build-host notice collection alongside the portable app and under `/usr/share/doc/visor/system-notices` in the Debian package. The installed audit requires the exact manifest and every listed notice hash. Two Pango filename mappings require matching GPL version headers. Broader native and corresponding-source review remains open. Hosted package validation follows.
+
 ## Dependency-notice and artifact audit follow-up
 
 Added offline collection of actual installed dependency/runtime notices and a checked-in, hash-pinned 203-file Qt/PySide notice corpus. The bundle validates the notice index against actual Qt version and file hashes. A separate frozen-file inventory records hashes, distribution/source origins, overlapping claims and unresolved entries, without publishing developer absolute paths or claiming full transitive compliance.

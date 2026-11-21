@@ -52,9 +52,6 @@ jobs:
         run: choco install innosetup --no-progress -y
       - name: Build bundle and host installer
         run: python scripts/build_desktop.py --package
-      - name: Capture Linux build-host system notice evidence
-        if: runner.os == 'Linux'
-        run: python scripts/collect_system_notices.py
       - name: Windows bundled workflow smoke check
         if: runner.os == 'Windows'
         shell: pwsh
@@ -93,13 +90,13 @@ jobs:
             dist/artifact-inventory.json
             dist/smoke-report.json
             dist/installer-report.json
-            dist/system-notice-review/manifest.json
+            dist/system-notice-manifest.json
           if-no-files-found: warn
       - uses: actions/upload-artifact@v4
         if: runner.os == 'Linux' && always()
         with:
           name: VISOR-Linux-${{ runner.arch }}-system-notices
-          path: dist/system-notice-review/*
+          path: dist/system-notices.zip
           if-no-files-found: warn
       - uses: actions/upload-artifact@v4
         if: success()

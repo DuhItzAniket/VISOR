@@ -108,6 +108,28 @@ def test_notice_symlink_cannot_escape_documentation_roots(tmp_path, inputs):
         collect(tmp_path, inputs, [inputs[6]])
 
 
+@pytest.mark.parametrize("version", [2, 3])
+@pytest.mark.parametrize("valid_text", [True, False])
+def test_versioned_gpl_filename_requires_matching_license_header(tmp_path, inputs, version, valid_text):
+    _, _, _, docs, common, _, package, _ = inputs
+    literal = f"GPL-{version}.0"
+    filename = f"GPL-{version}"
+    (docs / "libexample/copyright").write_text(f'See "/usr/share/common-licenses/{literal}".\n', encoding="ascii")
+    edition = version if valid_text else 1
+    notice = f"  GNU GENERAL PUBLIC LICENSE\n  Version {edition}, example date\n"
+    (common / filename).write_text(notice, encoding="ascii")
+    report = collect(tmp_path, inputs, [package])
+    if valid_text:
+        assert report["missing_notices"] == []
+        assert [(row["literal_token"], row["copied_name"]) for row in report["reference_resolutions"]] == [
+            (literal, filename)
+        ]
+        assert (tmp_path / "output/common-licenses" / filename).read_text(encoding="ascii") == notice
+    else:
+        assert report["missing_notices"][0]["name"] == literal
+        assert report["reference_resolutions"] == []
+
+
 def test_dpkg_search_uses_exact_path_and_preserves_all_valid_database_claims(tmp_path, monkeypatch):
     binary = tmp_path / "lib.so"
     binary.write_bytes(b"never loaded")

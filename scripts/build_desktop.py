@@ -160,16 +160,24 @@ def package(bundle: Path, version: str, architecture: str) -> None:
             run(["hdiutil", "create", "-volname", "VISOR", "-srcfolder", str(stage),
                  "-ov", "-format", "UDZO", str(output / f"{artifact}.dmg")])
     else:
-        import tempfile
+        import tarfile
 
-        # A portable archive is also useful on distributions outside Debian.
-        shutil.make_archive(str(output / artifact), "gztar", bundle.parent, bundle.name)
+        from visor.system_library_review import collect_system_review
+
         deb_arch = {"x86_64": "amd64", "aarch64": "arm64"}.get(architecture)
         if deb_arch is None:
             raise RuntimeError(f"Unsupported Debian package architecture: {architecture}")
+        info = json.loads((ROOT / "dist/build-info.json").read_text(encoding="utf-8"))
         with tempfile.TemporaryDirectory(prefix="visor-deb-") as temporary:
-            stage = Path(temporary)
+            work = Path(temporary)
+            notices = work / "system-notices"
+            collect_system_review(ROOT / "build/VISOR/COLLECT-00.toc", info, notices)
+            with tarfile.open(output / f"{artifact}.tar.gz", "w:gz") as archive:
+                archive.add(bundle, arcname="VISOR")
+                archive.add(notices, arcname="VISOR-system-notices")
+            stage = work / "package"
             shutil.copytree(bundle, stage / "opt" / "visor", symlinks=True)
+            shutil.copytree(notices, stage / "usr/share/doc/visor/system-notices")
             control = stage / "DEBIAN"
             control.mkdir()
             (control / "control").write_text(
@@ -191,6 +199,8 @@ def package(bundle: Path, version: str, architecture: str) -> None:
             icons.mkdir(parents=True)
             shutil.copy2(ROOT / "src" / "visor" / "assets" / "visor.svg", icons / "visor.svg")
             run(["dpkg-deb", "--root-owner-group", "--build", str(stage), str(output / f"{artifact}.deb")])
+            shutil.make_archive(str(ROOT / "dist/system-notices"), "zip", notices)
+            shutil.copy2(notices / "manifest.json", ROOT / "dist/system-notice-manifest.json")
 
 
 def main() -> None:

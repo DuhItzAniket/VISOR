@@ -20,7 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from visor.distribution_audit import digest
+from visor.distribution_audit import digest, relative_path
 
 
 def require_disposable_runner() -> None:
@@ -116,9 +116,25 @@ def linux_registered() -> bool:
     return status.returncode == 0 and status.stdout.strip() != "unknown ok not-installed"
 
 
+def verify_linux_notices(installed: Path, expected_manifest: Path) -> int:
+    manifest = installed / "manifest.json"
+    if manifest.is_symlink() or digest(manifest) != digest(expected_manifest):
+        raise RuntimeError("Installed Linux notice manifest differs from the build-host manifest.")
+    entries = json.loads(manifest.read_text(encoding="utf-8"))["files"]
+    if not entries:
+        raise RuntimeError("The Linux notice manifest contains no files.")
+    for entry in entries:
+        relative = relative_path(entry["path"])
+        path = installed / str(relative)
+        if path.is_symlink() or not path.resolve().is_relative_to(installed.resolve()) or digest(path) != entry["sha256"]:
+            raise RuntimeError(f"Installed Linux notice differs from the build-host copy: {relative}")
+    return len(entries)
+
+
 def check_linux(artifact: Path, dist: Path, folder: Path, info: dict, report: dict) -> None:
+    notice_root = Path("/usr/share/doc/visor")
     paths = (Path("/opt/visor"), Path("/usr/share/applications/org.visor.desktop.desktop"),
-             Path("/usr/share/icons/hicolor/scalable/apps/visor.svg"))
+             Path("/usr/share/icons/hicolor/scalable/apps/visor.svg"), notice_root)
     if linux_registered() or any(path.exists() or path.is_symlink() for path in paths):
         raise RuntimeError("Existing VISOR package/files found; refusing to overwrite them.")
     for field, expected in (("Package", "visor"), ("Version", info["version"])):
@@ -129,6 +145,10 @@ def check_linux(artifact: Path, dist: Path, folder: Path, info: dict, report: di
         if not linux_registered() or not all(path.exists() for path in paths):
             raise RuntimeError("Debian installation did not register the package and desktop assets.")
         report["checks"].append("Actual Debian package installation, desktop entry and icon")
+        manifest = dist / "system-notice-manifest.json"
+        count = verify_linux_notices(notice_root / "system-notices", manifest)
+        report["system_notices"] = {"files_verified": count, "manifest_sha256": digest(manifest)}
+        report["checks"].append("Installed Linux system notice manifest and file hashes match the build host")
         smoke(paths[0] / "VISOR", dist / "VISOR/VISOR", folder, info, report)
     finally:
         if linux_registered():

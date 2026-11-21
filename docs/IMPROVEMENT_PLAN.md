@@ -42,6 +42,8 @@ User requirement added 2026-10-20: professional product quality. Apply [PRODUCT_
 
 | I28 | P1 | Verify the installed Linux workflow without external networking | Install the real Debian package, exercise the frozen app, and purge it in a fresh loopback-only network namespace. Record actual interfaces and reject a connected or unverified environment before installation | Implemented; 18 focused checks, Ruff and 322 local core checks passed. Hosted Linux execution pending. Native clean-desktop review and Windows/macOS offline checks remain open |
 
+| I29 | P1 | Ship build-host Linux notices with both delivery formats | Include the same notice manifest and files in the portable archive and Debian package, verify installed hashes and removal, and explain versioned GPL filenames without selecting terms | 48 focused checks passed, four skipped. Hosted package verification and corresponding-source review remain open |
+
 ## Execution batches
 
 1. **Trust baseline:** I01–I03. Build and focused geometry/batch regressions; run the available suite. Commit verified changes with source evidence. Historical positive goldens must not be rewritten just to hide failures.

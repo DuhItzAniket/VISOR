@@ -1,5 +1,6 @@
 """Installer checks refuse user machines and preserve evidence on test failures."""
 
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -76,3 +77,18 @@ def test_linux_install_requires_loopback_only(checker, monkeypatch, tmp_path, in
     else:
         assert report["network"] == {"mode": "unverified"}
         assert "eth0" in report["error"]
+
+
+def test_linux_installed_notice_bytes_must_match(checker, tmp_path):
+    installed = tmp_path / "installed"
+    installed.mkdir()
+    notice = installed / "copyright"
+    notice.write_bytes(b"Example package notice\n")
+    data = json.dumps({"files": [{"path": notice.name, "sha256": hashlib.sha256(notice.read_bytes()).hexdigest()}]})
+    expected = tmp_path / "manifest.json"
+    expected.write_text(data, encoding="utf-8")
+    (installed / "manifest.json").write_text(data, encoding="utf-8")
+    assert checker.verify_linux_notices(installed, expected) == 1
+    notice.write_bytes(b"Changed notice\n")
+    with pytest.raises(RuntimeError, match="differs from the build-host copy"):
+        checker.verify_linux_notices(installed, expected)

@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-11-21 — Include Linux build-host notices in delivered packages
+
+- The portable Linux archive carries a sibling `VISOR-system-notices` directory. The Debian package installs the same files under `/usr/share/doc/visor/system-notices`. The installed check compares the manifest and every listed file hash with build-host evidence, and checks that purge removes the documentation directory.
+- Prior artifacts showed six Pango references to `GPL-2.0` and `GPL-3.0` while captured host files were named `GPL-2` and `GPL-3`. The collector records a mapping when the expected title/version header exists and preserves exact bytes and original references. This maps notice filenames without choosing the applicable license for any component.
+- Focused notice, installer and release audit tests passed (48 passed, four skipped). The full local CPU core passed 327 with six skips and 17 optional deselections. Ruff and cold Mypy (18 modules) passed. Hosted packaging and installed verification follow.
+
 ## 2026-11-21 — Add offline Linux installer validation and revisit local Windows crashes
 
 - The hosted Linux verification step enters a fresh network namespace with the runner user's privileges restored before running the verifier. The actual Debian install, installed smoke check and purge share the namespace. The verifier requires only the loopback interface and records what it observed. Windows and macOS retain normal runner networking, recorded explicitly in their reports. The runner's network stays available for later audit uploads.

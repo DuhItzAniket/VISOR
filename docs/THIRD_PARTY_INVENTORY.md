@@ -39,6 +39,8 @@ The subsequent [derived origin review](distribution/ORIGIN_REVIEW.md) traces ori
 
 I20 adds build-host Linux evidence collection: literal canonical-equivalent dpkg path queries, exact package/source versions and source-file hashes, package copyright files and literal common-license references. The result is a separate `VISOR-Linux-X64-system-notices` review artifact plus a manifest in the small audit artifact. Missing notices/unclaimed files remain explicit. The frozen app and its notice index remain unchanged in this review phase. [dpkg-query format](https://manpages.debian.org/bookworm/dpkg/dpkg-query.1.en.html), [Debian copyright format and limitations](https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/).
 
+I29 includes the captured Linux build-host notices and manifest in both the portable archive and the Debian package, with an installed hash check. The frozen application inventory still covers the app itself. This does not complete the separate review of native subcomponents and corresponding source.
+
 | Component observed locally | Declaration / notice evidence | Remaining distribution work |
 |---|---|---|
 | Python 3.11 runtime | Python distribution license files | Exact interpreter notice collected and hash-checked on all four targets; native/transitive review remains |
