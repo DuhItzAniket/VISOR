@@ -151,8 +151,6 @@ def package(bundle: Path, version: str, architecture: str) -> None:
             raise RuntimeError("Portable ZIP created. Inno Setup 6 is required to create the Windows installer.")
         run([compiler, f"/DAppVersion={version}", str(ROOT / "scripts" / "VISOR.iss")])
     elif system == "Darwin":
-        import tempfile
-
         with tempfile.TemporaryDirectory(prefix="visor-dmg-") as temporary:
             stage = Path(temporary)
             shutil.copytree(bundle, stage / bundle.name, symlinks=True)
@@ -183,7 +181,8 @@ def package(bundle: Path, version: str, architecture: str) -> None:
             (control / "control").write_text(
                 f"Package: visor\nVersion: {version}\nArchitecture: {deb_arch}\n"
                 "Maintainer: VISOR project\nSection: graphics\nPriority: optional\n"
-                "Depends: libgl1, libglib2.0-0, libxkbcommon-x11-0, libxcb-cursor0\n"
+                "Depends: libgl1, libglib2.0-0, libxkbcommon-x11-0, libxcb-cursor0, "
+                "libxcb-shape0, libxcb-keysyms1, libxcb-icccm4\n"
                 "Description: Visual Object Registration and Analysis desktop application\n",
                 encoding="utf-8",
             )

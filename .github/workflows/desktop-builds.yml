@@ -37,7 +37,8 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgl1 libegl1 libglib2.0-0 libxkbcommon-x11-0 libxcb-cursor0
+          sudo apt-get install -y libgl1 libegl1 libglib2.0-0 libxkbcommon-x11-0 libxcb-cursor0 \
+            libxcb-shape0 libxcb-keysyms1 libxcb-icccm4 xvfb xauth
       - name: Install build dependencies
         run: |
           python -m pip install -r requirements/desktop-build.txt
@@ -77,7 +78,8 @@ jobs:
             /usr/bin/setpriv --reuid="$(id -u)" --regid="$(id -g)" --init-groups -- \
             /usr/bin/env -i HOME="$HOME" PATH=/usr/bin:/bin LANG=C.UTF-8 \
             GITHUB_ACTIONS="$GITHUB_ACTIONS" RUNNER_ENVIRONMENT="$RUNNER_ENVIRONMENT" \
-            QT_QPA_PLATFORM=offscreen QT_OPENGL=software CUDA_VISIBLE_DEVICES=-1 \
+            QT_OPENGL=software QT_XCB_GL_INTEGRATION=none CUDA_VISIBLE_DEVICES=-1 \
+            /usr/bin/xvfb-run -a -s "-screen 0 1280x800x24 -nolisten tcp -extension GLX" \
             "$(command -v python)" scripts/verify_installer.py
       - name: Prepare validation candidate and checksums
         run: python scripts/prepare_release.py

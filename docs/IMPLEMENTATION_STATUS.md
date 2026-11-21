@@ -2,9 +2,11 @@
 
 Updated 2026-11-21. This is the current snapshot; chronological changes, prior checks and failed runs are preserved in [IMPLEMENTATION_LOG.md](IMPLEMENTATION_LOG.md) and Git history. Tasks and acceptance gates are in [IMPROVEMENT_PLAN.md](IMPROVEMENT_PLAN.md).
 
-I28 adds loopback-only verification to the hosted Linux install, workflow and removal check. The verifier records the observed interfaces and stops before installation when the namespace has an external interface. Windows and macOS retain their original hosted networking. Focused installer/candidate checks passed (18), as did Ruff and the local software-rendered Windows core suite (322 passed, six skipped, 17 optional deselections). A fresh hosted Linux run is required to validate the namespace and installer together. The historical local crashes did not recur in this run and their cause remains open.
+I28 verifies the hosted Linux install, workflow and removal with loopback-only networking. Linux [44886662085](https://github.com/DuhItzAniket/VISOR/actions/runs/44886662085) passed at 4e8a263 and the downloaded installer report showed only `lo`. Windows and macOS retain normal hosted networking. The local software-rendered Windows core suite passed 322 tests with six skips and 17 optional deselections. The historical local crashes did not recur in this run and their cause remains open.
 
 I29 packages the Linux build-host notice collection alongside the portable app and under `/usr/share/doc/visor/system-notices` in the Debian package. The installed audit requires the exact manifest and every listed notice hash. Two Pango filename mappings require matching GPL version headers. Broader native and corresponding-source review remains open. Hosted package validation follows.
+
+I30 adds an installed Linux X11 smoke check after the first notice-enabled build discovered three unresolved XCB dependencies. The workflow builds with those libraries, declares them in the Debian metadata, and runs the installed app on a virtual X11 display inside the loopback-only namespace. That build attempt also exposed a branch-local import that prevented Linux packaging. The import is corrected and a new native build is required.
 
 ## Dependency-notice and artifact audit follow-up
 

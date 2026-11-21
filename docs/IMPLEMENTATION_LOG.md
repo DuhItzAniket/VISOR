@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-11-21 — Exercise the Linux X11 startup path
+
+- I28 passed hosted Linux install, workflow and purge in 44886662085 at 4e8a263. The downloaded report confirmed `network.mode = loopback_only` and `interfaces = ["lo"]`. Automatic Windows/Linux core run 44886660590 passed.
+- I29 passed automatic core checks in 44886924322. Hosted native 44886924740 failed before staging packages because the macOS-only `tempfile` import shadowed the module import within the shared packaging function. Removed the local import. The same runner also exposed three unresolved XCB libraries during freezing. Added the matching Ubuntu/Debian packages to the Linux build and installer dependencies.
+- The Linux installed smoke check now uses Xvfb and requires the actual Qt `xcb` backend. The virtual X server shares the offline namespace and does not listen over TCP. Windows/macOS continue offscreen and record their actual Qt backend. Native desktop interaction remains a separate review.
+
 ## 2026-11-21 — Include Linux build-host notices in delivered packages
 
 - The portable Linux archive carries a sibling `VISOR-system-notices` directory. The Debian package installs the same files under `/usr/share/doc/visor/system-notices`. The installed check compares the manifest and every listed file hash with build-host evidence, and checks that purge removes the documentation directory.

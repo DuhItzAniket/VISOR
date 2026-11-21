@@ -37,7 +37,8 @@ def smoke(executable: Path, expected: Path, folder: Path, info: dict, report: di
     if not executable.is_file() or digest(executable) != digest(expected):
         raise RuntimeError("Installed executable differs from the verified frozen source executable.")
     environment = os.environ.copy()
-    environment["QT_QPA_PLATFORM"] = "offscreen"
+    qt_platform = "xcb" if info["system"] == "Linux" else "offscreen"
+    environment["QT_QPA_PLATFORM"] = qt_platform
     # The child is the actual frozen app; no Python executable is on its PATH.
     empty_path = folder / "empty-bin"
     empty_path.mkdir()
@@ -49,6 +50,8 @@ def smoke(executable: Path, expected: Path, folder: Path, info: dict, report: di
     data = json.loads(output.read_text(encoding="utf-8"))
     if data.get("success") is not True or data.get("version") != info["version"]:
         raise RuntimeError("Installed artifact workflow did not succeed with the expected version.")
+    if data.get("qt_platform") != qt_platform:
+        raise RuntimeError(f"The installed check did not use the expected Qt platform: {qt_platform}.")
     report["installed_smoke"] = data
     report["checks"].append("Installed executable hash and full frozen workflow with restricted PATH")
 
@@ -175,7 +178,8 @@ def verify(dist: Path, output: Path) -> int:
               "source_revision": info["source_revision"], "success": False, "checks": [],
               "installer": {"file": artifact.name, "sha256": digest(artifact), "bytes": artifact.stat().st_size},
               "network": {"mode": "unverified" if system == "Linux" else "runner_default"},
-              "scope": "Disposable hosted runner install/copy, offscreen workflow and removal."}
+              "scope": "Disposable hosted runner install/copy, workflow and removal. "
+                       "Linux uses a virtual X11 display; Windows and macOS use offscreen Qt."}
     try:
         if system == "Linux":
             interfaces = sorted(name for _, name in socket.if_nameindex())
