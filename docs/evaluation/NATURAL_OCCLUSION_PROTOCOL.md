@@ -1,0 +1,11 @@
+# Natural-image occlusion protocol
+
+Frozen on 2026-11-21 before evaluating either engine. Use the [HPatches full-image archive](https://github.com/hpatches/hpatches-dataset#full-image-sequences) and its supplied homographies. The original dataset and source citations are linked there. Dataset pixels are kept outside Git.
+
+Selection uses only the archive directory. For each prefix `i_` and `v_`, choose the first two alphabetically sorted scenes with `1.ppm`, `2.ppm`, `6.ppm`, `H_1_2` and `H_1_6` totaling at most 16 MiB uncompressed. Exclude all eight scenes from the previous VISOR natural-image studies: i_ajuntament, v_abstract, i_autannes, i_bologna, v_adam, v_apprentices, i_books and v_artisans. This selects i_boutique, i_bridger, v_astronautis and v_azzola.
+
+Use both 1→2 and 1→6 mappings per scene. Record three conditions per mapping: original full target, target with its left half set to uniform gray (BGR 127), and target with its right half set to the same gray. The split column is integer floor of target width divided by two. Write the masked images as lossless PNG at original dimensions. Keep the supplied homography for each variant. This creates 24 positive pairs. Pixel coverage is controlled; the proportion of the reference scene still visible may differ. No negatives are scored in this study.
+
+Run SIFT and ORB on CPU, with feature budget 1500, ratio 0.75, legacy adaptive RANSAC with 4 px base threshold, seed 0, one measured pass and zero warmups. Keep all 48 results, including accepted inaccurate fits, failures and annotation errors. Report the number of valid fits and positives within 3 px mean corner error per condition, along with the matched change from each unmodified target. Use all evaluable attempts in each denominator. This design studies controlled occlusion on four new natural scenes. It supplies neither production accuracy estimates nor speed comparisons. Existing thresholds, earlier studies and application defaults stay unchanged.
+
+Use `scripts/create_natural_occlusion_manifest.py` for preparation. Run the evaluator with OpenCV limited to two CPU threads and OpenCL disabled. The exact archive used is [the full-sequence ZIP](https://huggingface.co/datasets/vbalnt/hpatches/resolve/main/hpatches-sequences-release.zip). The manifest records hashes of all 20 original files.

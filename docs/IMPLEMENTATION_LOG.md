@@ -1,5 +1,10 @@
 # Implementation Log
 
+## 2026-11-21 — Prepare clean-desktop review and freeze the next research sample
+
+- Added the [native desktop review procedure](NATIVE_RELEASE_REVIEW.md) with the exact-artifact identity fields, repository image fixtures, offline install and replay, physical dropping, keyboard, screen reader and scaling checks. Steps were checked against current app actions and Git-tracked fixtures. This procedure records future manual evidence and does not mark any target reviewed.
+- Selected four unused HPatches scenes from the full-image ZIP directory before measuring any pair. Downloaded 25,260,190 bytes using bounded range reads. Two preparations produced byte-identical manifests and 16 mask files. Verified 24 complete pairs, 20 original-file hashes, exact preserved visible pixels and matching truth across all variants. Ruff and the generator's source-aware type check passed. Freeze [the protocol](evaluation/NATURAL_OCCLUSION_PROTOCOL.md) before evaluating.
+
 ## 2026-11-21 — Exercise the Linux X11 startup path
 
 - I28 passed hosted Linux install, workflow and purge in 44886662085 at 4e8a263. The downloaded report confirmed `network.mode = loopback_only` and `interfaces = ["lo"]`. Automatic Windows/Linux core run 44886660590 passed.

@@ -8,6 +8,8 @@ I29 packages the Linux build-host notice collection alongside the portable app a
 
 I30 adds an installed Linux X11 smoke check after the first notice-enabled build discovered three unresolved XCB dependencies. The workflow builds with those libraries, declares them in the Debian metadata, and runs the installed app on a virtual X11 display inside the loopback-only namespace. That build attempt also exposed a branch-local import that prevented Linux packaging. The import is corrected and a new native build is required.
 
+The [native desktop review procedure](NATIVE_RELEASE_REVIEW.md) gives testers one set of steps tied to each exact installer checksum. I31 adds a [frozen HPatches occlusion protocol](evaluation/NATURAL_OCCLUSION_PROTOCOL.md) using four previously unused scenes. The 24 prepared pairs and deterministic masks were checked before running either engine.
+
 ## Dependency-notice and artifact audit follow-up
 
 Added offline collection of actual installed dependency/runtime notices and a checked-in, hash-pinned 203-file Qt/PySide notice corpus. The bundle validates the notice index against actual Qt version and file hashes. A separate frozen-file inventory records hashes, distribution/source origins, overlapping claims and unresolved entries, without publishing developer absolute paths or claiming full transitive compliance.

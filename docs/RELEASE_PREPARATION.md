@@ -34,6 +34,8 @@ On Linux, validate the downloaded candidate's files with `sha256sum -c <prefix>-
 
 Before public release, complete the open I12/I13/I14 obligations, choose the reviewed release notes/version, and verify final signed/notarized bytes. Signing or another transformation that changes frozen files/installers requires fresh inventories, workflow/installation checks and checksums. Current Actions artifacts expire and are validation downloads; permanent release publication is a separate step after those gates.
 
+Use the [native desktop review procedure](NATIVE_RELEASE_REVIEW.md) to record actual package checks on each target, including offline launch, shell drop, keyboard, screen-reader and display-scaling behavior.
+
 Primary references: [Inno setup flags](https://jrsoftware.org/ishelp/topic_setupcmdline.htm), [Inno uninstall flags](https://jrsoftware.org/ishelp/topic_uninstcmdline.htm), [dpkg operations](https://manpages.ubuntu.com/manpages/jammy/man1/dpkg.1.html), [GitHub runner environment variables](https://docs.github.com/en/actions/reference/workflows-and-actions/variables).
 
 ## Automatic source checks
