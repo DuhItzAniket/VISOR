@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "kind": "downloaded_clean_linux_audit_verification",
+  "verification_date": "2026-11-21",
+  "native_run": 44890419996,
+  "core_run": 44890418897,
+  "candidate_artifact_id": 14702295019,
+  "audit_artifact_id": 14701368667,
+  "source_revision": "52ebc544a0839c970d664f829e5360d4cce36722",
+  "base_image": "ubuntu@sha256:f64b2ffc2f10ab8f8505aa56b2664bd846cbb9df87c7e2532e30f7667021c0e6",
+  "debian_sha256": "26bba4cfc7f3bc663b154731b944f1888efd29959de5377406454818497f7b3e",
+  "portable_sha256": "eb536a1dce6f37d7302fa8795479b2b4a9544674b2b70ea7747acb1fb62f00cd",
+  "audit_log_sha256": "86211d5f7f45cab84551d9e8093234853395d510fd23afd197250369c2c5bef6",
+  "smoke_checks": [
+    14,
+    14
+  ],
+  "network": "loopback only",
+  "notice_files_verified_on_runner": 94
+}

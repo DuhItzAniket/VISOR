@@ -1,5 +1,11 @@
 # Implementation Log
 
+## 2026-11-21 — Verify both Linux formats in a clean offline Ubuntu image
+
+- Confirmed `path-exclude=/usr/share/doc/*` in the exact Ubuntu amd64 base image used by both failed runs. Run 44890419996 at 52ebc54 passed with VISOR's notice directory included in the test installation. The package installed on the normal runner too, where its 94 system notice file hashes matched.
+- Downloaded the clean audit and compared its Debian SHA-256 to the regular installer report. Independently confirmed the matching source and frozen inventory hash, both successful 14-check XCB reports, no system Python, loopback-only networking, actual package purge and the portable archive hash recorded by the container. [Audit record](distribution/validation-52ebc54-linux.json)
+- Windows and Linux core CI passed at 52ebc54 in 44890418897. Native manual review, signing and corresponding-source review remain open. The tests ran on hosted CPU runners and did not use the local GPU.
+
 ## 2026-11-21 — Keep the notice directory in the minimal Ubuntu test
 
 - Run 44889876579 confirmed that the clean image provisioned `libegl1` and installed the package and desktop entry. The script stopped before emitting a smoke result. The minimal image can filter `/usr/share/doc` during package extraction. The check now prints the dpkg filters and explicitly includes only VISOR's notice subtree for this installation, then requires the installed manifest. Xvfb diagnostics use an unprivileged writable file and are printed on failure. [dpkg path filter documentation](https://manpages.ubuntu.com/manpages/jammy/man1/dpkg.1.html)

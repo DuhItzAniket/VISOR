@@ -26,7 +26,9 @@ Artifacts from this completed validation run:
 - [Windows x64 setup and portable ZIP](https://github.com/DuhItzAniket/VISOR/actions/runs/44887364989/artifacts/14700706394)
 - [macOS Apple Silicon DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/44887364989/artifacts/14701100001)
 - [macOS Intel DMG](https://github.com/DuhItzAniket/VISOR/actions/runs/44887364989/artifacts/14701040477)
-- [Linux x64 Debian and portable packages](https://github.com/DuhItzAniket/VISOR/actions/runs/44887364989/artifacts/14701080327)
+- [Linux x64 Debian and portable packages](https://github.com/DuhItzAniket/VISOR/actions/runs/44890419996/artifacts/14702295019)
+
+The Linux download comes from the newer 52ebc54 build. It declares the EGL runtime dependency and passed the Debian install, X11 workflow and purge, plus the portable X11 workflow in a fresh Ubuntu 22.04 image with only loopback networking. [Clean runtime evidence](distribution/validation-52ebc54-linux.json)
 
 GitHub may require sign-in to download Actions artifacts; artifacts also have a retention period. These links are validation downloads, not permanent public release URLs. The ZIP contents are flat: packages plus platform-prefixed evidence, a manifest and SHA256SUMS. Keep the files together when checking checksums.
 
