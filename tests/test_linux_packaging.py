@@ -29,7 +29,13 @@ def test_linux_both_packages_carry_the_same_notice_collection(tmp_path, monkeypa
 
     def verify_debian_stage(command):
         assert command[:3] == ["dpkg-deb", "--root-owner-group", "--build"]
-        docs = Path(command[3]) / "usr/share/doc/visor/system-notices"
+        stage = Path(command[3])
+        control = (stage / "DEBIAN/control").read_text(encoding="utf-8")
+        dependencies = next(line.removeprefix("Depends: ") for line in control.splitlines()
+                            if line.startswith("Depends: "))
+        # QtGui requires libEGL even when the X11 smoke disables GL integration.
+        assert "libegl1" in dependencies.split(", ")
+        docs = stage / "usr/share/doc/visor/system-notices"
         assert (docs / "manifest.json").read_bytes() == manifest
         assert (docs / "copyright").read_bytes() == notice
         debian_checks.append(command[4])

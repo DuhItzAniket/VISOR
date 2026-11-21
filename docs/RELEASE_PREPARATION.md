@@ -38,6 +38,15 @@ Before public release, complete the open I12/I13/I14 obligations, choose the rev
 
 Use the [native desktop review procedure](NATIVE_RELEASE_REVIEW.md) to record actual package checks on each target, including offline launch, shell drop, keyboard, screen-reader and display-scaling behavior.
 
+## Signing and notarization sequence
+
+The release publisher needs an authorized Windows Authenticode signer and an Apple Developer ID Application signing identity with access to Apple's notary service. Use the publisher's secure key store or signing service. Signing keys and notary credentials stay outside the repository, build logs and package evidence.
+
+- **Windows.** Sign and timestamp the built `VISOR.exe` before computing its final inventory or packing the portable ZIP and setup. Configure the Inno Setup signing tool during installer compilation so setup and the embedded uninstaller both receive signatures. Verify the setup, installed executable, and installed uninstaller against the expected publisher and timestamp using the Authenticode policy. Record the results before removing the test installation. [Microsoft SignTool](https://learn.microsoft.com/windows/win32/seccrypto/signtool) · [Inno Setup uninstaller signing](https://jrsoftware.org/inno-setup/documentation/topic_setup_signeduninstaller.htm)
+- **macOS.** Sign the frozen app and nested code with Developer ID and hardened runtime before building each architecture's DMG. Submit the final distribution to the notary service, check the response and log, and staple and validate the ticket on the distribution. Check the copied app's signature and verify normal Gatekeeper behavior on the clean test desktop for each architecture. [Apple distribution packaging](https://developer.apple.com/documentation/xcode/packaging-mac-software-for-distribution) · [Apple notarization workflow](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow)
+
+Capture inventories after signing the application files. Compute distribution checksums after all signing, notarization and stapling steps. Tie the install, launch and report hashes to those final installers and their installed executables. The current build workflow produces validation artifacts with no trusted publisher configuration, so the release manifest's signing status remains false.
+
 Primary references: [Inno setup flags](https://jrsoftware.org/ishelp/topic_setupcmdline.htm), [Inno uninstall flags](https://jrsoftware.org/ishelp/topic_uninstcmdline.htm), [dpkg operations](https://manpages.ubuntu.com/manpages/jammy/man1/dpkg.1.html), [GitHub runner environment variables](https://docs.github.com/en/actions/reference/workflows-and-actions/variables).
 
 ## Automatic source checks

@@ -27,13 +27,18 @@ chown nobody:nogroup "$workdir"
 install -d -m 700 -o nobody -g nogroup "$workdir/runtime"
 
 smoke() {
-    local executable=$1 report=$2
+    local executable=$1 report=$2 status=0
     runuser -u nobody -- /usr/bin/env -i \
         HOME="$workdir" XDG_RUNTIME_DIR="$workdir/runtime" PATH=/usr/bin:/bin LANG=C.UTF-8 \
         QT_QPA_PLATFORM=xcb QT_XCB_GL_INTEGRATION=none QT_OPENGL=software \
         CUDA_VISIBLE_DEVICES=-1 OPENCV_OPENCL_RUNTIME=disabled \
-        /usr/bin/xvfb-run -a -s '-screen 0 1280x800x24 -nolisten tcp -extension GLX' \
-        /usr/bin/env PATH=/nonexistent "$executable" --smoke-check "$report"
+        /usr/bin/xvfb-run -a -e /dev/stderr -s '-screen 0 1280x800x24 -nolisten tcp -extension GLX' \
+        /usr/bin/env PATH=/nonexistent "$executable" --smoke-check "$report" || status=$?
+    if (( status != 0 )); then
+        echo "Smoke check exited with status $status: $executable" >&2
+        if test -f "$report"; then cat "$report"; fi
+        return "$status"
+    fi
     cat "$report"
     grep -Eq '"qt_platform":[[:space:]]*"xcb"' "$report"
     grep -Eq '"success":[[:space:]]*true' "$report"

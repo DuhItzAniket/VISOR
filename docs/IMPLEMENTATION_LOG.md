@@ -1,5 +1,14 @@
 # Implementation Log
 
+## 2026-11-21 — Declare the Linux Qt GUI loader dependency
+
+- The regular installed X11 check passed in 44889303026. The clean container installed the Debian package but failed before its X11 smoke succeeded. Inspection of the frozen Qt GUI ELF dependency table found a direct `libEGL.so.1` dependency. It is present on the build runner via `libegl1`, absent from the frozen bundle and absent from the first clean image's prerequisite list. Added it to the real Debian package metadata.
+- The container now emits virtual-display stderr and any partial smoke report on failure. The changed prerequisite and clean work paths need a new hosted run.
+
+## 2026-11-21 — Document the signing handoff for final package bytes
+
+- Recorded the signing order against the present desktop builder and Inno files, including inner executable hashes, installed uninstaller trust, Apple Developer ID and notarization, and final package checksum timing. Linked primary vendor instructions. Actual signing still needs the release publisher's identities and key access.
+
 ## 2026-11-21 — Publish the natural cross-scene negative test
 
 - All four original first-image hashes matched the earlier occlusion manifest. Ran 24 CPU attempts from clean e321fba with OpenCV set to two threads and OpenCL disabled. No runtime errors and zero fits accepted by either engine. Published all raw rows, including null ground-truth fields and effective settings. [Findings](evaluation/NATURAL_NEGATIVES_FINDINGS.md)

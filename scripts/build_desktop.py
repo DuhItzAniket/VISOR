@@ -181,7 +181,7 @@ def package(bundle: Path, version: str, architecture: str) -> None:
             (control / "control").write_text(
                 f"Package: visor\nVersion: {version}\nArchitecture: {deb_arch}\n"
                 "Maintainer: VISOR project\nSection: graphics\nPriority: optional\n"
-                "Depends: libgl1, libglib2.0-0, libxkbcommon-x11-0, libxcb-cursor0, "
+                "Depends: libgl1, libegl1, libglib2.0-0, libxkbcommon-x11-0, libxcb-cursor0, "
                 "libxcb-shape0, libxcb-keysyms1, libxcb-icccm4\n"
                 "Description: Visual Object Registration and Analysis desktop application\n",
                 encoding="utf-8",
