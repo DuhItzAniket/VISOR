@@ -1,5 +1,9 @@
 # Implementation Log
 
+## 2026-11-21 — Freeze a natural cross-scene negative test
+
+- Inspected the first frames from the fixed four-scene HPatches set and recorded scene descriptions. Froze all 12 directed cross-scene pairs and the CPU evaluation settings in the [protocol](evaluation/NATURAL_NEGATIVES_PROTOCOL.md) before measuring any of those pairs. The original study measured positives and controlled occlusions only.
+
 ## 2026-11-21 — Exercise both Linux package formats on a clean runtime image
 
 - Added a separate clean Ubuntu 22.04 container check after the standard hosted installed-app check. The provisioning build looks up the real installer dependencies and adds the virtual display and fonts. It copies both package formats into a disposable runtime with networking disabled. The workflow runs the app as an unprivileged user with an empty executable search path.

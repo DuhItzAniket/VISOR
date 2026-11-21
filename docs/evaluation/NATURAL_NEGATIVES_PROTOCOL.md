@@ -1,0 +1,9 @@
+# Cross-scene negative protocol
+
+Frozen on 2026-11-21 before evaluating any negative pair in this set. Use the first image from each of the four [HPatches full-image sequences](https://github.com/hpatches/hpatches-dataset#full-image-sequences) selected in the prior [occlusion protocol](NATURAL_OCCLUSION_PROTOCOL.md). Retain the hashes in `manifest.source_files_sha256` of that study.
+
+Before matching, inspect the four first images and record the scene labels. `i_boutique` shows street facades, `i_bridger` shows a lift pavilion and patio, `v_astronautis` shows an astronaut print, and `v_azzola` shows a collage of torn posters. The images show distinct scenes or pictured objects. The two architectural references retain shared visual structure from rooflines and windows. The astronaut print and poster collage provide other textured surfaces.
+
+Include all 12 directed cross-scene pairs of the four first images in the order given above. For each pair the reference and target are `<scene>/1.ppm`, the pair ID is `<reference-scene>-to-<target-scene>`, the expected match is false and ground truth is absent. Both directions are included because matching and geometric validation need not be symmetric. If a fit is accepted, report its inliers, inlier residual and image support. Never assign a ground-truth corner error to these pairs.
+
+Use SIFT and ORB, CPU, a feature budget of 1500, ratio 0.75, legacy adaptive RANSAC with base 4 px, RNG seed 0, one measured pass and zero warmups. OpenCV uses two CPU threads with OpenCL disabled. Publish all 24 rows. Record accepted fits and errors per engine and identify whether an accepted pair is the architecture-to-architecture comparison. Do not select settings from these results or interpret directions that share scenes as independent coverage of deployment conditions.
