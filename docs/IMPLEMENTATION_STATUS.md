@@ -10,6 +10,8 @@ I30 adds an installed Linux X11 smoke check after the first notice-enabled build
 
 The [native desktop review procedure](NATIVE_RELEASE_REVIEW.md) gives testers one set of steps tied to each exact installer checksum. I31 adds a [frozen HPatches occlusion protocol](evaluation/NATURAL_OCCLUSION_PROTOCOL.md) using four previously unused scenes. The 24 prepared pairs and deterministic masks were checked before running either engine.
 
+The desktop matrix uses GitHub's macOS 15 Apple Silicon and Intel images. The retired macOS 14 Apple Silicon job was cancelled by the hosted runner. Verification on the replacement image follows.
+
 ## Dependency-notice and artifact audit follow-up
 
 Added offline collection of actual installed dependency/runtime notices and a checked-in, hash-pinned 203-file Qt/PySide notice corpus. The bundle validates the notice index against actual Qt version and file hashes. A separate frozen-file inventory records hashes, distribution/source origins, overlapping claims and unresolved entries, without publishing developer absolute paths or claiming full transitive compliance.

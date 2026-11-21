@@ -1,5 +1,9 @@
 # Implementation Log
 
+## 2026-11-21 — Replace the retired Apple Silicon runner
+
+- Run 44887213103 cancelled its `macos-14` job before building. GitHub retired that image on November 2. The desktop matrix now uses `macos-15` for Apple Silicon and retains `macos-15-intel` for Intel. The published runner architecture distinguishes these labels. This does not establish the minimum supported macOS release. [GitHub runner image retirement](https://github.com/actions/runner-images/issues/13518) · [Hosted runner labels](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)
+
 ## 2026-11-21 — Prepare clean-desktop review and freeze the next research sample
 
 - Added the [native desktop review procedure](NATIVE_RELEASE_REVIEW.md) with the exact-artifact identity fields, repository image fixtures, offline install and replay, physical dropping, keyboard, screen reader and scaling checks. Steps were checked against current app actions and Git-tracked fixtures. This procedure records future manual evidence and does not mark any target reviewed.
