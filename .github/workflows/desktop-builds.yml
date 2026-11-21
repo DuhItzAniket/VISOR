@@ -81,6 +81,21 @@ jobs:
             QT_OPENGL=software QT_XCB_GL_INTEGRATION=none CUDA_VISIBLE_DEVICES=-1 \
             /usr/bin/xvfb-run -a -s "-screen 0 1280x800x24 -nolisten tcp -extension GLX" \
             "$(command -v python)" scripts/verify_installer.py
+      - name: Check Linux packages in a clean Ubuntu runtime
+        if: runner.os == 'Linux'
+        shell: bash
+        timeout-minutes: 8
+        run: |
+          context="$(mktemp -d)"
+          cp dist/installers/*.deb "$context/visor.deb"
+          cp dist/installers/*.tar.gz "$context/portable.tar.gz"
+          cp scripts/verify-clean-linux.sh "$context/"
+          docker pull ubuntu:22.04
+          base="$(docker image inspect ubuntu:22.04 --format '{{index .RepoDigests 0}}')"
+          printf 'Ubuntu base image: %s\n' "$base" | tee dist/clean-linux.log
+          docker build --file scripts/clean-linux.Dockerfile --build-arg "BASE_IMAGE=$base" \
+            --tag visor-clean-linux "$context" 2>&1 | tee -a dist/clean-linux.log
+          docker run --rm --network none visor-clean-linux 2>&1 | tee -a dist/clean-linux.log
       - name: Prepare validation candidate and checksums
         run: python scripts/prepare_release.py
       - uses: actions/upload-artifact@v4
@@ -93,6 +108,7 @@ jobs:
             dist/smoke-report.json
             dist/installer-report.json
             dist/system-notice-manifest.json
+            dist/clean-linux.log
           if-no-files-found: warn
       - uses: actions/upload-artifact@v4
         if: runner.os == 'Linux' && always()

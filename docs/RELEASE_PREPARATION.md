@@ -14,6 +14,8 @@ Every installed executable must match the frozen executable hash. Its full smoke
 
 The Linux lane uses a fresh [network namespace](https://manpages.ubuntu.com/manpages/jammy/man1/unshare.1.html) for install, smoke and purge. The verifier requires an interface list of just `lo`, reports it in `network`, and fails before touching the package database otherwise. The installed app runs through Qt's XCB plugin on an Xvfb display. The Windows/macOS checks use offscreen Qt with normal runner networking. Clean-desktop testing, physical shell drag, screen readers, scaling, native launchers, Gatekeeper and trusted signing still need separate evidence.
 
+The separate clean Ubuntu 22.04 lane provisions declared Debian prerequisites and the Xvfb, Xauth and font test packages before disconnecting. It then installs the actual Debian package, runs the app as an unprivileged user, purges it and runs the portable archive with only loopback networking. The audit includes `clean-linux.log` with the base image digest, observed packages and file hashes. This exercises a minimal userspace and virtual X11 display. Manual desktop behavior is tracked in the native review procedure.
+
 After success, `scripts/prepare_release.py` validates the matching build/inventory/smoke/installer reports and exact tested installer bytes. It rejects failed reports, another source/version/platform, stale/extra/missing package formats, files changed during staging and an existing destination. It writes a new `dist/release-candidate` directory containing flat assets:
 
 - Original installer/archive filenames.

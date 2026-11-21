@@ -1,5 +1,10 @@
 # Implementation Log
 
+## 2026-11-21 — Exercise both Linux package formats on a clean runtime image
+
+- Added a separate clean Ubuntu 22.04 container check after the standard hosted installed-app check. The provisioning build looks up the real installer dependencies and adds the virtual display and fonts. It copies both package formats into a disposable runtime with networking disabled. The workflow runs the app as an unprivileged user with an empty executable search path.
+- The gate records the base image digest, package hashes, declared and installed prerequisites, and both X11 smoke reports. It checks installer removal and the portable notice directory. Local Bash syntax and whitespace checks passed. Hosted execution follows.
+
 ## 2026-11-21 — Verify the refreshed four-platform candidates
 
 - Native run 44887364989 at d37ef53 passed Windows x64, Linux x64, Apple Silicon and Intel. Windows ran 331 core tests with two skips. The other three ran 329 each with four skips. Each deselected 17 optional tests. All four downloaded audit reports matched their source and inventory hashes. Linux installed the Debian package, ran with actual Qt XCB on a loopback-only network and passed purge.
